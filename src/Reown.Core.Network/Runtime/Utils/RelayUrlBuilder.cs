@@ -2,6 +2,7 @@ using System;
 using Reown.Core.Common;
 using Reown.Core.Common.Logging;
 using Reown.Core.Common.Utils;
+using UnityEngine;
 
 namespace Reown.Core.Network
 {
@@ -19,18 +20,21 @@ namespace Reown.Core.Network
             currentParameters.Add("projectId", projectId);
             currentParameters.Add("ua", ua);
 
-            if (TryGetBundleId(out var bundleId))
-            {
-                currentParameters.Add("bundleId", bundleId);
-            }
-            else if (TryGetPackageName(out var packageName))
-            {
-                currentParameters.Add("packageName", packageName);
-            }
-            else if (TryGetOrigin(out var origin))
-            {
-                currentParameters.Add("origin", origin);
-            }
+            // if (TryGetBundleId(out var bundleId))
+            // {
+            //     Debug.Log($"bundleId: {bundleId}");
+            //     currentParameters.Add("bundleId", bundleId);
+            // }
+            // else if (TryGetPackageName(out var packageName))
+            // {
+            //     Debug.Log($"packageName: {packageName}");
+            //     currentParameters.Add("packageName", packageName);
+            // }
+            // else if (TryGetOrigin(out var origin))
+            // {
+            //     Debug.Log($"origin: {origin}");
+            //     currentParameters.Add("origin", origin);
+            // }
 
             var formattedParameters = UrlUtils.StringifyQs(currentParameters);
 

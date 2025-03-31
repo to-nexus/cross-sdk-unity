@@ -182,6 +182,7 @@ namespace Reown.Sign.Unity
 
             Connecting = true;
 
+            Debug.Log($"[Url] {Url}");
             _socket = new WebSocket(Url);
 
             _socket.OnOpen += OnOpen;
