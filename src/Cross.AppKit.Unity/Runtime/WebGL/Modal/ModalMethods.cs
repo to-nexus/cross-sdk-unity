@@ -1,4 +1,4 @@
-namespace Reown.AppKit.Unity.WebGl.Modal
+namespace Cross.AppKit.Unity.WebGl.Modal
 {
     public static class ModalMethods
     {

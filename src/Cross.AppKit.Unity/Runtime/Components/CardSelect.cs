@@ -1,9 +1,9 @@
 using System;
-using Reown.AppKit.Unity.Utils;
+using Cross.AppKit.Unity.Utils;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class CardSelect : VisualElement
     {
@@ -79,7 +79,7 @@ namespace Reown.AppKit.Unity.Components
 
         public CardSelect(StatusIconType statusIconType)
         {
-            var asset = Resources.Load<VisualTreeAsset>("Reown/AppKit/Components/CardSelect/CardSelect");
+            var asset = Resources.Load<VisualTreeAsset>("Cross/AppKit/Components/CardSelect/CardSelect");
             asset.CloneTree(this);
 
             name = Name;

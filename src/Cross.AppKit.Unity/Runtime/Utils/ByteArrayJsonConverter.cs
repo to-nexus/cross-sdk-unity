@@ -1,8 +1,8 @@
 using System;
 using Newtonsoft.Json;
-using Reown.Core.Common.Utils;
+using Cross.Core.Common.Utils;
 
-namespace Reown.AppKit.Unity.Utils
+namespace Cross.AppKit.Unity.Utils
 {
     /// <summary>
     /// Converts byte array to hex string and vice versa.

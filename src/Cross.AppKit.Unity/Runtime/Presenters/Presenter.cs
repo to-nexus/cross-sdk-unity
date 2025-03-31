@@ -1,7 +1,7 @@
 using System;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public abstract class PresenterBase : IDisposable
     {

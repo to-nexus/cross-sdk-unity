@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using AOT;
 using Newtonsoft.Json;
 using UnityEngine;
-using Reown.AppKit.Unity.Utils;
+using Cross.AppKit.Unity.Utils;
 
-namespace Reown.AppKit.Unity.WebGl
+namespace Cross.AppKit.Unity.WebGl
 {
     public class InteropService
     {

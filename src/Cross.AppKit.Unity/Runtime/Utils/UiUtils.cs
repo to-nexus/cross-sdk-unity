@@ -4,7 +4,7 @@ using UnityEngine;
 using Unity.VectorGraphics;
 #endif
 
-namespace Reown.AppKit.Unity.Utils
+namespace Cross.AppKit.Unity.Utils
 {
     public class UiUtils
     {

@@ -1,16 +1,16 @@
 using System;
 using System.Threading.Tasks;
-using Reown.Core.Common.Utils;
-using Reown.Sign.Models;
-using Reown.Sign.Unity;
+using Cross.Core.Common.Utils;
+using Cross.Sign.Models;
+using Cross.Sign.Unity;
 using UnityEngine;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public abstract class AppKit : MonoBehaviour
     {
         [VersionMarker]
-        public const string Version = "unity-appkit-v1.2.1";
+        public const string Version = "unity-appkit-v1.0.0";
         
         public static AppKit Instance { get; protected set; }
 

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine.Assertions;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public abstract class NetworkController
     {

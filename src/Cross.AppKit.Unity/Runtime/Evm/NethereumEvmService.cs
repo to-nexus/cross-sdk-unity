@@ -12,19 +12,19 @@ using Nethereum.Signer;
 using Nethereum.Signer.EIP712;
 using Nethereum.Util;
 using Nethereum.Web3;
-using Reown.Sign.Nethereum.Unity;
-using Reown.Sign.Unity;
+using Cross.Sign.Nethereum.Unity;
+using Cross.Sign.Unity;
 using UnityEngine;
 using HexBigInteger = Nethereum.Hex.HexTypes.HexBigInteger;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public class NethereumEvmService : EvmService
     {
         private readonly Eip712TypedDataSigner _eip712TypedDataSigner = new();
 
         private readonly EthereumMessageSigner _ethereumMessageSigner = new();
-        private ReownSignUnityInterceptor _interceptor;
+        private CrossSignUnityInterceptor _interceptor;
 
         public IWeb3 Web3 { get; private set; }
 
@@ -69,7 +69,7 @@ namespace Reown.AppKit.Unity
         
         protected override Task InitializeAsyncCore(SignClientUnity signClient)
         {
-            _interceptor = new ReownSignUnityInterceptor(signClient);
+            _interceptor = new CrossSignUnityInterceptor(signClient);
 
             SetInitialWeb3Instance();
 

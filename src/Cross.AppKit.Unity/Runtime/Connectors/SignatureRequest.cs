@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     /// <summary>
     ///     Request to approve/reject EIP-4361 (SIWE) or CAIP-122 signature

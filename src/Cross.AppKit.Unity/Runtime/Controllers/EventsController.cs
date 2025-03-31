@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Reown.AppKit.Unity.Http;
-using Reown.Core.Common.Logging;
+using Cross.AppKit.Unity.Http;
+using Cross.Core.Common.Logging;
 using UnityEngine;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public class EventsController
     {
@@ -71,7 +71,7 @@ namespace Reown.AppKit.Unity
 
                 var requestJson = JsonConvert.SerializeObject(request);
 
-                ReownLogger.Log($"[EventsController] Sending event: {@event.name}.\n\nRequest payload:\n {requestJson}");
+                CrossLogger.Log($"[EventsController] Sending event: {@event.name}.\n\nRequest payload:\n {requestJson}");
 
                 await _httpClient.PostAsync("e", requestJson);
             }

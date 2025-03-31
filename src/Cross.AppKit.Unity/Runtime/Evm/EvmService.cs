@@ -1,9 +1,9 @@
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
-using Reown.Sign.Unity;
+using Cross.Sign.Unity;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public abstract class EvmService
     {

@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace Reown.AppKit.Unity.Model.BlockchainApi
+namespace Cross.AppKit.Unity.Model.BlockchainApi
 {
     [Serializable]
     public sealed class GetIdentityResponse

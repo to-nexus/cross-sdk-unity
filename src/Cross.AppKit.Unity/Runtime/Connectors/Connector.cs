@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Reown.Core.Common.Model.Errors;
-using Reown.Sign.Models;
-using Reown.Sign.Models.Cacao;
-using Reown.Sign.Unity;
+using Cross.Core.Common.Model.Errors;
+using Cross.Sign.Models;
+using Cross.Sign.Models.Cacao;
+using Cross.Sign.Unity;
 using UnityEngine;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public abstract class Connector
     {
@@ -159,7 +159,7 @@ namespace Reown.AppKit.Unity
             }
             catch (Exception e)
             {
-                if (e is not ReownNetworkException)
+                if (e is not CrossNetworkException)
                     Debug.LogException(e);
 
                 await DisconnectAsync();

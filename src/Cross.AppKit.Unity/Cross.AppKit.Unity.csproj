@@ -12,8 +12,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Reown.Sign.Nethereum.Unity\Reown.Sign.Nethereum.Unity.csproj"/>
-        <ProjectReference Include="..\Reown.Sign.Unity\Reown.Sign.Unity.csproj"/>
+        <ProjectReference Include="..\Cross.Sign.Nethereum.Unity\Cross.Sign.Nethereum.Unity.csproj"/>
+        <ProjectReference Include="..\Cross.Sign.Unity\Cross.Sign.Unity.csproj"/>
         <Reference Include="UnityEngine">
             <HintPath>$(UnityDllPath)</HintPath>
         </Reference>

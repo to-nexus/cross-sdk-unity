@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class NetworkSearchView : VisualElement
     {
@@ -23,7 +23,7 @@ namespace Reown.AppKit.Unity.Components
 
         public NetworkSearchView(string visualTreePath)
         {
-            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "Reown/AppKit/Views/NetworkSearchView/NetworkSearchView");
+            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "Cross/AppKit/Views/NetworkSearchView/NetworkSearchView");
             asset.CloneTree(this);
 
             name = Name;

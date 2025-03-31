@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Reown.Sign.Models.Cacao;
+using Cross.Sign.Models.Cacao;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public class SiweConfig
     {

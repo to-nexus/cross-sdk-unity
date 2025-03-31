@@ -1,6 +1,6 @@
 using System;
 
-namespace Reown.AppKit.Unity.WebGl
+namespace Cross.AppKit.Unity.WebGl
 {
     internal class InteropException : Exception
     {

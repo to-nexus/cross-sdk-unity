@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class Button : VisualElement
     {
@@ -123,7 +123,7 @@ namespace Reown.AppKit.Unity.Components
 
         public Button()
         {
-            var asset = Resources.Load<VisualTreeAsset>("Reown/AppKit/Components/Button/Button");
+            var asset = Resources.Load<VisualTreeAsset>("Cross/AppKit/Components/Button/Button");
             asset.CloneTree(this);
 
             name = Name;

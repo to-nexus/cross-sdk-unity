@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class IconLink : VisualElement
     {
@@ -108,14 +108,14 @@ namespace Reown.AppKit.Unity.Components
 
         public IconLink(VectorImage icon, Action clickEvent)
         {
-            var asset = Resources.Load<VisualTreeAsset>("Reown/AppKit/Components/IconLink/IconLink");
+            var asset = Resources.Load<VisualTreeAsset>("Cross/AppKit/Components/IconLink/IconLink");
             asset.CloneTree(this);
 
             name = Name;
 
             image = this.Q<Image>();
             if (icon == null)
-                icon = Resources.Load<VectorImage>("Reown/AppKit/Icons/icon_regular_info");
+                icon = Resources.Load<VectorImage>("Cross/AppKit/Icons/icon_regular_info");
             image.vectorImage = icon;
 
             Clickable = new Clickable(clickEvent);

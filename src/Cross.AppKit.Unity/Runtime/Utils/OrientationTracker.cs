@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Reown.AppKit.Unity.Utils
+namespace Cross.AppKit.Unity.Utils
 {
     public class OrientationTracker : MonoBehaviour
     {

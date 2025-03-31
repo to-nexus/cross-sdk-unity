@@ -1,7 +1,7 @@
 using UnityEngine;
-using Reown.AppKit.Unity.WebGl.Wagmi;
+using Cross.AppKit.Unity.WebGl.Wagmi;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
 #if UNITY_WEBGL
     public class WebGlConnectionProposal : ConnectionProposal

@@ -4,9 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using AOT;
 using Newtonsoft.Json;
-using Reown.AppKit.Unity.WebGl.Wagmi;
+using Cross.AppKit.Unity.WebGl.Wagmi;
 
-namespace Reown.AppKit.Unity.WebGl.Modal
+namespace Cross.AppKit.Unity.WebGl.Modal
 {
     public static class ModalInterop
     {

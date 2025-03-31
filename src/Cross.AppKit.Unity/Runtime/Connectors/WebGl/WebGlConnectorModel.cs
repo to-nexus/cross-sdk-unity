@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
 #if UNITY_WEBGL
     [Serializable]

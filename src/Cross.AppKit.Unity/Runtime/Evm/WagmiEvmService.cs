@@ -1,10 +1,10 @@
 using System.Numerics;
 using System.Threading.Tasks;
 using Nethereum.Contracts;
-using Reown.AppKit.Unity.WebGl.Wagmi;
-using Reown.Sign.Unity;
+using Cross.AppKit.Unity.WebGl.Wagmi;
+using Cross.Sign.Unity;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
 #if UNITY_WEBGL
     public class WagmiEvmService : EvmService

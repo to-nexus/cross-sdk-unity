@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class TextInput : VisualElement
     {
@@ -22,7 +22,7 @@ namespace Reown.AppKit.Unity.Components
 
         public TextInput()
         {
-            var asset = Resources.Load<VisualTreeAsset>("Reown/AppKit/Components/TextInput/TextInput");
+            var asset = Resources.Load<VisualTreeAsset>("Cross/AppKit/Components/TextInput/TextInput");
             asset.CloneTree(this);
 
             AddToClassList(ClassName);

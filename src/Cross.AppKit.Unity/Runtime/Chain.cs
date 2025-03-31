@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     [Serializable]
     public class Chain
@@ -70,9 +70,9 @@ namespace Reown.AppKit.Unity
             this.decimals = decimals;
         }
 
-        public static implicit operator Reown.Sign.Nethereum.Model.Currency(Currency currency)
+        public static implicit operator Cross.Sign.Nethereum.Model.Currency(Currency currency)
         {
-            return new Reown.Sign.Nethereum.Model.Currency(currency.name, currency.symbol, currency.decimals);
+            return new Cross.Sign.Nethereum.Model.Currency(currency.name, currency.symbol, currency.decimals);
         }
     }
 

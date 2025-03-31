@@ -2,15 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Reown.Core.Common.Model.Errors;
-using Reown.Sign.Interfaces;
-using Reown.Sign.Models;
-using Reown.Sign.Models.Engine;
-using Reown.Sign.Unity;
-using Reown.Sign.Utils;
+using Cross.Core.Common.Model.Errors;
+using Cross.Sign.Interfaces;
+using Cross.Sign.Models;
+using Cross.Sign.Models.Engine;
+using Cross.Sign.Unity;
+using Cross.Sign.Utils;
 using UnityEngine;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public class WalletConnectConnectionProposal : ConnectionProposal
     {
@@ -160,7 +160,7 @@ namespace Reown.AppKit.Unity
                     await connectedData.Approval;
                 }
             }
-            catch (ReownNetworkException e) when (e.CodeType == ErrorType.DISAPPROVED_CHAINS)
+            catch (CrossNetworkException e) when (e.CodeType == ErrorType.DISAPPROVED_CHAINS)
             {
                 // Wallet declined connection, don't throw/log.
                 // The `SessionConnectionErroredHandler` will handle the error.

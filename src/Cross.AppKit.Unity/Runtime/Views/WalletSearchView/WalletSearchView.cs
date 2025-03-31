@@ -1,10 +1,10 @@
 using System;
-using Reown.AppKit.Unity.Utils;
+using Cross.AppKit.Unity.Utils;
 using UnityEngine;
 using UnityEngine.UIElements;
-using DeviceType = Reown.AppKit.Unity.Utils.DeviceType;
+using DeviceType = Cross.AppKit.Unity.Utils.DeviceType;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class WalletSearchView : VisualElement
     {
@@ -44,7 +44,7 @@ namespace Reown.AppKit.Unity.Components
 
         public WalletSearchView(string visualTreePath)
         {
-            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "Reown/AppKit/Views/WalletSearchView/WalletSearchView");
+            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "Cross/AppKit/Views/WalletSearchView/WalletSearchView");
             asset.CloneTree(this);
 
             AddToClassList(Name);
@@ -55,7 +55,7 @@ namespace Reown.AppKit.Unity.Components
             searchInput = this.Q<TextInput>();
             searchInput.leftSlot.Add(new Image
             {
-                vectorImage = Resources.Load<VectorImage>("Reown/AppKit/Icons/icon_medium_magnifier")
+                vectorImage = Resources.Load<VectorImage>("Cross/AppKit/Icons/icon_medium_magnifier")
             });
             searchInput.RegisterCallback<ChangeEvent<string>>(evt => SearchInputValueChanged?.Invoke(evt.newValue));
             searchInput.SetPlaceholder("Search wallet");
@@ -76,7 +76,7 @@ namespace Reown.AppKit.Unity.Components
             // --- QR Code Link
             qrCodeLink = this.Q<IconLink>(ClassNameQrCodeLink);
             if (deviceType is DeviceType.Phone)
-                qrCodeLink.image.vectorImage = Resources.Load<VectorImage>("Reown/AppKit/Icons/icon_regular_qrcode");
+                qrCodeLink.image.vectorImage = Resources.Load<VectorImage>("Cross/AppKit/Icons/icon_regular_qrcode");
             else
                 qrCodeLink.style.display = DisplayStyle.None;
         }

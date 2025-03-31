@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
-using Reown.AppKit.Unity.Components;
-using Reown.AppKit.Unity.Utils;
-using Reown.Sign.Unity;
+using Cross.AppKit.Unity.Components;
+using Cross.AppKit.Unity.Utils;
+using Cross.Sign.Unity;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public class ModalHeaderPresenter : Presenter<ModalHeader>
     {
@@ -31,7 +31,7 @@ namespace Reown.AppKit.Unity
 
             // Create Back button and add it to the left slot
             var goBackIconLink = new IconLink(
-                Resources.Load<VectorImage>("Reown/AppKit/Icons/icon_medium_chevronleft"),
+                Resources.Load<VectorImage>("Cross/AppKit/Icons/icon_medium_chevronleft"),
                 routerController.GoBack)
             {
                 style =
@@ -50,7 +50,7 @@ namespace Reown.AppKit.Unity
 
             // Close button
             View.rightSlot.Add(new IconLink(
-                Resources.Load<VectorImage>("Reown/AppKit/Icons/icon_bold_xmark"),
+                Resources.Load<VectorImage>("Cross/AppKit/Icons/icon_bold_xmark"),
                 AppKit.CloseModal
             ));
         }
@@ -89,10 +89,10 @@ namespace Reown.AppKit.Unity
 
             var icon = notification.type switch
             {
-                NotificationType.Error => Resources.Load<VectorImage>("Reown/AppKit/Icons/icon_bold_warningcircle"),
-                NotificationType.Success => Resources.Load<VectorImage>("Reown/AppKit/Icons/icon_bold_checkmark"),
-                NotificationType.Info => Resources.Load<VectorImage>("Reown/AppKit/Icons/icon_bold_info"),
-                _ => Resources.Load<VectorImage>("Reown/AppKit/Icons/icon_bold_warningcircle")
+                NotificationType.Error => Resources.Load<VectorImage>("Cross/AppKit/Icons/icon_bold_warningcircle"),
+                NotificationType.Success => Resources.Load<VectorImage>("Cross/AppKit/Icons/icon_bold_checkmark"),
+                NotificationType.Info => Resources.Load<VectorImage>("Cross/AppKit/Icons/icon_bold_info"),
+                _ => Resources.Load<VectorImage>("Cross/AppKit/Icons/icon_bold_warningcircle")
             };
 
             View.ShowSnackbar(snackbarIconColor, icon, notification.message);

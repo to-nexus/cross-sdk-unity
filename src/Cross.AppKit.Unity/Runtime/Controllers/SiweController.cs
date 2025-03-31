@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public class SiweController
     {

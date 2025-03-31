@@ -1,6 +1,6 @@
 using System;
 
-namespace Reown.AppKit.Unity.WebGl.Modal
+namespace Cross.AppKit.Unity.WebGl.Modal
 {
     [Serializable]
     public class ModalState

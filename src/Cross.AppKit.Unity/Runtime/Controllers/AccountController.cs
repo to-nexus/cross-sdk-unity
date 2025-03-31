@@ -5,10 +5,10 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using UnityEngine;
-using Reown.AppKit.Unity.Http;
-using Reown.AppKit.Unity.Utils;
+using Cross.AppKit.Unity.Http;
+using Cross.AppKit.Unity.Utils;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public class AccountController : INotifyPropertyChanged
     {

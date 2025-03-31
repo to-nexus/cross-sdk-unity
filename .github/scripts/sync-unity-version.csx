@@ -45,7 +45,7 @@ foreach (var field in versionFields)
 
 // Update Unity sample app version
 Log.SubHeader("Updating Unity Sample App Version");
-var projectSettingsPath = Path.GetFullPath("sample/Reown.AppKit.Unity/ProjectSettings/ProjectSettings.asset");
+var projectSettingsPath = Path.GetFullPath("sample/Cross.AppKit.Unity/ProjectSettings/ProjectSettings.asset");
 if (File.Exists(projectSettingsPath))
 {
     await UpdateProjectSettingsVersionAsync(projectSettingsPath, newVersion);
@@ -211,7 +211,7 @@ async Task UpdatePackageVersionsAsync(string srcPath, string newVersion)
                 writer.WriteToken(jsonReader.TokenType, jsonReader.Value);
 
                 jsonReader.Read();
-                if (propertyName == "version" || (propertyName?.StartsWith("com.reown.") ?? false))
+                if (propertyName == "version" || (propertyName?.StartsWith("nexus.cross.") ?? false))
                 {
                     if (jsonReader.Value?.ToString() != newVersion)
                     {
@@ -258,7 +258,7 @@ async Task UpdatePackagesLockVersionsAsync(string basePath, string newVersion)
         {
             foreach (var dep in depsObj.Properties())
             {
-                if (dep.Name.StartsWith("com.reown."))
+                if (dep.Name.StartsWith("nexus.cross."))
                 {
                     var depObj = dep.Value as JObject;
                     if (depObj != null)
@@ -268,7 +268,7 @@ async Task UpdatePackagesLockVersionsAsync(string basePath, string newVersion)
                         {
                             foreach (var nestedDep in nestedDepsObj.Properties())
                             {
-                                if (nestedDep.Name.StartsWith("com.reown."))
+                                if (nestedDep.Name.StartsWith("nexus.cross."))
                                 {
                                     var oldVersion = nestedDepsObj[nestedDep.Name].ToString();
                                     if (oldVersion != newVersion)

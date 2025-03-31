@@ -1,6 +1,6 @@
-using Reown.AppKit.Unity.Model;
+using Cross.AppKit.Unity.Model;
 
-namespace Reown.AppKit.Unity.Utils
+namespace Cross.AppKit.Unity.Utils
 {
     public static class EventUtils
     {

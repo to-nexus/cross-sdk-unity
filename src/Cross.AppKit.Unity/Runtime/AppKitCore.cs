@@ -1,11 +1,11 @@
 using System;
 using System.Threading.Tasks;
-using Reown.AppKit.Unity.Utils;
-using Reown.Sign.Models;
-using Reown.Sign.Unity;
+using Cross.AppKit.Unity.Utils;
+using Cross.Sign.Models;
+using Cross.Sign.Unity;
 using UnityEngine;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public class AppKitCore : AppKit
     {
@@ -93,7 +93,7 @@ namespace Reown.AppKit.Unity
         protected virtual ModalController CreateModalController()
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            return new Reown.AppKit.Unity.WebGl.ModalControllerWebGl();
+            return new Cross.AppKit.Unity.WebGl.ModalControllerWebGl();
 #else
             return new ModalControllerUtk();
 #endif

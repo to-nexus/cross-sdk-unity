@@ -1,8 +1,8 @@
-using Reown.AppKit.Unity.Utils;
+using Cross.AppKit.Unity.Utils;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class NetworkLoadingView : VisualElement
     {
@@ -26,7 +26,7 @@ namespace Reown.AppKit.Unity.Components
 
         public NetworkLoadingView(string visualTreePath)
         {
-            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "Reown/AppKit/Views/NetworkLoadingView/NetworkLoadingView");
+            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "Cross/AppKit/Views/NetworkLoadingView/NetworkLoadingView");
             asset.CloneTree(this);
 
             name = Name;

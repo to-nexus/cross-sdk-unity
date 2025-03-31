@@ -1,8 +1,8 @@
-using Reown.AppKit.Unity.Utils;
+using Cross.AppKit.Unity.Utils;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class QrCode : VisualElement
     {
@@ -23,7 +23,7 @@ namespace Reown.AppKit.Unity.Components
 
         public QrCode(string data)
         {
-            var asset = Resources.Load<VisualTreeAsset>("Reown/AppKit/Components/QrCode/QrCode");
+            var asset = Resources.Load<VisualTreeAsset>("Cross/AppKit/Components/QrCode/QrCode");
             asset.CloneTree(this);
 
             AddToClassList(Name);

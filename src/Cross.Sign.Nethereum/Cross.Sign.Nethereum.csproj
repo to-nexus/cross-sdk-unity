@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>$(DefaultTargetFrameworks)</TargetFrameworks>
+        <PackageVersion>$(DefaultVersion)</PackageVersion>
+        <AssemblyVersion>$(DefaultVersion)</AssemblyVersion>
+        <PackageId>Cross.Sign.Nethereum</PackageId>
+        <Title>Cross.Sign.Nethereum</Title>
+        <Authors>skibitsky</Authors>
+        <Description>Cross request interceptor for Nethereum</Description>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    </PropertyGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Cross.Sign\Cross.Sign.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Nethereum.Web3" />
+    </ItemGroup>
+</Project>

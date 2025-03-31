@@ -3,15 +3,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Reown.Sign.Models;
-using Reown.Sign.Models.Engine;
-using Reown.Sign.Models.Engine.Methods;
-using Reown.Sign.Nethereum;
-using Reown.Sign.Nethereum.Model;
-using Reown.Sign.Unity;
+using Cross.Sign.Models;
+using Cross.Sign.Models.Engine;
+using Cross.Sign.Models.Engine.Methods;
+using Cross.Sign.Nethereum;
+using Cross.Sign.Nethereum.Model;
+using Cross.Sign.Unity;
 using UnityEngine;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public class WalletConnectConnector : Connector
     {

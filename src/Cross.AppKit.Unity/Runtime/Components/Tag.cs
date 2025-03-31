@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Reown.AppKit.Unity.Utils;
+using Cross.AppKit.Unity.Utils;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class Tag : VisualElement
     {
@@ -25,7 +25,7 @@ namespace Reown.AppKit.Unity.Components
 
         public Tag(string text, TagType type)
         {
-            var asset = Resources.Load<VisualTreeAsset>("Reown/AppKit/Components/Tag/Tag");
+            var asset = Resources.Load<VisualTreeAsset>("Cross/AppKit/Components/Tag/Tag");
             asset.CloneTree(this);
 
             name = Name;

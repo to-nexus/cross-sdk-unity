@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class WalletView : VisualElement
     {
@@ -34,7 +34,7 @@ namespace Reown.AppKit.Unity.Components
 
         public WalletView(string visualTreePath)
         {
-            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "Reown/AppKit/Views/WalletView/WalletView");
+            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "Cross/AppKit/Views/WalletView/WalletView");
             asset.CloneTree(this);
 
             AddToClassList(Name);

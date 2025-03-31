@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
-using Reown.AppKit.Unity.Utils;
+using Cross.AppKit.Unity.Utils;
 
-namespace Reown.AppKit.Unity.Http
+namespace Cross.AppKit.Unity.Http
 {
     public abstract class HttpClientDecorator
     {

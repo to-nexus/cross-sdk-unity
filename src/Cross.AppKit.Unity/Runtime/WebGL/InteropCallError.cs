@@ -1,6 +1,6 @@
 using System;
 
-namespace Reown.AppKit.Unity.WebGl
+namespace Cross.AppKit.Unity.WebGl
 {
     [Serializable]
     public struct InteropCallError

@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.UIElements;
-using Reown.AppKit.Unity.Utils;
+using Cross.AppKit.Unity.Utils;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class AccountView : VisualElement
     {
@@ -36,7 +36,7 @@ namespace Reown.AppKit.Unity.Components
 
         public AccountView(string visualTreePath)
         {
-            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "Reown/AppKit/Views/AccountView/AccountView");
+            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "Cross/AppKit/Views/AccountView/AccountView");
             asset.CloneTree(this);
 
             name = Name;

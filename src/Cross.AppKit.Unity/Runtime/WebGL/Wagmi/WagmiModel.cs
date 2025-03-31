@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace Reown.AppKit.Unity.WebGl.Wagmi
+namespace Cross.AppKit.Unity.WebGl.Wagmi
 {
     [Serializable]
     public class GetBalanceParameter

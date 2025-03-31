@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         projectPath:
-          - 'sample/Reown.AppKit.Unity'
+          - 'sample/Cross.AppKit.Unity'
         targetPlatform:
           # - StandaloneOSX # Build a macOS standalone (Intel 64-bit).
           # - StandaloneWindows # Build a Windows standalone.

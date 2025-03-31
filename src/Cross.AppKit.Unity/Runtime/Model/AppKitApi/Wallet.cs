@@ -1,8 +1,8 @@
 using Newtonsoft.Json;
-using Reown.AppKit.Unity.Utils;
+using Cross.AppKit.Unity.Utils;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity.Model
+namespace Cross.AppKit.Unity.Model
 {
     public class Wallet
     {

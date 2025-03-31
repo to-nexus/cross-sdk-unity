@@ -4,7 +4,7 @@ using ZXing.Common;
 using ZXing.QrCode;
 using ZXing.Rendering;
 
-namespace Reown.AppKit.Unity.Utils
+namespace Cross.AppKit.Unity.Utils
 {
     /// <summary>
     ///     A utility class for encoding QR codes

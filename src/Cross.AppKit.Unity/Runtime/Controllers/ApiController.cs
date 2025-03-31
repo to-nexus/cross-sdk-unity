@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
-using Reown.AppKit.Unity.Http;
-using Reown.AppKit.Unity.Model;
+using Cross.AppKit.Unity.Http;
+using Cross.AppKit.Unity.Model;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public class ApiController
     {

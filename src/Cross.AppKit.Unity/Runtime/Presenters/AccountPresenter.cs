@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Reown.AppKit.Unity.Components;
-using Reown.AppKit.Unity.Utils;
+using Cross.AppKit.Unity.Components;
+using Cross.AppKit.Unity.Utils;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public class AccountPresenter : Presenter<AccountView>
     {
@@ -78,7 +78,7 @@ namespace Reown.AppKit.Unity
             {
                 IconFallbackElement =
                 {
-                    vectorImage = Resources.Load<VectorImage>("Reown/AppKit/Icons/icon_medium_info")
+                    vectorImage = Resources.Load<VectorImage>("Cross/AppKit/Icons/icon_medium_info")
                 }
             };
             Buttons.Add(_networkButton);
@@ -87,7 +87,7 @@ namespace Reown.AppKit.Unity
 
         protected virtual void CreateDisconnectButton(VisualElement buttonsListView)
         {
-            var disconnectIcon = Resources.Load<VectorImage>("Reown/AppKit/Icons/icon_medium_disconnect");
+            var disconnectIcon = Resources.Load<VectorImage>("Cross/AppKit/Icons/icon_medium_disconnect");
             var disconnectButton = new ListItem("Disconnect", OnDisconnectButtonClick, disconnectIcon, ListItem.IconType.Circle, ListItem.IconStyle.Accent);
             Buttons.Add(disconnectButton);
             buttonsListView.Add(disconnectButton);

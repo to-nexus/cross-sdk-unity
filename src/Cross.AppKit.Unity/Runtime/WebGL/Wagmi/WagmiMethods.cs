@@ -1,4 +1,4 @@
-namespace Reown.AppKit.Unity.WebGl.Wagmi
+namespace Cross.AppKit.Unity.WebGl.Wagmi
 {
     public static class WagmiMethods
     {

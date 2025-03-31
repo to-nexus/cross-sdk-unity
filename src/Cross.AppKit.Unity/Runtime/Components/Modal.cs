@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class Modal : VisualElement
     {
@@ -21,7 +21,7 @@ namespace Reown.AppKit.Unity.Components
 
         public Modal()
         {
-            var asset = Resources.Load<VisualTreeAsset>("Reown/AppKit/Components/Modal/Modal");
+            var asset = Resources.Load<VisualTreeAsset>("Cross/AppKit/Components/Modal/Modal");
             asset.CloneTree(this);
 
             name = Name;

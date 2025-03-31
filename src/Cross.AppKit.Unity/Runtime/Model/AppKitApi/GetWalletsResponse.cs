@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Reown.AppKit.Unity.Model
+namespace Cross.AppKit.Unity.Model
 {
     public class GetWalletsResponse
     {

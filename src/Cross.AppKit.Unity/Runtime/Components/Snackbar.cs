@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class Snackbar : VisualElement
     {
@@ -67,7 +67,7 @@ namespace Reown.AppKit.Unity.Components
 
         public Snackbar(IconColor iconColor, string message)
         {
-            var asset = Resources.Load<VisualTreeAsset>("Reown/AppKit/Components/Snackbar/Snackbar");
+            var asset = Resources.Load<VisualTreeAsset>("Cross/AppKit/Components/Snackbar/Snackbar");
             asset.CloneTree(this);
 
             AddToClassList(ClassName);

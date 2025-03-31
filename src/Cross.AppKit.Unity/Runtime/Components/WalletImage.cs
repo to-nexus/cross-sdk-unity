@@ -1,7 +1,7 @@
 using UnityEngine.UIElements;
-using Reown.AppKit.Unity.Utils;
+using Cross.AppKit.Unity.Utils;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class WalletImage : VisualElement
     {

@@ -1,8 +1,8 @@
-using Reown.AppKit.Unity.Utils;
+using Cross.AppKit.Unity.Utils;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class QrCodeView : VisualElement
     {
@@ -34,7 +34,7 @@ namespace Reown.AppKit.Unity.Components
 
         public QrCodeView(string visualTreePath)
         {
-            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "Reown/AppKit/Views/QrCodeView/QrCodeView");
+            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "Cross/AppKit/Views/QrCodeView/QrCodeView");
             asset.CloneTree(this);
 
             name = Name;

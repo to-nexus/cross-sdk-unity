@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Reown.Sign.Unity;
+using Cross.Sign.Unity;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity.Utils
+namespace Cross.AppKit.Unity.Utils
 {
     public interface IImageHandler<in TImage>
     {

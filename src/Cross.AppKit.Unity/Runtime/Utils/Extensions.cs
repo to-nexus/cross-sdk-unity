@@ -3,7 +3,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity.Utils
+namespace Cross.AppKit.Unity.Utils
 {
     public static class StringExtensions
     {

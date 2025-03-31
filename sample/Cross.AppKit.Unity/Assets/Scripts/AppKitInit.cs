@@ -1,10 +1,10 @@
-using Reown.AppKit.Unity;
-using Reown.AppKit.Unity.Model;
-using Reown.Core.Common.Logging;
+using Cross.AppKit.Unity;
+using Cross.AppKit.Unity.Model;
+using Cross.Core.Common.Logging;
 using Skibitsky.Unity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityLogger = Reown.Sign.Unity.UnityLogger;
+using UnityLogger = Cross.Sign.Unity.UnityLogger;
 
 #if !UNITY_WEBGL
 using mixpanel;
@@ -18,8 +18,8 @@ namespace Sample
 
         private async void Start()
         {
-            // Set up Reown logger to collect logs from AppKit
-            ReownLogger.Instance = new UnityLogger();
+            // Set up Cross logger to collect logs from AppKit
+            CrossLogger.Instance = new UnityLogger();
 
             // The very basic configuration of SIWE
             var siweConfig = new SiweConfig
@@ -39,12 +39,12 @@ namespace Sample
             // AppKit configuration
             var appKitConfig = new AppKitConfig
             {
-                // Project ID from https://cloud.reown.com/
-                projectId = "884a108399b5e7c9bc00bd9be4ccb2cc",
+                // Project ID from cross test
+                projectId = "ef21cf313a63dbf63f2e9e04f3614029",
                 metadata = new Metadata(
                     "AppKit Unity",
                     "AppKit Unity Sample",
-                    "https://reown.com",
+                    "https://to.nexus",
                     "https://raw.githubusercontent.com/reown-com/reown-dotnet/main/media/appkit-icon.png",
                     new RedirectData
                     {
@@ -76,7 +76,7 @@ namespace Sample
         }
 
         /// <summary>
-        ///     This method returns a list of Reown sample wallets on iOS and Android.
+        ///     This method returns a list of Cross sample wallets on iOS and Android.
         ///     These wallets are used for testing and are not included in the default list of wallets returned by AppKit's REST API.
         ///     On other platforms, this method returns null, so only the default list of wallets is used.
         /// </summary>

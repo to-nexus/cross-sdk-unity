@@ -1,0 +1,13 @@
+{
+  "name": "nexus.cross.core.network",
+  "version": "1.0.0",
+  "displayName": "Cross.Core.Network",
+  "unity": "2022.3",
+  "author": "Nexus",
+  "keywords": [
+    "cross"
+  ],
+  "dependencies": {
+    "nexus.cross.core.common": "1.0.0"
+  }
+}

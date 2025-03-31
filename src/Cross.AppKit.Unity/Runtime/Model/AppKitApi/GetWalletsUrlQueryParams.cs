@@ -1,4 +1,4 @@
-namespace Reown.AppKit.Unity.Model
+namespace Cross.AppKit.Unity.Model
 {
     public struct GetWalletsUrlQueryParams
     {

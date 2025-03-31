@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Reown.AppKit.Unity.Components;
-using Reown.AppKit.Unity.Utils;
-using Reown.Core.Common.Model.Errors;
+using Cross.AppKit.Unity.Components;
+using Cross.AppKit.Unity.Utils;
+using Cross.Core.Common.Model.Errors;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public class NetworkSearchPresenter : Presenter<NetworkSearchView>
     {
@@ -89,7 +89,7 @@ namespace Reown.AppKit.Unity
                 }
             };
 
-            var hexagon = Resources.Load<VectorImage>("Reown/AppKit/Images/hexagon");
+            var hexagon = Resources.Load<VectorImage>("Cross/AppKit/Images/hexagon");
             var imageContainer = item.Q<VisualElement>(CardSelect.NameImageContainer);
             imageContainer.style.backgroundImage = new StyleBackground(hexagon);
             imageContainer.style.width = 52;
@@ -117,7 +117,7 @@ namespace Reown.AppKit.Unity
 
                 await changeChainTask;
             }
-            catch (ReownNetworkException e)
+            catch (CrossNetworkException e)
             {
                 // If user declines network switch, MetaMask returns a long json error message.
                 // The message is not user-friendly, so we show a default error message instead.

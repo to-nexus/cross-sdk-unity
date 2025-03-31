@@ -1,0 +1,13 @@
+{
+  "name": "nexus.cross.sign",
+  "version": "1.0.0",
+  "displayName": "Cross.Sign",
+  "unity": "2022.3",
+  "author": "Nexus",
+  "keywords": [
+    "cross"
+  ],
+  "dependencies": {
+    "nexus.cross.core": "1.0.0"
+  }
+}

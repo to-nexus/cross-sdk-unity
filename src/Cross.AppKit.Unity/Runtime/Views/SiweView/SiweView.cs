@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Button = Reown.AppKit.Unity.Components.Button;
+using Button = Cross.AppKit.Unity.Components.Button;
 
-namespace Reown.AppKit.Unity.Views.SiweView
+namespace Cross.AppKit.Unity.Views.SiweView
 {
     public class SiweView : VisualElement
     {
@@ -64,7 +64,7 @@ namespace Reown.AppKit.Unity.Views.SiweView
 
         public SiweView(string visualTreePath)
         {
-            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "Reown/AppKit/Views/SiweView/SiweView");
+            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "Cross/AppKit/Views/SiweView/SiweView");
             asset.CloneTree(this);
 
             name = Name;

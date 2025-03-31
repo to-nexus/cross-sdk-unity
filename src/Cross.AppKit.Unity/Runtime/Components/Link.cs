@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class Link : VisualElement
     {
@@ -145,7 +145,7 @@ namespace Reown.AppKit.Unity.Components
 
         public Link()
         {
-            var asset = Resources.Load<VisualTreeAsset>("Reown/AppKit/Components/Link/Link");
+            var asset = Resources.Load<VisualTreeAsset>("Cross/AppKit/Components/Link/Link");
             asset.CloneTree(this);
 
             name = Name;

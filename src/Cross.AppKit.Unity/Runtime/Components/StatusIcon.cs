@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class StatusIcon : VisualElement
     {
@@ -13,7 +13,7 @@ namespace Reown.AppKit.Unity.Components
         public static readonly string ClassNameIconColorError = $"{ClassName}__icon-container--color-error";
         public static readonly string ClassNameIconColorSuccess = $"{ClassName}__icon-container--color-success";
 
-        public const string SuccessIconPath = "Reown/AppKit/Icons/icon_medium_checkmark";
+        public const string SuccessIconPath = "Cross/AppKit/Icons/icon_medium_checkmark";
 
         public readonly Image icon;
         public readonly VisualElement iconContainer;
@@ -28,7 +28,7 @@ namespace Reown.AppKit.Unity.Components
 
         public StatusIcon(IconType type, IconColor color)
         {
-            var asset = Resources.Load<VisualTreeAsset>("Reown/AppKit/Components/StatusIcon/StatusIcon");
+            var asset = Resources.Load<VisualTreeAsset>("Cross/AppKit/Components/StatusIcon/StatusIcon");
             asset.CloneTree(this);
 
             AddToClassList(ClassName);

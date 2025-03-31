@@ -1,6 +1,6 @@
 using System;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public class ConnectionProposal : IDisposable
     {

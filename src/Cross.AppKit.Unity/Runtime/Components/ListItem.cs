@@ -1,10 +1,10 @@
 using System;
-using Reown.AppKit.Unity.Utils;
+using Cross.AppKit.Unity.Utils;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Reown.AppKit.Unity.Utils;
+using Cross.AppKit.Unity.Utils;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class ListItem : VisualElement
     {
@@ -135,7 +135,7 @@ namespace Reown.AppKit.Unity.Components
             IconStyle iconStyle = IconStyle.Default,
             StatusIconType statusIconType = StatusIconType.None)
         {
-            var asset = Resources.Load<VisualTreeAsset>("Reown/AppKit/Components/ListItem/ListItem");
+            var asset = Resources.Load<VisualTreeAsset>("Cross/AppKit/Components/ListItem/ListItem");
             asset.CloneTree(this);
 
             name = Name;

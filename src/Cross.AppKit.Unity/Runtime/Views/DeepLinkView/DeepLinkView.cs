@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Reown.AppKit.Unity.Utils;
+using Cross.AppKit.Unity.Utils;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class DeepLinkView : VisualElement
     {
@@ -48,7 +48,7 @@ namespace Reown.AppKit.Unity.Components
 
         public DeepLinkView(string visualTreePath)
         {
-            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "Reown/AppKit/Views/DeepLinkView/DeepLinkView");
+            var asset = Resources.Load<VisualTreeAsset>(visualTreePath ?? "Cross/AppKit/Views/DeepLinkView/DeepLinkView");
             asset.CloneTree(this);
 
             name = Name;

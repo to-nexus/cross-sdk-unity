@@ -1,9 +1,9 @@
 using System;
 using System.Security.Cryptography;
-using Reown.Sign.Models;
-using Reown.Sign.Models.Cacao;
+using Cross.Sign.Models;
+using Cross.Sign.Models.Cacao;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public class SiweUtils
     {

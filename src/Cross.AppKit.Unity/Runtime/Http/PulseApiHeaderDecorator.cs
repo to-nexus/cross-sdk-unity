@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Reown.AppKit.Unity.Http
+namespace Cross.AppKit.Unity.Http
 {
     public class PulseApiHeaderDecorator : AppKitApiHeaderDecorator
     {

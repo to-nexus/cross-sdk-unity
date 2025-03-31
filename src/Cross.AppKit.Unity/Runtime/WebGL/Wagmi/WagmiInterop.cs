@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
-namespace Reown.AppKit.Unity.WebGl.Wagmi
+namespace Cross.AppKit.Unity.WebGl.Wagmi
 {
 #if UNITY_WEBGL 
     public static class WagmiInterop

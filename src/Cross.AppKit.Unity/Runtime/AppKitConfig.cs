@@ -1,7 +1,7 @@
 using System;
-using Reown.AppKit.Unity.Model;
+using Cross.AppKit.Unity.Model;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     [Serializable]
     public class AppKitConfig

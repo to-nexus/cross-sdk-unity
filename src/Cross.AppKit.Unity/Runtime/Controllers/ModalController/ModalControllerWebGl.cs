@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using UnityEngine;
-using Reown.AppKit.Unity.WebGl.Modal;
-using NativeViewType = Reown.AppKit.Unity.ViewType;
-using WebGlViewType = Reown.AppKit.Unity.WebGl.Modal.ViewType;
+using Cross.AppKit.Unity.WebGl.Modal;
+using NativeViewType = Cross.AppKit.Unity.ViewType;
+using WebGlViewType = Cross.AppKit.Unity.WebGl.Modal.ViewType;
 
-namespace Reown.AppKit.Unity.WebGl
+namespace Cross.AppKit.Unity.WebGl
 {
     /// <summary>
     /// Modal Controller for the web implementation of the AppKit that uses Wagmi.

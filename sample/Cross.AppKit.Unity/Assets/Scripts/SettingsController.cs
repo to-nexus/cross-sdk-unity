@@ -1,4 +1,4 @@
-using Reown.AppKit.Unity;
+using Cross.AppKit.Unity;
 using Sample.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;

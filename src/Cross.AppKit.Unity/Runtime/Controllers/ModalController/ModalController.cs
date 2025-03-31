@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Reown.AppKit.Unity
+namespace Cross.AppKit.Unity
 {
     public abstract class ModalController
     {

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Reown.AppKit.Unity.Components
+namespace Cross.AppKit.Unity.Components
 {
     public class Tabbed : VisualElement
     {
@@ -32,7 +32,7 @@ namespace Reown.AppKit.Unity.Components
 
         public Tabbed()
         {
-            styleSheets.Add(Resources.Load<StyleSheet>("Reown/AppKit/Components/Tabbed/Tabbed"));
+            styleSheets.Add(Resources.Load<StyleSheet>("Cross/AppKit/Components/Tabbed/Tabbed"));
             name = Name;
 
             RegisterCallback<AttachToPanelEvent>(_ =>
