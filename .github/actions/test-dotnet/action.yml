@@ -6,9 +6,9 @@ inputs:
     description: 'The type of CI step to run'
     required: true
   relay-endpoint:
-    description: 'The endpoint of the relay e.g. wss://relay.walletconnect.org'
+    description: 'The endpoint of the relay e.g. wss://cross-relay.crosstoken.io/ws'
     required: false
-    default: 'wss://relay.walletconnect.org'
+    default: 'wss://cross-relay.crosstoken.io/ws'
   project-id:
     description: 'Cross project id'
     required: true

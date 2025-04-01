@@ -7,7 +7,7 @@ namespace Cross.Core.Models.Verify
 {
     public sealed class Verifier : IDisposable
     {
-        private const string VerifyServer = "https://verify.walletconnect.com";
+        private const string VerifyServer = "https://cross-verify.crosstoken.io";
 
         private readonly HttpClient _client = new()
         {

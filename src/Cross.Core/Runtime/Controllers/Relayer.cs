@@ -23,7 +23,7 @@ namespace Cross.Core.Controllers
         /// <summary>
         ///     The default relay server URL used when no relay URL is given
         /// </summary>
-        public const string DefaultRelayUrl = "wss://relay.walletconnect.org";
+        public const string DefaultRelayUrl = "wss://cross-relay.crosstoken.io/ws";
 
         private readonly string _projectId;
         private readonly ILogger _logger;

@@ -114,6 +114,8 @@ namespace Cross.AppKit.Unity
             public const string CeloAlfajores = "44787";
             public const string Polygon = "137";
             public const string Avalanche = "43114";
+            public const string CrossTestnet = "612044";
+            public const string CrossMainnet = "612055";
         }
 
         // https://specs.walletconnect.com/2.0/specs/meta-clients/web3modal/api#known-static-asset-ids
@@ -147,6 +149,30 @@ namespace Cross.AppKit.Unity
 
         public static class Chains
         {
+            public static readonly Chain CrossTestnet = new(
+                Namespaces.Evm,
+                References.CrossTestnet,
+                "Cross Testnet",
+                new Currency("CROSS", "CROSS", 18),
+                new BlockExplorer("Cross Scan", "https://testnet.crossscan.io"),
+                "https://testnet.cross-nexus.com:22001",
+                true,
+                $"{ChainImageUrl}/{ImageIds[References.Ethereum]}",
+                "mainnet"
+            );
+
+            public static readonly Chain CrossMainnet = new(
+                Namespaces.Evm,
+                References.CrossMainnet,
+                "Cross Mainnet",
+                new Currency("CROSS", "CROSS", 18),
+                new BlockExplorer("Cross Scan", "https://mainnet.crossscan.io"),
+                "https://mainnet.crosstoken.io:22001",
+                false,
+                $"{ChainImageUrl}/{ImageIds[References.Ethereum]}",
+                "mainnet"
+            );
+
             public static readonly Chain Ethereum = new(
                 Namespaces.Evm,
                 References.Ethereum,
@@ -304,7 +330,9 @@ namespace Cross.AppKit.Unity
                 Base,
                 BaseGoerli,
                 Polygon,
-                Avalanche
+                Avalanche,
+                CrossTestnet,
+                CrossMainnet
             };
         }
     }

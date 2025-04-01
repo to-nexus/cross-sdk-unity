@@ -91,55 +91,6 @@ namespace Sample
                     MobileLink = "cross-wallet://"
                 }
             };
-
-// #if UNITY_IOS && !UNITY_EDITOR
-//             return new[]
-//             {
-//                 new Wallet
-//                 {
-//                     Name = "Swift Wallet",
-//                     ImageUrl = "https://raw.githubusercontent.com/reown-com/reown-dotnet/refs/heads/main/media/walletkit-icon.png",
-//                     MobileLink = "walletapp://"
-//                 },
-//                 new Wallet
-//                 {
-//                     Name = "React Native Wallet",
-//                     ImageUrl = "https://raw.githubusercontent.com/reown-com/reown-dotnet/refs/heads/main/media/walletkit-icon.png",
-//                     MobileLink = "rn-web3wallet://"
-//                 },
-//                 new Wallet
-//                 {
-//                     Name = "Flutter Wallet Prod",
-//                     ImageUrl = "https://raw.githubusercontent.com/reown-com/reown-dotnet/refs/heads/main/media/walletkit-icon.png",
-//                     MobileLink = "wcflutterwallet://"
-//                 }
-//             };
-// #endif
-
-// #if UNITY_ANDROID && !UNITY_EDITOR
-//             return new[]
-//             {
-//                 new Wallet
-//                 {
-//                     Name = "Kotlin Wallet",
-//                     ImageUrl = "https://raw.githubusercontent.com/reown-com/reown-dotnet/refs/heads/main/media/walletkit-icon.png",
-//                     MobileLink = "kotlin-web3wallet://"
-//                 },
-//                 new Wallet
-//                 {
-//                     Name = "React Native Wallet",
-//                     ImageUrl = "https://raw.githubusercontent.com/reown-com/reown-dotnet/refs/heads/main/media/walletkit-icon.png",
-//                     MobileLink = "rn-web3wallet://"
-//                 },
-//                 new Wallet
-//                 {
-//                     Name = "Flutter Wallet Prod",
-//                     ImageUrl = "https://raw.githubusercontent.com/reown-com/reown-dotnet/refs/heads/main/media/walletkit-icon.png",
-//                     MobileLink = "wcflutterwallet://"
-//                 }
-//             };
-// #endif
-            return null;
         }
     }
 }

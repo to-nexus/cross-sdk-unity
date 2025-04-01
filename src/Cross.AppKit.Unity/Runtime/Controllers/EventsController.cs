@@ -56,6 +56,13 @@ namespace Cross.AppKit.Unity
             try
             {
                 Debug.Log($"Send Event {@event.name}. State: {_state.ToString()}");
+
+                if (true)
+                {
+                    Debug.Log("Skipping event send");
+                    return;
+                }
+
                 if (_state == AnalyticsState.Disabled)
                     return;
 

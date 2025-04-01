@@ -22,14 +22,8 @@ namespace Cross.AppKit.Unity
 
         public Chain[] supportedChains =
         {
-            ChainConstants.Chains.Ethereum,
-            ChainConstants.Chains.Arbitrum,
-            ChainConstants.Chains.Polygon,
-            ChainConstants.Chains.Avalanche,
-            ChainConstants.Chains.Optimism,
-            ChainConstants.Chains.Base,
-            ChainConstants.Chains.Celo,
-            ChainConstants.Chains.Ronin
+            ChainConstants.Chains.CrossTestnet,
+            ChainConstants.Chains.CrossMainnet
         };
 
         public Wallet[] customWallets;
