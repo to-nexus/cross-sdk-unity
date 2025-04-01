@@ -63,8 +63,14 @@ namespace Sample
                 },
                 new ButtonStruct
                 {
-                    Text = "Send Transaction",
-                    OnClick = OnSendTransactionButton,
+                    Text = "Send 1 Cross",
+                    OnClick = OnSendNativeButton,
+                    AccountRequired = true
+                },
+                new ButtonStruct
+                {
+                    Text = "Send 1 ERC20",
+                    OnClick = OnSendERC20Button,
                     AccountRequired = true
                 },
                 new ButtonStruct
@@ -172,7 +178,7 @@ namespace Sample
 
         public void OnConnectButton()
         {
-            AppKit.OpenModal();
+            AppKit.Connect();
         }
 
         public void OnNetworkButton()
@@ -249,18 +255,51 @@ namespace Sample
             }
         }
 
-        public async void OnSendTransactionButton()
+        public async void OnSendNativeButton()
         {
-            Debug.Log("[AppKit Sample] OnSendTransactionButton");
+            Debug.Log("[AppKit Sample] OnSendNativeButton");
 
-            const string toAddress = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045";
+            const string toAddress = "0x920A31f0E48739C3FbB790D992b0690f7F5C42ea";
 
             try
             {
                 Notification.ShowMessage("Sending transaction...");
 
-                var value = Web3.Convert.ToWei(0.001);
+                var value = Web3.Convert.ToWei(1);  // send 1 cross
                 var result = await AppKit.Evm.SendTransactionAsync(toAddress, value);
+                Debug.Log("Transaction hash: " + result);
+
+                Notification.ShowMessage("Transaction sent");
+            }
+            catch (Exception e)
+            {
+                Notification.ShowMessage($"Error sending transaction.\n{e.Message}");
+                Debug.LogException(e, this);
+            }
+        }
+
+        public async void OnSendERC20Button()
+        {
+            Debug.Log("[AppKit Sample] OnSendERC20Button");
+            TextAsset abiText = Resources.Load<TextAsset>("Contracts/SampleERC20abi");
+            const string toAddress = "0x920A31f0E48739C3FbB790D992b0690f7F5C42ea";
+            const string ERC20_ADDRESS = "0x88f8146EB4120dA51Fc978a22933CbeB71D8Bde6";
+            string abi = abiText.text;
+
+            try
+            {
+                Notification.ShowMessage("Sending transaction...");
+
+                var value = Web3.Convert.ToWei(1);
+                object[] args = new object[] { toAddress, value };
+
+                var result = await AppKit.Evm.WriteContractAsync(
+                    ERC20_ADDRESS,  // token contract address
+                    abi,  //abi
+                    "transfer", // method
+                    args
+                );
+
                 Debug.Log("Transaction hash: " + result);
 
                 Notification.ShowMessage("Transaction sent");

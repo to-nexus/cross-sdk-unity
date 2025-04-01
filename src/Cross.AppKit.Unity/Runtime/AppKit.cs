@@ -91,6 +91,13 @@ namespace Cross.AppKit.Unity
             Instance.OpenModalCore(viewType);
         }
 
+        public static void Connect() {
+            if (IsModalOpen)
+                return;
+
+            OpenModal();
+        }
+
         public static void CloseModal()
         {
             if (!IsModalOpen)
