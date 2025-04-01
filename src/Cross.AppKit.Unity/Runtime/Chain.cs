@@ -155,7 +155,7 @@ namespace Cross.AppKit.Unity
                 "Cross Testnet",
                 new Currency("CROSS", "CROSS", 18),
                 new BlockExplorer("Cross Scan", "https://testnet.crossscan.io"),
-                "https://testnet.cross-nexus.com:22001",
+                "https://testnet.crosstoken.io:22001",
                 true,
                 $"{ChainImageUrl}/{ImageIds[References.Ethereum]}",
                 "mainnet"

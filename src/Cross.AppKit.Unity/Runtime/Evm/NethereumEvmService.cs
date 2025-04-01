@@ -127,6 +127,8 @@ namespace Cross.AppKit.Unity
             if (chain == null || string.IsNullOrWhiteSpace(chain.RpcUrl))
                 throw new InvalidOperationException($"Chain with id {chainId} is not supported or doesn't have an RPC URL. Make sure it's added to the supported chains in the AppKit config.");
 
+            Debug.Log($"Creating RPC URL for chain {chainId}: {chain.RpcUrl}");
+
             return chain.RpcUrl;
         }
 

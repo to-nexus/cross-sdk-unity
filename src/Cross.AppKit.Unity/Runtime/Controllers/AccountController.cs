@@ -8,6 +8,8 @@ using UnityEngine;
 using Cross.AppKit.Unity.Http;
 using Cross.AppKit.Unity.Utils;
 using Newtonsoft.Json;
+using Nethereum.Web3;
+using System.Numerics;
 
 namespace Cross.AppKit.Unity
 {
@@ -103,7 +105,7 @@ namespace Cross.AppKit.Unity
             
             Address = account.Address;
             AccountId = account.AccountId;
-            ChainId = account.ChainId;
+            ChainId = account.ChainId.Split(":")[1] ?? "-1";
             
             await Task.WhenAll(
                 UpdateBalance(),
@@ -171,8 +173,12 @@ namespace Cross.AppKit.Unity
                 BalanceSymbol = _networkController.ActiveChain.NativeCurrency.symbol;
                 return;
             }
+
+            Debug.Log("ChainId: " + ChainId);
             
-            var balance = Array.Find(response.Balances,x => x.chainId == ChainId && string.IsNullOrWhiteSpace(x.address));
+            var balance = Array.Find(response.Balances,x => x.chainId == ChainId);
+
+            Debug.Log("balance: " + JsonConvert.SerializeObject(balance, Formatting.Indented));
 
             if (string.IsNullOrWhiteSpace(balance.quantity.numeric))
             {
@@ -181,7 +187,7 @@ namespace Cross.AppKit.Unity
             }
             else
             {
-                Balance = balance.quantity.numeric;
+                Balance = Web3.Convert.FromWei(BigInteger.Parse(balance.quantity.numeric), int.Parse(balance.quantity.decimals)).ToString();
                 BalanceSymbol = balance.symbol;
             }
         }
