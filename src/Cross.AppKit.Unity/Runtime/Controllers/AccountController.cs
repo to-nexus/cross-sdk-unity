@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Cross.AppKit.Unity.Http;
 using Cross.AppKit.Unity.Utils;
+using Newtonsoft.Json;
 
 namespace Cross.AppKit.Unity
 {
@@ -126,32 +127,33 @@ namespace Cross.AppKit.Unity
 
         public async Task UpdateProfile()
         {
-            if (string.IsNullOrWhiteSpace(Address))
-                return;
+            return; // not use identity
+            // if (string.IsNullOrWhiteSpace(Address))
+            //     return;
             
-            var identity = await _blockchainApiController.GetIdentityAsync(Address);
-            ProfileName = string.IsNullOrWhiteSpace(identity.Name)
-                ? Address.Truncate()
-                : identity.Name;
+            // var identity = await _blockchainApiController.GetIdentityAsync(Address);
+            // ProfileName = string.IsNullOrWhiteSpace(identity.Name)
+            //     ? Address.Truncate()
+            //     : identity.Name;
 
-            if (!string.IsNullOrWhiteSpace(identity.Avatar))
-            {
-                try
-                {
-                    var headers = await _httpClient.HeadAsync(identity.Avatar);
-                    var avatarFormat = headers["Content-Type"].Split('/').Last();
-                    ProfileAvatar = new AccountAvatar(identity.Avatar, avatarFormat);
-                }
-                catch (Exception e)
-                {
-                    ProfileAvatar = default;
-                }
-            }
-            else
+            // if (!string.IsNullOrWhiteSpace(identity.Avatar))
+            // {
+            //     try
+            //     {
+            //         var headers = await _httpClient.HeadAsync(identity.Avatar);
+            //         var avatarFormat = headers["Content-Type"].Split('/').Last();
+            //         ProfileAvatar = new AccountAvatar(identity.Avatar, avatarFormat);
+            //     }
+            //     catch (Exception e)
+            //     {
+            //         ProfileAvatar = default;
+            //     }
+            // }
+            // else
 
-            {
-                ProfileAvatar = default;
-            }
+            // {
+            //     ProfileAvatar = default;
+            // }
         }
 
         public async Task UpdateBalance()
@@ -160,9 +162,11 @@ namespace Cross.AppKit.Unity
                 return;
             
             var response = await _blockchainApiController.GetBalanceAsync(Address);
+            Debug.Log($"[UpdateBalance response] {JsonConvert.SerializeObject(response, Formatting.Indented)}");
             
             if (response.Balances.Length == 0)
             {
+                Debug.Log("balance is null");
                 Balance = "0.000";
                 BalanceSymbol = _networkController.ActiveChain.NativeCurrency.symbol;
                 return;

@@ -30,7 +30,7 @@ namespace Cross.AppKit.Unity
                 return;
             }
 
-            await LoadRemoteAnalyticsConfig(apiController);
+            // await LoadRemoteAnalyticsConfig(apiController);
         }
 
 

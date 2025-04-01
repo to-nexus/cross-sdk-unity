@@ -11,7 +11,7 @@ namespace Cross.AppKit.Unity
 {
     public class ApiController
     {
-        private const string BasePath = "https://api.web3modal.com/";
+        private const string BasePath = "https://stg-wallet-server.crosstoken.io";
         private const int TimoutSeconds = 5;
 
         private readonly string _includedWalletIdsString = AppKit.Config.includedWalletIds is { Length: > 0 }

@@ -23,9 +23,9 @@ namespace Cross.AppKit.Unity.Model.BlockchainApi
         public Balance[] Balances { get; }
         
         [JsonConstructor]
-        public GetBalanceResponse(Balance[] balances)
+        public GetBalanceResponse(int code, Balance[] data, string message)
         {
-            Balances = balances;
+            Balances = data;
         }
     }
 
@@ -43,17 +43,14 @@ namespace Cross.AppKit.Unity.Model.BlockchainApi
         [JsonProperty("address")]
         public string address;
         
-        [JsonProperty("value")]
-        public string value;
-        
-        [JsonProperty("price")]
-        public string price;
-        
         [JsonProperty("quantity")]
         public Quantity quantity;
         
         [JsonProperty("iconUrl")]
         public string iconUrl;
+
+        [JsonProperty("blockNumber")]
+        public string blockNumber;
     }
     
     [Serializable]

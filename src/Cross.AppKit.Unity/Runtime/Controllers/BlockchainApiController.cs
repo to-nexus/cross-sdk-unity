@@ -9,7 +9,7 @@ namespace Cross.AppKit.Unity
 {
     public class BlockchainApiController
     {
-        private const string BasePath = "https://rpc.walletconnect.org/v1/";
+        private const string BasePath = "https://stg-wallet-server.crosstoken.io";
         private const int TimoutSeconds = 5;
 
         private readonly IDictionary<string, string> _getBalanceHeaders = new Dictionary<string, string>
@@ -61,7 +61,7 @@ namespace Cross.AppKit.Unity
                 throw new ArgumentNullException(nameof(address));
 
             var projectId = AppKit.Config.projectId;
-            return await _httpClient.GetAsync<GetBalanceResponse>($"account/{address}/balance?projectId={projectId}&currency=usd", headers: _getBalanceHeaders);
+            return await _httpClient.GetAsync<GetBalanceResponse>($"api/v1/public/token/balance?account={address}", headers: _getBalanceHeaders);
         }
     }
 }

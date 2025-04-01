@@ -21,21 +21,6 @@ namespace Sample
             // Set up Cross logger to collect logs from AppKit
             CrossLogger.Instance = new UnityLogger();
 
-            // The very basic configuration of SIWE
-            var siweConfig = new SiweConfig
-            {
-                GetMessageParams = () => new SiweMessageParams
-                {
-                    Domain = "example.com",
-                    Uri = "https://example.com/login"
-                },
-                SignOutOnChainChange = false
-            };
-
-            // Subscribe to SIWE events
-            siweConfig.SignInSuccess += _ => Debug.Log("[Dapp] SIWE Sign In Success!");
-            siweConfig.SignOutSuccess += () => Debug.Log("[Dapp] SIWE Sign Out Success!");
-
             // AppKit configuration
             var appKitConfig = new AppKitConfig
             {
@@ -51,12 +36,7 @@ namespace Sample
                         // Used by native wallets to redirect back to the app after approving requests
                         Native = "appkit-sample-unity://"
                     }
-                ),
-                customWallets = GetCustomWallets(),
-                // On mobile show 5 wallets on the Connect view (the first AppKit modal screen)
-                connectViewWalletsCountMobile = 5,
-                // Assign the SIWE configuration created above. Can be null if SIWE is not used.
-                siweConfig = siweConfig
+                )
             };
 
             Debug.Log("[AppKit Init] Initializing AppKit...");
@@ -73,24 +53,6 @@ namespace Sample
 
             Debug.Log($"[AppKit Init] AppKit initialized. Loading menu scene...");
             SceneManager.LoadScene(_menuScene);
-        }
-
-        /// <summary>
-        ///     This method returns a list of Cross sample wallets on iOS and Android.
-        ///     These wallets are used for testing and are not included in the default list of wallets returned by AppKit's REST API.
-        ///     On other platforms, this method returns null, so only the default list of wallets is used.
-        /// </summary>
-        private Wallet[] GetCustomWallets()
-        {
-            return new[]
-            {
-                new Wallet
-                {
-                    Name = "Cross Wallet",
-                    ImageUrl = "https://raw.githubusercontent.com/reown-com/reown-dotnet/refs/heads/main/media/walletkit-icon.png",
-                    MobileLink = "cross-wallet://"
-                }
-            };
         }
     }
 }

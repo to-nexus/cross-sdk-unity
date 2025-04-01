@@ -12,13 +12,13 @@ namespace Cross.AppKit.Unity
         public ushort connectViewWalletsCountMobile = 3;
         public ushort connectViewWalletsCountDesktop = 2;
 
-        public bool enableAnalytics = true;
+        public bool enableAnalytics = false;    // do not log analytics data as we don't have it on backend
 
         public bool enableEmail = true; // Currently supported only in WebGL
         public bool enableOnramp = true; // Currently supported only in WebGL
         public bool enableCoinbaseWallet = true; // Currently supported only in WebGL
 
-        public SiweConfig siweConfig;
+        public SiweConfig siweConfig = null;    // no use of siwe
 
         public Chain[] supportedChains =
         {
@@ -26,7 +26,7 @@ namespace Cross.AppKit.Unity
             ChainConstants.Chains.CrossMainnet
         };
 
-        public Wallet[] customWallets;
+        public Wallet[] customWallets = GetCustomWallets();
 
         public Metadata metadata;
         public string projectId;
@@ -64,6 +64,18 @@ namespace Cross.AppKit.Unity
             }
         }
 #endif
+        private static Wallet[] GetCustomWallets()
+        {
+            return new[]
+            {
+                new Wallet
+                {
+                    Name = "Cross Wallet",
+                    ImageUrl = "https://raw.githubusercontent.com/reown-com/reown-dotnet/refs/heads/main/media/walletkit-icon.png",
+                    MobileLink = "cross-wallet://"
+                }
+            };
+        }
     }
 
     public class Metadata

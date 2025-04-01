@@ -14,7 +14,7 @@ namespace Cross.Sign.Utils
 {
     public static class SignatureUtils
     {
-        public const string DefaultRpcUrl = "https://rpc.walletconnect.org/v1";
+        public const string DefaultRpcUrl = "https://testnet.crosstoken.io:22001";
 
         public static async Task<bool> VerifySignature(
             string address,
