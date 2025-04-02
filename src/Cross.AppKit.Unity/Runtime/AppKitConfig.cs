@@ -72,7 +72,10 @@ namespace Cross.AppKit.Unity
                 {
                     Name = "Cross Wallet",
                     ImageUrl = "https://raw.githubusercontent.com/reown-com/reown-dotnet/refs/heads/main/media/walletkit-icon.png",
-                    MobileLink = "cross-wallet://"
+                    MobileLink = "crossx://",
+                    DesktopLink = "crossx://",
+                    AppStore = "https://to.nexus",
+                    PlayStore = "https://to.nexus"
                 }
             };
         }

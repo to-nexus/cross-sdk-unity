@@ -85,26 +85,6 @@ namespace Cross.AppKit.Unity
 
             if (count <= 0)
                 return;
-            
-            // var response = await AppKit.ApiController.GetWallets(1, count);
-
-            // foreach (var wallet in response.Data)
-            // {
-            //     Debug.Log($"[wallet] name: {wallet.Name}");
-            //     Debug.Log($"[wallet] order: {wallet.Order}");
-            //     Debug.Log($"[wallet] mobile_link: {wallet.MobileLink}");
-            //     Debug.Log($"[wallet] desktop_link: {wallet.DesktopLink}");
-            //     Debug.Log($"[wallet] app_store: {wallet.AppStore}");
-            //     // Skip recent wallet to avoid duplicates
-            //     if (recentWalletExists && recentWallet.Id == wallet.Id)
-            //         continue;
-
-            //     var walletListItem = BuildWalletListItem(wallet);
-            //     View.Add(walletListItem);
-            // }
-
-            // var responseCount = response.Count;
-            // CreateAllWalletsListItem(responseCount);
         }
 
         protected virtual void CreateWalletConnectButton()

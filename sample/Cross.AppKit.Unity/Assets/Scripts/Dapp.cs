@@ -9,6 +9,7 @@ using Cross.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
 using ButtonUtk = UnityEngine.UIElements.Button;
+using Newtonsoft.Json;
 
 namespace Sample
 {
@@ -81,12 +82,18 @@ namespace Sample
                 },
                 new ButtonStruct
                 {
+                    Text = "Get Tokens",
+                    OnClick = OnGetTokensButton,
+                    AccountRequired = true
+                },
+                new ButtonStruct
+                {
                     Text = "Read Contract",
                     OnClick = OnReadContractClicked,
                     AccountRequired = true,
                     ChainIds = new HashSet<string>
                     {
-                        "eip155:1"
+                        "eip155:612044"
                     }
                 },
                 new ButtonStruct
@@ -212,6 +219,39 @@ namespace Sample
             }
         }
 
+        public async void OnGetTokensButton()
+        {
+            Debug.Log("[AppKit Sample] OnGetTokensButton");
+
+            try
+            {
+                Notification.ShowMessage("Getting tokens...");
+
+                Debug.Log($"AccountController: {JsonConvert.SerializeObject(AppKit.AccountController.IsInitialized, Formatting.Indented)}");
+                Debug.Log($"DApp Tokens: {JsonConvert.SerializeObject(AppKit.AccountController.Tokens, Formatting.Indented)}");
+                var tokens = AppKit.AccountController.Tokens;
+                
+                string message = "Tokens:\n";
+
+                foreach (var token in tokens)
+                {
+                    string symbol = token.Symbol;
+                    string numeric = token.Quantity.numeric;
+                    int decimals = int.Parse(token.Quantity.decimals);
+
+                    var balance = Web3.Convert.FromWei(BigInteger.Parse(numeric), decimals);
+                    message += $"{symbol}: {balance}";
+                }
+
+                Notification.ShowMessage(message);
+            }
+            catch (Exception e)
+            {
+                Notification.ShowMessage($"{nameof(RpcResponseException)}:\n{e.Message}");
+                Debug.LogException(e, this);
+            }
+        }
+
         public async void OnPersonalSignButton()
         {
             Debug.Log("[AppKit Sample] OnPersonalSignButton");
@@ -281,9 +321,9 @@ namespace Sample
         public async void OnSendERC20Button()
         {
             Debug.Log("[AppKit Sample] OnSendERC20Button");
-            TextAsset abiText = Resources.Load<TextAsset>("Contracts/SampleERC20abi");
             const string toAddress = "0x920A31f0E48739C3FbB790D992b0690f7F5C42ea";
             const string ERC20_ADDRESS = "0x88f8146EB4120dA51Fc978a22933CbeB71D8Bde6";
+            TextAsset abiText = Resources.Load<TextAsset>("Contracts/SampleERC20abi");
             string abi = abiText.text;
 
             try
@@ -374,15 +414,16 @@ namespace Sample
 
         public async void OnReadContractClicked()
         {
-            if (AppKit.NetworkController.ActiveChain.ChainId != "eip155:1")
+            if (AppKit.NetworkController.ActiveChain.ChainId != "eip155:612044")
             {
-                Notification.ShowMessage("Please switch to Ethereum mainnet.");
+                Notification.ShowMessage("Please switch to Cross Testnet.");
                 return;
             }
 
-            const string contractAddress = "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb"; // on Ethereum mainnet
-            const string yugaLabsAddress = "0xA858DDc0445d8131daC4d1DE01f834ffcbA52Ef1";
-            const string abi = CryptoPunksAbi;
+            const string contractAddress = "0x88f8146EB4120dA51Fc978a22933CbeB71D8Bde6"; // on Cross Testnet
+            const string testAccountAddress = "0xC1B55cfc80D0e9fB9ce7e31ecEbA4782Fcc4455D";
+            TextAsset abiText = Resources.Load<TextAsset>("Contracts/SampleERC20abi");
+            string abi = abiText.text;
 
             Notification.ShowMessage("Reading smart contract state...");
 
@@ -393,9 +434,9 @@ namespace Sample
 
                 var balance = await AppKit.Evm.ReadContractAsync<BigInteger>(contractAddress, abi, "balanceOf", new object[]
                 {
-                    yugaLabsAddress
+                    testAccountAddress
                 });
-                var result = $"Yuga Labs owns: {balance} {tokenName} tokens active chain.";
+                var result = $"Test Account owns: {Web3.Convert.FromWei(balance)} {tokenName} tokens active chain.";
 
                 Notification.ShowMessage(result);
             }

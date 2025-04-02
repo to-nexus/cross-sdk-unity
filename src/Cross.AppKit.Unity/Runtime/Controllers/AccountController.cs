@@ -10,6 +10,7 @@ using Cross.AppKit.Unity.Utils;
 using Newtonsoft.Json;
 using Nethereum.Web3;
 using System.Numerics;
+using Cross.AppKit.Unity.Model.BlockchainApi;
 
 namespace Cross.AppKit.Unity
 {
@@ -52,6 +53,12 @@ namespace Cross.AppKit.Unity
             set => SetField(ref _profileAvatar, value);
         }
         
+        public Token[] Tokens
+        {
+            get => _tokens;
+            set => SetField(ref _tokens, value);
+        }
+
         public string Balance
         {
             get => _balance;
@@ -79,6 +86,8 @@ namespace Cross.AppKit.Unity
         
         private string _balance;
         private string _balanceSymbol;
+
+        private Token[] _tokens;
         
         public event PropertyChangedEventHandler PropertyChanged;
         
@@ -174,11 +183,15 @@ namespace Cross.AppKit.Unity
                 return;
             }
 
-            Debug.Log("ChainId: " + ChainId);
-            
-            var balance = Array.Find(response.Balances,x => x.chainId == ChainId);
-
+            var balance = Array.Find(response.Balances,x => x.chainId == ChainId && x.address == "0x0000000000000000000000000000000000000000");
             Debug.Log("balance: " + JsonConvert.SerializeObject(balance, Formatting.Indented));
+
+            var tokens = response.Balances
+                .Where(x => x.chainId == ChainId && x.address != "0x0000000000000000000000000000000000000000")
+                .Select(b => new Token(b.symbol, b.quantity)).ToArray();
+
+            Debug.Log($"Tokens: {JsonConvert.SerializeObject(tokens, Formatting.Indented)}");
+            Tokens = tokens;
 
             if (string.IsNullOrWhiteSpace(balance.quantity.numeric))
             {
@@ -207,6 +220,19 @@ namespace Cross.AppKit.Unity
         }
         
     }
+
+    public readonly struct Token
+    {
+        public readonly string Symbol;
+        public readonly Quantity Quantity;
+
+        public Token(string symbol, Quantity quantity)
+        {
+            Symbol = symbol;
+            Quantity = quantity;
+        }
+    }
+
 
     public readonly struct AccountAvatar
     {

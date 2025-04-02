@@ -26,6 +26,8 @@ namespace Cross.AppKit.Unity
 
         public DeepLinkPresenter(RouterController router, VisualElement parent, bool hideView = true) : base(router, parent, hideView)
         {
+            Debug.Log("DeepLinkPresenter");
+
             View.CopyLinkClicked += OnCopyLinkClicked;
             View.TryAgainLinkClicked += OnTryAgainLinkClicked;
 
@@ -68,6 +70,8 @@ namespace Cross.AppKit.Unity
 
         private IEnumerator OpenDeepLinkWhenReady()
         {
+            Debug.Log("OpenDeepLinkWhenReady");
+
             // Wait for transition to finish
             yield return _waitForSeconds05;
 
@@ -80,6 +84,8 @@ namespace Cross.AppKit.Unity
 
         private void OpenDeepLink()
         {
+            Debug.Log($"OpenDeepLink, MobileLinK: {_wallet.MobileLink} DesktopLink: {_wallet.DesktopLink}");
+
             var redirect = Application.isMobilePlatform ? _wallet.MobileLink : _wallet.DesktopLink;
             Linker.OpenSessionProposalDeepLink(_connectionProposal.Uri, redirect);
         }
