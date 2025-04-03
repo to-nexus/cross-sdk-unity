@@ -17,7 +17,7 @@ namespace Cross.Sign.Nethereum
         /// <param name="signClient">Cross Sign client</param>
         /// <param name="ethereumChain">Ethereum chain to switch to</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="ethereumChain"/> is null</exception>
-        [Obsolete("This extension will be removed in the future versions. Cross AppKit will handle chain switching in MetaMask internally.")]
+        [Obsolete("This extension will be removed in the future versions. Cross CrossSdk will handle chain switching in MetaMask internally.")]
         public static async Task SwitchEthereumChainAsync(this ISignClient signClient, EthereumChain ethereumChain)
         {
             if (ethereumChain == null)

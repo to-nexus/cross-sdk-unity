@@ -45,7 +45,7 @@ foreach (var field in versionFields)
 
 // Update Unity sample app version
 Log.SubHeader("Updating Unity Sample App Version");
-var projectSettingsPath = Path.GetFullPath("sample/Cross.AppKit.Unity/ProjectSettings/ProjectSettings.asset");
+var projectSettingsPath = Path.GetFullPath("sample/Cross.Sdk.Unity/ProjectSettings/ProjectSettings.asset");
 if (File.Exists(projectSettingsPath))
 {
     await UpdateProjectSettingsVersionAsync(projectSettingsPath, newVersion);

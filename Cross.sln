@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cross.Sign.Nethereum", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cross.Sign.Nethereum.Unity", "src\Cross.Sign.Nethereum.Unity\Cross.Sign.Nethereum.Unity.csproj", "{90011BE0-4297-4D3A-A4AA-FEB4BCB194F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cross.AppKit.Unity", "src\Cross.AppKit.Unity\Cross.AppKit.Unity.csproj", "{3F06A851-E57D-4FEE-8EDC-259202512DC5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cross.Sdk.Unity", "src\Cross.Sdk.Unity\Cross.Sdk.Unity.csproj", "{3F06A851-E57D-4FEE-8EDC-259202512DC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
