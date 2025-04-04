@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Nethereum.ABI.FunctionEncoding;
+using Nethereum.Contracts;
 using Nethereum.Contracts.Standards.ERC1271.ContractDefinition;
 using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.RPC.Eth.DTOs;
@@ -253,19 +254,19 @@ namespace Cross.Sdk.Unity
 
         // -- Write Contract ------------------------------------------
 
-        protected override async Task<string> WriteContractAsyncCore(string contractAddress, string contractAbi, string methodName, BigInteger value = default, BigInteger gas = default, params object[] arguments)
+        protected override async Task<string> WriteContractAsyncCore(string contractAddress, string contractAbi, string methodName, CustomData customData, BigInteger value = default, BigInteger gas = default, params object[] arguments)
         {
             var contract = Web3.Eth.GetContract(contractAbi, contractAddress);
             var function = contract.GetFunction(methodName);
 
-            return await function.SendTransactionAsync(
-                null, // will be automatically filled by interceptor
-                new HexBigInteger(gas),
-                new HexBigInteger(value),
-                arguments
-            );
+            var transactionInput = CreateTransactionInput(function, contractAddress, value, gas, arguments);
+            return await Web3.Client.SendRequestAsync<string>("eth_sendTransaction", null, transactionInput, customData);
         }
 
+        private TransactionInput CreateTransactionInput(Nethereum.Contracts.Function function, string contractAddress, BigInteger value, BigInteger gas, object[] arguments)
+        {
+            return new TransactionInput(function.GetData(arguments), contractAddress, new HexBigInteger(value));
+        }
 
         // -- Send Transaction ----------------------------------------
 

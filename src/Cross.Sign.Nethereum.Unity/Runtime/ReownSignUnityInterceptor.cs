@@ -1,8 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using Nethereum.JsonRpc.Client;
-using Cross.Core.Common.Logging;
 using Cross.Sign.Unity;
+using Newtonsoft.Json;
+using UnityEngine;
 
 namespace Cross.Sign.Nethereum.Unity
 {
@@ -37,6 +38,7 @@ namespace Cross.Sign.Nethereum.Unity
             string route = null,
             params object[] paramList)
         {
+            Debug.Log("InterceptSendRequestAsync: " + method + " " + route + " " + JsonConvert.SerializeObject(paramList));
             return CrossInterceptor.InterceptSendRequestAsync(interceptedSendRequestAsync, method, route, paramList);
         }
     }

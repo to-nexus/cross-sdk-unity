@@ -48,6 +48,7 @@ namespace Cross.Sign.Nethereum
             {
                 if (request.Method == ApiMethods.eth_sendTransaction.ToString())
                 {
+                    Debug.Log("InterceptSendRequestAsync: " + request.Method + " " + request.RawParameters[0]);
                     return await _crossSignService.SendTransactionAsync((TransactionInput)request.RawParameters[0]);
                 }
 

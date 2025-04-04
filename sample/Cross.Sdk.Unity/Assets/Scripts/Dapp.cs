@@ -339,19 +339,23 @@ namespace Sample
             const string ERC20_ADDRESS = "0x88f8146EB4120dA51Fc978a22933CbeB71D8Bde6";
             TextAsset abiText = Resources.Load<TextAsset>("Contracts/SampleERC20abi");
             string abi = abiText.text;
-
+            var customData = new CustomData
+                {
+                    Metadata = "Meta data is mandatory in Unity Sdk."
+                };
             try
             {
                 Notification.ShowMessage("Sending transaction...");
 
                 var value = Web3.Convert.ToWei(1);
-                object[] args = new object[] { toAddress, value };
 
                 var result = await CrossSdk.Evm.WriteContractAsync(
                     ERC20_ADDRESS,  // token contract address
                     abi,  //abi
                     "transfer", // method
-                    args
+                    customData,
+                    toAddress,
+                    value
                 );
 
                 Debug.Log("Transaction hash: " + result);
