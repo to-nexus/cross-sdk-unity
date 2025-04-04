@@ -6,6 +6,8 @@ using Nethereum.JsonRpc.Client;
 using Nethereum.Web3;
 using Cross.Sdk.Unity;
 using Cross.Core;
+using Cross.Sign.Models;
+using Cross.Sign.Nethereum.Model;
 using UnityEngine;
 using UnityEngine.UIElements;
 using ButtonUtk = UnityEngine.UIElements.Button;
@@ -265,8 +267,12 @@ namespace Sample
                 // It's also possible to sign a message as a byte array
                 // var messageBytes = System.Text.Encoding.UTF8.GetBytes(message);
                 // var signature = await CrossSdk.Evm.SignMessageAsync(messageBytes);
+                var customData = new CustomData
+                {
+                    Metadata = "You are about to sign a message. This is plain text type custom data."
+                };
 
-                var signature = await CrossSdk.Evm.SignMessageAsync(message);
+                var signature = await CrossSdk.Evm.SignMessageAsync(message, "0x", customData);
                 var isValid = await CrossSdk.Evm.VerifyMessageSignatureAsync(account.Address, message, signature);
 
                 Notification.ShowMessage($"Signature valid: {isValid}");
@@ -305,8 +311,16 @@ namespace Sample
             {
                 Notification.ShowMessage("Sending transaction...");
 
+                var customData = new CustomData
+                {
+                    Metadata = new
+                    {
+                        Title = "Custom Data",
+                        Description = "Your are about to send 1 cross to the address"
+                    }
+                };
                 var value = Web3.Convert.ToWei(1);  // send 1 cross
-                var result = await CrossSdk.Evm.SendTransactionAsync(toAddress, value);
+                var result = await CrossSdk.Evm.SendTransactionAsync(toAddress, value, null, customData);
                 Debug.Log("Transaction hash: " + result);
 
                 Notification.ShowMessage("Transaction sent");

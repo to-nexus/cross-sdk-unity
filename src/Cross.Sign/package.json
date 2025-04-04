@@ -8,6 +8,7 @@
     "cross"
   ],
   "dependencies": {
-    "nexus.cross.core": "1.0.0"
+    "nexus.cross.core": "1.0.0",
+    "nexus.cross.sign.nethereum": "1.0.0"
   }
 }

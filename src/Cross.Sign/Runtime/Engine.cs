@@ -25,7 +25,6 @@ using Cross.Sign.Models.Engine;
 using Cross.Sign.Models.Engine.Events;
 using Cross.Sign.Models.Engine.Methods;
 using Cross.Sign.Utils;
-
 namespace Cross.Sign
 {
     /// <summary>
@@ -293,9 +292,15 @@ namespace Cross.Sign
             return Extend(Client.AddressProvider.DefaultSession.Topic);
         }
 
-        public Task<TR> Request<T, TR>(T data, string chainId = null, long? expiry = null)
+        public Task<TR> Request<T, TR>(T data, CustomData customData = null, string chainId = null, long? expiry = null)
         {
-            return Request<T, TR>(Client.AddressProvider.DefaultSession.Topic, data,
+            return Request<T, TR>(Client.AddressProvider.DefaultSession.Topic, data, customData,
+                chainId ?? Client.AddressProvider.DefaultChainId, expiry);
+        }
+
+        public Task<TR> RequestWithAddress<T, TR>(T data, string address, CustomData customData = null, string chainId = null, long? expiry = null)
+        {
+            return RequestWithAddress<T, TR>(Client.AddressProvider.DefaultSession.Topic, data, address, customData,
                 chainId ?? Client.AddressProvider.DefaultChainId, expiry);
         }
 
@@ -699,22 +704,7 @@ namespace Cross.Sign
             return IAcknowledgement.FromTask(acknowledgedTask.Task);
         }
 
-        /// <summary>
-        ///     Send a request to the session in the given topic with the request data T. You may (optionally) specify
-        ///     a chainId the request should be performed in. This function will await a response of type TR from the session.
-        ///     If no response is ever received, then a Timeout exception may be thrown.
-        ///     The type T MUST define the RpcMethodAttribute to tell the SDK what JSON RPC method to use for the given
-        ///     type T.
-        ///     Either type T or TR MUST define a RpcRequestOptions and RpcResponseOptions attribute to tell the SDK
-        ///     what options to use for the Request / Response.
-        /// </summary>
-        /// <param name="topic">The topic of the session to send the request in</param>
-        /// <param name="data">The data of the request</param>
-        /// <param name="chainId">An (optional) chainId the request should be performed in</param>
-        /// <typeparam name="T">The type of the request data. MUST define the RpcMethodAttribute</typeparam>
-        /// <typeparam name="TR">The type of the response data.</typeparam>
-        /// <returns>The response data as type TR</returns>
-        public async Task<TR> Request<T, TR>(string topic, T data, string chainId = null, long? expiry = null)
+        public async Task<TR> RequestWithAddress<T, TR>(string topic, T data, string address, CustomData customData = null, string chainId = null, long? expiry = null)
         {
             await IsValidSessionTopic(topic);
 
@@ -734,18 +724,90 @@ namespace Cross.Sign
                 requestChainId = chainId;
             }
 
-            var request = new JsonRpcRequest<T>(method, data);
+            var request = new JsonRpcRequest<object[]>(method, new object[] { data, address, customData });
 
             IsInitialized();
             await PrivateThis.IsValidRequest(topic, request, requestChainId);
             var taskSource = new TaskCompletionSource<TR>();
 
-            var id = await MessageHandler.SendRequest<SessionRequest<T>, TR>(topic,
-                new SessionRequest<T>
+            var id = await MessageHandler.SendRequest<SessionRequest<object[]>, TR>(topic,
+                new SessionRequest<object[]>
                 {
                     ChainId = requestChainId,
                     Request = request
-                });
+                }
+                );
+
+            SessionRequestEvents<T, TR>()
+                .FilterResponses(e => e.Topic == topic && e.Response.Id == id)
+                .OnResponse += args =>
+            {
+                if (args.Response.IsError)
+                    taskSource.TrySetException(args.Response.Error.ToException());
+                else
+                    taskSource.TrySetResult(args.Response.Result);
+
+                return Task.CompletedTask;
+            };
+
+            SessionRequestSent?.Invoke(this, new SessionRequestEvent
+            {
+                Topic = topic,
+                Id = id,
+                ChainId = requestChainId
+            });
+
+            return await taskSource.Task;
+        }
+
+        /// <summary>
+        ///     Send a request to the session in the given topic with the request data T. You may (optionally) specify
+        ///     a chainId the request should be performed in. This function will await a response of type TR from the session.
+        ///     If no response is ever received, then a Timeout exception may be thrown.
+        ///     The type T MUST define the RpcMethodAttribute to tell the SDK what JSON RPC method to use for the given
+        ///     type T.
+        ///     Either type T or TR MUST define a RpcRequestOptions and RpcResponseOptions attribute to tell the SDK
+        ///     what options to use for the Request / Response.
+        /// </summary>
+        /// <param name="topic">The topic of the session to send the request in</param>
+        /// <param name="data">The data of the request</param>
+        /// <param name="chainId">An (optional) chainId the request should be performed in</param>
+        /// <typeparam name="T">The type of the request data. MUST define the RpcMethodAttribute</typeparam>
+        /// <typeparam name="TR">The type of the response data.</typeparam>
+        /// <returns>The response data as type TR</returns>
+        public async Task<TR> Request<T, TR>(string topic, T data, CustomData customData = null, string chainId = null, long? expiry = null)
+        {
+            await IsValidSessionTopic(topic);
+
+            var method = RpcMethodAttribute.MethodForType<T>();
+
+            string requestChainId;
+            if (string.IsNullOrWhiteSpace(chainId))
+            {
+                var sessionData = Client.Session.Get(topic);
+                var defaultNamespace = Client.AddressProvider.DefaultNamespace ??
+                                       sessionData.Namespaces.Keys.FirstOrDefault();
+                requestChainId = Client.AddressProvider.DefaultChainId ??
+                                 sessionData.Namespaces[defaultNamespace].Chains[0];
+            }
+            else
+            {
+                requestChainId = chainId;
+            }
+
+            var request = new JsonRpcRequest<object[]>(method, new object[] { data, customData });
+
+            IsInitialized();
+            await PrivateThis.IsValidRequest(topic, request, requestChainId);
+            var taskSource = new TaskCompletionSource<TR>();
+
+            var id = await MessageHandler.SendRequest<SessionRequest<object[]>, TR>(topic,
+                new SessionRequest<object[]>
+                {
+                    ChainId = requestChainId,
+                    Request = request
+                }
+                );
 
             SessionRequestEvents<T, TR>()
                 .FilterResponses(e => e.Topic == topic && e.Response.Id == id)

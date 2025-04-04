@@ -370,9 +370,14 @@ namespace Cross.Sign
         /// <typeparam name="T">The type of the request data. MUST define the RpcMethodAttribute</typeparam>
         /// <typeparam name="TR">The type of the response data.</typeparam>
         /// <returns>The response data as type TR</returns>
-        public Task<TR> Request<T, TR>(string topic, T data, string chainId = null, long? expiry = null)
+        public Task<TR> Request<T, TR>(string topic, T data, CustomData customData= null, string chainId = null, long? expiry = null)
         {
-            return Engine.Request<T, TR>(topic, data, chainId, expiry);
+            return Engine.Request<T, TR>(topic, data, customData, chainId, expiry);
+        }
+
+        public Task<TR> RequestWithAddress<T, TR>(string topic, T data, string address, CustomData customData= null, string chainId = null, long? expiry = null)
+        {
+            return Engine.RequestWithAddress<T, TR>(topic, data, address, customData, chainId, expiry);
         }
 
         /// <summary>
@@ -447,9 +452,14 @@ namespace Cross.Sign
             return Engine.Extend();
         }
 
-        public Task<TR> Request<T, TR>(T data, string chainId = null, long? expiry = null)
+        public Task<TR> Request<T, TR>(T data, CustomData customData = null, string chainId = null, long? expiry = null)
         {
-            return Engine.Request<T, TR>(data, chainId, expiry);
+            return Engine.Request<T, TR>(data, customData, chainId, expiry);
+        }
+
+        public Task<TR> RequestWithAddress<T, TR>(T data, string address, CustomData customData = null, string chainId = null, long? expiry = null)
+        {
+            return Engine.RequestWithAddress<T, TR>(data, address, customData, chainId, expiry);
         }
 
         public Task Respond<T, TR>(JsonRpcResponse<TR> response)

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Cross.Core.Common.Utils;
 using Cross.Core.Network.Models;
+using Cross.Core.Models;
 
 namespace Cross.Sign.Nethereum.Model
 {

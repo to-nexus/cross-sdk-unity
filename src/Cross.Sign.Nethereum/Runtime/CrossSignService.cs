@@ -1,7 +1,9 @@
 using System.Threading.Tasks;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.RPC.HostWallet;
+using Cross.Core.Models;
 using Cross.Sign.Nethereum.Model;
+using Cross.Sign.Models;
 
 namespace Cross.Sign.Nethereum
 {
@@ -19,16 +21,16 @@ namespace Cross.Sign.Nethereum
             return IsMethodSupportedCore(method);
         }
 
-        public Task<object> SendTransactionAsync(TransactionInput transaction)
+        public Task<object> SendTransactionAsync(TransactionInput transaction, CustomData customData = null)
         {
-            return SendTransactionAsyncCore(transaction);
+            return SendTransactionAsyncCore(transaction, customData);
         }
 
-        public Task<object> PersonalSignAsync(string message, string address = null)
+        public Task<object> PersonalSignAsync(string message, string address, CustomData customData = null)
         {
             if (string.IsNullOrEmpty(message))
                 throw new System.ArgumentException("Message cannot be null or empty", nameof(message));
-            return PersonalSignAsyncCore(message, address);
+            return PersonalSignAsyncCore(message, address, customData);
         }
 
         public Task<object> EthSignTypedDataV4Async(string data, string address = null)
@@ -61,8 +63,8 @@ namespace Cross.Sign.Nethereum
         }
 
         protected abstract bool IsMethodSupportedCore(string method);
-        protected abstract Task<object> SendTransactionAsyncCore(TransactionInput transaction);
-        protected abstract Task<object> PersonalSignAsyncCore(string message, string address = null);
+        protected abstract Task<object> SendTransactionAsyncCore(TransactionInput transaction, CustomData customData = null);
+        protected abstract Task<object> PersonalSignAsyncCore(string message, string address, CustomData customData = null);
         protected abstract Task<object> EthSignTypedDataV4AsyncCore(string data, string address = null);
         protected abstract Task<object> WalletSwitchEthereumChainAsyncCore(SwitchEthereumChain arg);
         protected abstract Task<object> WalletAddEthereumChainAsyncCore(EthereumChain chain);

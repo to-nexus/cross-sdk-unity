@@ -2,6 +2,7 @@ using System;
 using System.Numerics;
 using System.Threading.Tasks;
 using Cross.Sign.Unity;
+using Cross.Sign.Models;
 
 namespace Cross.Sdk.Unity
 {
@@ -25,20 +26,20 @@ namespace Cross.Sdk.Unity
 
         // -- Sign Message ---------------------------------------------
 
-        public Task<string> SignMessageAsync(string message)
+        public Task<string> SignMessageAsync(string message, string address, CustomData customData = null)
         {
             if (string.IsNullOrWhiteSpace(message))
                 throw new ArgumentNullException(nameof(message));
 
-            return SignMessageAsyncCore(message);
+            return SignMessageAsyncCore(message, address, customData);
         }
 
-        public Task<string> SignMessageAsync(byte[] rawMessage)
+        public Task<string> SignMessageAsync(byte[] rawMessage, string address, CustomData customData = null)
         {
             if (rawMessage == null || rawMessage.Length == 0)
                 throw new ArgumentNullException(nameof(rawMessage));
 
-            return SignMessageAsyncCore(rawMessage);
+            return SignMessageAsyncCore(rawMessage, address, customData);
         }
 
 
@@ -111,12 +112,12 @@ namespace Cross.Sdk.Unity
 
         // -- Send Transaction ----------------------------------------
 
-        public Task<string> SendTransactionAsync(string addressTo, BigInteger value, string data = null)
+        public Task<string> SendTransactionAsync(string addressTo, BigInteger value, string data = null, CustomData customData = null)
         {
             if (string.IsNullOrWhiteSpace(addressTo))
                 throw new ArgumentNullException(nameof(addressTo));
 
-            return SendTransactionAsyncCore(addressTo, value, data);
+            return SendTransactionAsyncCore(addressTo, value, data, customData);
         }
         
         
@@ -164,14 +165,14 @@ namespace Cross.Sdk.Unity
 
         protected abstract Task InitializeAsyncCore(SignClientUnity signClient);
         protected abstract Task<BigInteger> GetBalanceAsyncCore(string address);
-        protected abstract Task<string> SignMessageAsyncCore(string message);
-        protected abstract Task<string> SignMessageAsyncCore(byte[] rawMessage);
+        protected abstract Task<string> SignMessageAsyncCore(string message, string address, CustomData customData = null);
+        protected abstract Task<string> SignMessageAsyncCore(byte[] rawMessage, string address, CustomData customData = null);
         protected abstract Task<bool> VerifyMessageSignatureAsyncCore(string address, string message, string signature);
         protected abstract Task<string> SignTypedDataAsyncCore(string dataJson);
         protected abstract Task<bool> VerifyTypedDataSignatureAsyncCore(string address, string dataJson, string signature);
         protected abstract Task<TReturn> ReadContractAsyncCore<TReturn>(string contractAddress, string contractAbi, string methodName, object[] arguments = null);
         protected abstract Task<string> WriteContractAsyncCore(string contractAddress, string contractAbi, string methodName, BigInteger value = default, BigInteger gas = default, params object[] arguments);
-        protected abstract Task<string> SendTransactionAsyncCore(string addressTo, BigInteger value, string data = null);
+        protected abstract Task<string> SendTransactionAsyncCore(string addressTo, BigInteger value, string data = null, CustomData customData = null);
         protected abstract Task<string> SendRawTransactionAsyncCore(string signedTransaction);
         protected abstract Task<BigInteger> EstimateGasAsyncCore(string addressTo, BigInteger value, string data = null);
         protected abstract Task<BigInteger> EstimateGasAsyncCore(string contractAddress, string contractAbi, string methodName, BigInteger value = default, params object[] arguments);

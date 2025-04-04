@@ -1,14 +1,14 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Nethereum.RPC.Eth.DTOs;
-using Nethereum.RPC.HostWallet;
 using Cross.Sign.Interfaces;
 using Cross.Sign.Nethereum.Model;
+using Cross.Sign.Models;
 using EthSignTypedDataV4 = Cross.Sign.Nethereum.Model.EthSignTypedDataV4;
 using Transaction = Cross.Sign.Nethereum.Model.Transaction;
 using WalletAddEthereumChain = Cross.Sign.Nethereum.Model.WalletAddEthereumChain;
 using WalletSwitchEthereumChain = Cross.Sign.Nethereum.Model.WalletSwitchEthereumChain;
-
+using UnityEngine;
 namespace Cross.Sign.Nethereum
 {
     public class CrossSignServiceCore : CrossSignService
@@ -39,27 +39,30 @@ namespace Cross.Sign.Nethereum
             return addressProvider.DefaultSession.Namespaces[defaultNamespace].Methods.Contains(method);
         }
 
-        protected override async Task<object> SendTransactionAsyncCore(TransactionInput transaction)
+        protected override async Task<object> SendTransactionAsyncCore(TransactionInput transaction, CustomData customData = null)
         {
             var fromAddress = GetDefaultAddress();
             var txData = new Transaction
             {
-                from = fromAddress,
-                to = transaction.To,
-                value = transaction.Value?.HexValue,
-                gas = transaction.Gas?.HexValue,
-                gasPrice = transaction.GasPrice?.HexValue,
-                data = transaction.Data
+                From = fromAddress,
+                To = transaction.To,
+                Value = transaction.Value?.HexValue,
+                Gas = transaction.Gas?.HexValue,
+                GasPrice = transaction.GasPrice?.HexValue,
+                Data = transaction.Data,
             };
             var sendTransactionRequest = new EthSendTransaction(txData);
-            return await _signClient.Request<EthSendTransaction, string>(sendTransactionRequest);
+
+            return await _signClient.Request<EthSendTransaction, string>(sendTransactionRequest, customData);
         }
 
-        protected override async Task<object> PersonalSignAsyncCore(string message, string address = null)
+        protected override async Task<object> PersonalSignAsyncCore(string message, string address, CustomData customData = null)
         {
-            address ??= GetDefaultAddress();
-            var signDataRequest = new PersonalSign(message, address);
-            return await _signClient.Request<PersonalSign, string>(signDataRequest);
+            
+            address = (address == null || address == "0x") ? GetDefaultAddress() : address;
+            var signDataRequest = new PersonalSign(message);
+
+            return await _signClient.RequestWithAddress<PersonalSign, string>(signDataRequest, address, customData);
         }
 
         protected override async Task<object> EthSignTypedDataV4AsyncCore(string data, string address = null)

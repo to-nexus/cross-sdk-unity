@@ -127,7 +127,7 @@ namespace Cross.Sdk.Unity
 
                 var siweMessage = await CrossSdk.SiweController.CreateMessageAsync(ethAddress, ethChainId);
 
-                var signature = await CrossSdk.Evm.SignMessageAsync(siweMessage.Message);
+                var signature = await CrossSdk.Evm.SignMessageAsync(siweMessage.Message, "0x");
                 var cacaoPayload = SiweUtils.CreateCacaoPayload(siweMessage.CreateMessageArgs);
                 var cacaoSignature = new CacaoSignature(CacaoSignatureType.Eip191, signature);
                 var cacao = new CacaoObject(CacaoHeader.Caip112, cacaoPayload, cacaoSignature);

@@ -119,18 +119,6 @@
       "dependencies": {},
       "url": "https://package.openupm.com"
     },
-    "nexus.cross.sdk.unity": {
-      "version": "file:./../../../src/Cross.Sdk.Unity",
-      "depth": 0,
-      "source": "local",
-      "dependencies": {
-        "nexus.cross.sign.nethereum.unity": "1.0.0",
-        "nexus.cross.sign.unity": "1.0.0",
-        "nexus.cross.core": "1.0.0",
-        "nexus.cross.unity.dependencies": "1.0.0",
-        "com.unity.vectorgraphics": "2.0.0-preview.24"
-      }
-    },
     "nexus.cross.core": {
       "version": "file:./../../../src/Cross.Core",
       "depth": 0,
@@ -178,12 +166,25 @@
         "nexus.cross.core.common": "1.0.0"
       }
     },
+    "nexus.cross.sdk.unity": {
+      "version": "file:./../../../src/Cross.Sdk.Unity",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "nexus.cross.sign.nethereum.unity": "1.0.0",
+        "nexus.cross.sign.unity": "1.0.0",
+        "nexus.cross.core": "1.0.0",
+        "nexus.cross.unity.dependencies": "1.0.0",
+        "com.unity.vectorgraphics": "2.0.0-preview.24"
+      }
+    },
     "nexus.cross.sign": {
       "version": "file:./../../../src/Cross.Sign",
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "nexus.cross.core": "1.0.0"
+        "nexus.cross.core": "1.0.0",
+        "nexus.cross.sign.nethereum": "1.0.0"
       }
     },
     "nexus.cross.sign.nethereum": {

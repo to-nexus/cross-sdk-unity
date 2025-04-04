@@ -16,6 +16,9 @@ using Cross.Sign.Nethereum.Unity;
 using Cross.Sign.Unity;
 using UnityEngine;
 using HexBigInteger = Nethereum.Hex.HexTypes.HexBigInteger;
+using Cross.Sign.Nethereum.Model;
+using Cross.Core.Models;
+using Cross.Sign.Models;
 
 namespace Cross.Sdk.Unity
 {
@@ -144,16 +147,16 @@ namespace Cross.Sdk.Unity
 
         // -- Sign Message ---------------------------------------------
 
-        protected override async Task<string> SignMessageAsyncCore(string message)
+        protected override async Task<string> SignMessageAsyncCore(string message, string address, CustomData customData = null)
         {
             var encodedMessage = message.ToHexUTF8();
-            return await Web3.Client.SendRequestAsync<string>("personal_sign", null, encodedMessage);
+            return await Web3.Client.SendRequestAsync<string>("personal_sign", null, encodedMessage, address, customData);
         }
 
-        protected override Task<string> SignMessageAsyncCore(byte[] rawMessage)
+        protected override async Task<string> SignMessageAsyncCore(byte[] rawMessage, string address, CustomData customData = null)
         {
             var encodedMessage = rawMessage.ToHex(true);
-            return Web3.Client.SendRequestAsync<string>("personal_sign", null, encodedMessage);
+            return await Web3.Client.SendRequestAsync<string>("personal_sign", null, encodedMessage, address, customData);
         }
 
 
@@ -266,10 +269,10 @@ namespace Cross.Sdk.Unity
 
         // -- Send Transaction ----------------------------------------
 
-        protected override Task<string> SendTransactionAsyncCore(string addressTo, BigInteger value, string data = null)
+        protected override Task<string> SendTransactionAsyncCore(string addressTo, BigInteger value, string data = null, CustomData customData = null)
         {
             var transactionInput = new TransactionInput(data, addressTo, new HexBigInteger(value));
-            return Web3.Client.SendRequestAsync<string>("eth_sendTransaction", null, transactionInput);
+            return Web3.Client.SendRequestAsync<string>("eth_sendTransaction", null, transactionInput, customData);
         }
         
         

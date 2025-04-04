@@ -21,7 +21,6 @@ namespace Cross.Core.Network.Models
         [JsonProperty("params")]
         private T _params;
 
-
         /// <summary>
         ///     Create a blank Json rpc request
         /// </summary>

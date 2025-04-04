@@ -6,6 +6,8 @@ using Nethereum.RPC;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.RPC.HostWallet;
 using Cross.Sign.Nethereum.Model;
+using Cross.Sign.Models;
+using UnityEngine;
 
 namespace Cross.Sign.Nethereum
 {
@@ -51,9 +53,6 @@ namespace Cross.Sign.Nethereum
 
                 if (request.Method == ApiMethods.personal_sign.ToString())
                 {
-                    if (request.RawParameters.Length == 1)
-                        return await _crossSignService.PersonalSignAsync((string)request.RawParameters[0]);
-
                     return await _crossSignService.PersonalSignAsync((string)request.RawParameters[0], (string)request.RawParameters[1]);
                 }
 
@@ -103,15 +102,15 @@ namespace Cross.Sign.Nethereum
             {
                 if (method == ApiMethods.eth_sendTransaction.ToString())
                 {
-                    return await _crossSignService.SendTransactionAsync((TransactionInput)paramList[0]);
+                    var customData = (paramList.Length == 2) ? (CustomData)paramList[1] : null;
+                    return await _crossSignService.SendTransactionAsync((TransactionInput)paramList[0], customData);
                 }
 
                 if (method == ApiMethods.personal_sign.ToString())
                 {
-                    if (paramList.Length == 1)
-                        return await _crossSignService.PersonalSignAsync((string)paramList[0]);
+                    var customData = (paramList.Length == 3) ? (CustomData)paramList[2] : null;
 
-                    return await _crossSignService.PersonalSignAsync((string)paramList[0], (string)paramList[1]);
+                    return await _crossSignService.PersonalSignAsync((string)paramList[0], (string)paramList[1], customData);
                 }
 
                 if (method == ApiMethods.eth_signTypedData_v4.ToString())

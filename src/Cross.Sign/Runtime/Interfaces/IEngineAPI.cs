@@ -262,7 +262,9 @@ namespace Cross.Sign.Interfaces
         /// <typeparam name="T">The type of the request data. MUST define the RpcMethodAttribute</typeparam>
         /// <typeparam name="TR">The type of the response data.</typeparam>
         /// <returns>The response data as type TR</returns>
-        Task<TR> Request<T, TR>(string topic, T data, string chainId = null, long? expiry = null);
+        Task<TR> Request<T, TR>(string topic, T data, CustomData customData = null, string chainId = null, long? expiry = null);
+
+        Task<TR> RequestWithAddress<T, TR>(string topic, T data, string address, CustomData customData = null, string chainId = null, long? expiry = null);
 
         /// <summary>
         ///     Send a response to a request to the session in the given topic with the response data TR. This function
@@ -340,7 +342,9 @@ namespace Cross.Sign.Interfaces
         /// <typeparam name="T">The type of the request data. MUST define the RpcMethodAttribute</typeparam>
         /// <typeparam name="TR">The type of the response data.</typeparam>
         /// <returns>The response data as type TR</returns>
-        Task<TR> Request<T, TR>(T data, string chainId = null, long? expiry = null);
+        Task<TR> Request<T, TR>(T data, CustomData customData = null, string chainId = null, long? expiry = null);
+
+        Task<TR> RequestWithAddress<T, TR>(T data, string address, CustomData customData = null, string chainId = null, long? expiry = null);
 
         /// <summary>
         ///     Send a response to a request to the default session with the response data TR. This function

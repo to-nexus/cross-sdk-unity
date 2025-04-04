@@ -1,30 +1,34 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Cross.Core.Common.Utils;
+using System.Collections.Generic;
+using Cross.Sign.Models;
+using Cross.Core.Models;
 
 namespace Cross.Sign.Nethereum.Model
 {
     public class Transaction
     {
         [JsonProperty("from")]
-        public string from;
+        public string From { get; set; }
 
         [JsonProperty("to")]
-        public string to;
+        public string To { get; set; }
 
         [JsonProperty("gas", NullValueHandling = NullValueHandling.Ignore)]
-        public string gas;
+        public string Gas { get; set; }
 
         [JsonProperty("gasPrice", NullValueHandling = NullValueHandling.Ignore)]
-        public string gasPrice;
+        public string GasPrice { get; set; }
 
         [JsonProperty("value")]
-        public string value;
+        public string Value { get; set; }
 
         [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
-        public string data = "0x";
-        
+        public string Data { get; set; }
+
         [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
-        public string type;
+        public string Type { get; set; }
 
         [Preserve]
         public Transaction()
