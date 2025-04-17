@@ -88,10 +88,7 @@ namespace Cross.Sign.Models
 
             var sessionRequest = e.Request.Params.Request;
 
-            _logger.Log($"sessionRequest: {JsonConvert.SerializeObject(sessionRequest, Formatting.Indented)}");
-
             if (sessionRequest.Method != method) {
-                _logger.Log($"Request method does not match: {sessionRequest.Method} != {method}");
                 return;
             }
 

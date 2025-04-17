@@ -206,10 +206,10 @@ namespace Sample
 
             try
             {
-                Notification.ShowMessage("Getting balance with WalletConnect Blockchain API...");
+                Notification.ShowMessage("Getting balance with Cross API...");
 
+                await CrossSdk.UpdateBalance(); // update from cross api
                 var account = await CrossSdk.GetAccountAsync();
-
                 var balance = await CrossSdk.Evm.GetBalanceAsync(account.Address);
 
                 Notification.ShowMessage($"Balance: {Web3.Convert.FromWei(balance)} ETH");
@@ -229,9 +229,8 @@ namespace Sample
             {
                 Notification.ShowMessage("Getting tokens...");
 
-                Debug.Log($"AccountController: {JsonConvert.SerializeObject(CrossSdk.AccountController.IsInitialized, Formatting.Indented)}");
-                Debug.Log($"DApp Tokens: {JsonConvert.SerializeObject(CrossSdk.AccountController.Tokens, Formatting.Indented)}");
-                var tokens = CrossSdk.AccountController.Tokens;
+                await CrossSdk.UpdateBalance(); // update from cross api
+                var tokens = CrossSdk.GetTokens();
                 
                 string message = "Tokens:\n";
 

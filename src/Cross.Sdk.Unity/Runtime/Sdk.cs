@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Cross.Core.Common.Utils;
 using Cross.Sign.Models;
 using Cross.Sign.Unity;
+using Nethereum.Contracts.Standards.ERC20.TokenList;
 using UnityEngine;
 
 namespace Cross.Sdk.Unity
@@ -109,6 +110,16 @@ namespace Cross.Sdk.Unity
         public static Task<Account> GetAccountAsync()
         {
             return ConnectorController.GetAccountAsync();
+        }
+
+        public static async Task UpdateBalance()
+        {
+            await AccountController.UpdateBalance();
+        }
+
+        public static Token[] GetTokens()
+        {
+            return AccountController.Tokens;
         }
 
         public static Task DisconnectAsync()
