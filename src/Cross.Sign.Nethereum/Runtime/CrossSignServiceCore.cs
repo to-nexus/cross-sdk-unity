@@ -8,16 +8,20 @@ using EthSignTypedDataV4 = Cross.Sign.Nethereum.Model.EthSignTypedDataV4;
 using Transaction = Cross.Sign.Nethereum.Model.Transaction;
 using WalletAddEthereumChain = Cross.Sign.Nethereum.Model.WalletAddEthereumChain;
 using WalletSwitchEthereumChain = Cross.Sign.Nethereum.Model.WalletSwitchEthereumChain;
-using UnityEngine;
+using Cross.Core.Common.Logging;
+using Newtonsoft.Json;
+
 namespace Cross.Sign.Nethereum
 {
     public class CrossSignServiceCore : CrossSignService
     {
         private readonly ISignClient _signClient;
+        private readonly ILogger _logger;
 
         public CrossSignServiceCore(ISignClient signClient)
         {
             _signClient = signClient;
+            _logger = CrossLogger.WithContext("CrossSignServiceCore");
         }
 
         public override bool IsWalletConnected
@@ -53,7 +57,11 @@ namespace Cross.Sign.Nethereum
             };
             var sendTransactionRequest = new EthSendTransaction(txData);
 
-            return await _signClient.Request<EthSendTransaction, string>(sendTransactionRequest, customData);
+            _logger.Log($"sent sendTransactionRequest");
+            var txHash = await _signClient.Request<EthSendTransaction, string>(sendTransactionRequest, customData);
+            _logger.Log($"txHash: {txHash}");
+            
+            return txHash;
         }
 
         protected override async Task<object> PersonalSignAsyncCore(string message, string address, CustomData customData = null)

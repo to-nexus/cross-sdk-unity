@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Cross.Sign.Unity;
 using Cross.Sign.Models;
+using Nethereum.RPC.Eth.DTOs;
 
 namespace Cross.Sdk.Unity
 {
@@ -22,7 +23,6 @@ namespace Cross.Sdk.Unity
 
             return GetBalanceAsyncCore(address);
         }
-
 
         // -- Sign Message ---------------------------------------------
 
@@ -161,7 +161,9 @@ namespace Cross.Sdk.Unity
         {
             return GetGasPriceAsyncCore();
         }
-        
+
+        public abstract Task<Transaction> GetTransactionByHash(string hash);
+        public abstract Task<Transaction> PollTransaction(string hash);
 
         protected abstract Task InitializeAsyncCore(SignClientUnity signClient);
         protected abstract Task<BigInteger> GetBalanceAsyncCore(string address);

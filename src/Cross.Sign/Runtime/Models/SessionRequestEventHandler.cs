@@ -18,7 +18,6 @@ namespace Cross.Sign.Models
     public class SessionRequestEventHandler<T, TR> : TypedEventHandler<T, TR>
     {
         private readonly IEnginePrivate _enginePrivate;
-
         protected SessionRequestEventHandler(ICoreClient engine, IEnginePrivate enginePrivate) : base(engine)
         {
             _enginePrivate = enginePrivate;
@@ -66,7 +65,6 @@ namespace Cross.Sign.Models
         protected override void Setup()
         {
             var wrappedRef = TypedEventHandler<SessionRequest<T>, TR>.GetInstance(Ref);
-
             wrappedRef.OnRequest += WrappedRefOnOnRequest;
             wrappedRef.OnResponse += WrappedRefOnOnResponse;
 
@@ -90,7 +88,12 @@ namespace Cross.Sign.Models
 
             var sessionRequest = e.Request.Params.Request;
 
-            if (sessionRequest.Method != method) return;
+            _logger.Log($"sessionRequest: {JsonConvert.SerializeObject(sessionRequest, Formatting.Indented)}");
+
+            if (sessionRequest.Method != method) {
+                _logger.Log($"Request method does not match: {sessionRequest.Method} != {method}");
+                return;
+            }
 
             // Set inner request id to match outer request id
             sessionRequest.Id = e.Request.Id;

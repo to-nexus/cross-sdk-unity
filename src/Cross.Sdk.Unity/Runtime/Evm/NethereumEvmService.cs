@@ -20,6 +20,8 @@ using HexBigInteger = Nethereum.Hex.HexTypes.HexBigInteger;
 using Cross.Sign.Nethereum.Model;
 using Cross.Core.Models;
 using Cross.Sign.Models;
+using Transaction = Nethereum.RPC.Eth.DTOs.Transaction;
+using Newtonsoft.Json;
 
 namespace Cross.Sdk.Unity
 {
@@ -136,6 +138,40 @@ namespace Cross.Sdk.Unity
             return chain.RpcUrl;
         }
 
+        // -- Get Transaction by Hash ---------------------------------
+        public override async Task<Transaction> GetTransactionByHash(string hash)
+        {
+            return await Web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(hash);
+        }
+
+        // -- Poll Transaction
+        public override async Task<Transaction> PollTransaction(string hash)
+        {
+            Debug.Log($"pollingTx with hash: {hash}");
+
+            var timeouts = new Queue<int>(new[] { 1000, 100 }); // milliseconds
+
+            while (true)
+            {
+                try
+                {
+                    var tx = await GetTransactionByHash(hash);
+
+                    if (tx != null)
+                    {
+                        Debug.Log($"tx found: {JsonConvert.SerializeObject(tx, Formatting.Indented)}");
+                        return tx;
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    throw new Exception($"Transaction not found: {hash}");
+                }
+
+                int delay = timeouts.Count > 0 ? timeouts.Dequeue() : 4000;
+                await Task.Delay(delay);
+            }
+        }
 
         // -- Get Balance ----------------------------------------------
 

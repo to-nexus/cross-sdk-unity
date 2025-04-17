@@ -8,6 +8,7 @@ using Nethereum.RPC.HostWallet;
 using Cross.Sign.Nethereum.Model;
 using Cross.Sign.Models;
 using UnityEngine;
+using Newtonsoft.Json;
 
 namespace Cross.Sign.Nethereum
 {
@@ -48,8 +49,8 @@ namespace Cross.Sign.Nethereum
             {
                 if (request.Method == ApiMethods.eth_sendTransaction.ToString())
                 {
-                    Debug.Log("InterceptSendRequestAsync: " + request.Method + " " + request.RawParameters[0]);
-                    return await _crossSignService.SendTransactionAsync((TransactionInput)request.RawParameters[0]);
+                    var customData = (request.RawParameters.Length == 2) ? (CustomData)request.RawParameters[1] : null;
+                    return await _crossSignService.SendTransactionAsync((TransactionInput)request.RawParameters[0], customData);
                 }
 
                 if (request.Method == ApiMethods.personal_sign.ToString())

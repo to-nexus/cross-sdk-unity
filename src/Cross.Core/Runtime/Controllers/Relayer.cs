@@ -251,7 +251,6 @@ namespace Cross.Core.Controllers
             TR result;
             try
             {
-                _logger.Log("Sending request through provider");
                 result = await Provider.Request<T, TR>(request, context);
             }
             catch (WebSocketException)

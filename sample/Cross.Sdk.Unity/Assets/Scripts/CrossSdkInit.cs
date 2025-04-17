@@ -34,7 +34,7 @@ namespace Sample
                     new RedirectData
                     {
                         // Used by native wallets to redirect back to the app after approving requests
-                        Native = "cross-sdk-unity-sample://"
+                        Native = "cross-sdk-unity-sample://wc"
                     }
                 )
             };

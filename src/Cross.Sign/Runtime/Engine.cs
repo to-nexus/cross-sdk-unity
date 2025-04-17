@@ -738,7 +738,7 @@ namespace Cross.Sign
                 }
                 );
 
-            SessionRequestEvents<T, TR>()
+            SessionRequestEvents<object[], TR>()
                 .FilterResponses(e => e.Topic == topic && e.Response.Id == id)
                 .OnResponse += args =>
             {
@@ -795,31 +795,30 @@ namespace Cross.Sign
                 requestChainId = chainId;
             }
 
-            var request = new JsonRpcRequest<object[]>(method, new object[] { data, customData });
-
-            IsInitialized();
-            await PrivateThis.IsValidRequest(topic, request, requestChainId);
+            var id = new long();
             var taskSource = new TaskCompletionSource<TR>();
 
-            var id = await MessageHandler.SendRequest<SessionRequest<object[]>, TR>(topic,
+            var request = new JsonRpcRequest<object[]>(method, new object [] { data, customData });
+            IsInitialized();
+            await PrivateThis.IsValidRequest(topic, request, requestChainId);
+            SessionRequestEvents<object[], TR>()
+                .FilterResponses(e => e.Topic == topic && e.Response.Id == id)
+                .OnResponse += args =>
+                {
+                    if (args.Response.IsError)
+                        taskSource.TrySetException(args.Response.Error.ToException());
+                    else
+                        taskSource.TrySetResult(args.Response.Result);
+
+                    return Task.CompletedTask;
+                };
+            id = await MessageHandler.SendRequest<SessionRequest<object[]>, TR>(topic,
                 new SessionRequest<object[]>
                 {
                     ChainId = requestChainId,
                     Request = request
                 }
-                );
-
-            SessionRequestEvents<T, TR>()
-                .FilterResponses(e => e.Topic == topic && e.Response.Id == id)
-                .OnResponse += args =>
-            {
-                if (args.Response.IsError)
-                    taskSource.TrySetException(args.Response.Error.ToException());
-                else
-                    taskSource.TrySetResult(args.Response.Result);
-
-                return Task.CompletedTask;
-            };
+            );
 
             SessionRequestSent?.Invoke(this, new SessionRequestEvent
             {

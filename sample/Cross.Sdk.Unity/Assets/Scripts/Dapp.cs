@@ -275,7 +275,7 @@ namespace Sample
                 var signature = await CrossSdk.Evm.SignMessageAsync(message, "0x", customData);
                 var isValid = await CrossSdk.Evm.VerifyMessageSignatureAsync(account.Address, message, signature);
 
-                Notification.ShowMessage($"Signature valid: {isValid}");
+                Notification.ShowMessage($"Signature finished: {signature} valid? {isValid}");
             }
             catch (RpcResponseException e)
             {
@@ -323,7 +323,16 @@ namespace Sample
                 var result = await CrossSdk.Evm.SendTransactionAsync(toAddress, value, null, customData);
                 Debug.Log("Transaction hash: " + result);
 
-                Notification.ShowMessage("Transaction sent");
+                Notification.ShowMessage($"Tx hash: {result} now polling tx...");
+
+                try {
+                    var tx = await CrossSdk.Evm.PollTransaction(result);
+                    Notification.ShowMessage($"Successfully retrieved transaction {result}");
+                }
+                catch (Exception ex)
+                {
+                    Notification.ShowMessage($"Error: {ex.Message}");
+                }
             }
             catch (Exception e)
             {
@@ -360,7 +369,17 @@ namespace Sample
 
                 Debug.Log("Transaction hash: " + result);
 
-                Notification.ShowMessage("Transaction sent");
+                Notification.ShowMessage($"Tx hash: {result} now polling tx...");
+
+                try {
+                    var tx = await CrossSdk.Evm.PollTransaction(result);
+                    Notification.ShowMessage($"Successfully retrieved transaction {result}");
+                }
+                catch (Exception ex)
+                {
+                    Notification.ShowMessage($"Error: {ex.Message}");
+                }
+                
             }
             catch (Exception e)
             {
