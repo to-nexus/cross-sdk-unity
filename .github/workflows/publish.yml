@@ -24,11 +24,8 @@ jobs:
   deploy:
     needs: sonarqube
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/ci/'))
-    runs-on: alpine-latest
+    runs-on: ubuntu-latest
     steps:
-    - name: Install dependencies on Alpine
-      run: apk add --no-cache bash coreutils
-
     - uses: actions/checkout@v4
 
     - name: Set up Node.js
