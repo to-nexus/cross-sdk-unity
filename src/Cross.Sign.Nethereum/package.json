@@ -1,5 +1,5 @@
 {
-  "name": "nexus.cross.sign.nethereum",
+  "name": "com.nexus.cross.sign.nethereum",
   "version": "1.0.0",
   "displayName": "Cross.Sign.Nethereum",
   "unity": "2022.3",
@@ -8,7 +8,7 @@
     "cross"
   ],
   "dependencies": {
-    "nexus.cross.sign": "1.0.0",
+    "com.nexus.cross.sign": "1.0.0",
     "com.nethereum.unity": "4.26.0"
   }
 }

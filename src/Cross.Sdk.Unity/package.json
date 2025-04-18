@@ -1,5 +1,5 @@
 {
-  "name": "nexus.cross.sdk.unity",
+  "name": "com.nexus.cross.sdk.unity",
   "version": "1.0.0",
   "displayName": "Cross.Sdk.Unity",
   "unity": "2022.3",
@@ -11,10 +11,10 @@
     "web3"
   ],
   "dependencies": {
-    "nexus.cross.sign.nethereum.unity": "1.0.0",
-    "nexus.cross.sign.unity": "1.0.0",
-    "nexus.cross.core": "1.0.0",
-    "nexus.cross.unity.dependencies": "1.0.0",
+    "com.nexus.cross.sign.nethereum.unity": "1.0.0",
+    "com.nexus.cross.sign.unity": "1.0.0",
+    "com.nexus.cross.core": "1.0.0",
+    "com.nexus.cross.unity.dependencies": "1.0.0",
     "com.unity.vectorgraphics": "2.0.0-preview.24"
   }
 }

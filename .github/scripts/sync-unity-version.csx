@@ -211,7 +211,7 @@ async Task UpdatePackageVersionsAsync(string srcPath, string newVersion)
                 writer.WriteToken(jsonReader.TokenType, jsonReader.Value);
 
                 jsonReader.Read();
-                if (propertyName == "version" || (propertyName?.StartsWith("nexus.cross.") ?? false))
+                if (propertyName == "version" || (propertyName?.StartsWith("com.nexus.cross.") ?? false))
                 {
                     if (jsonReader.Value?.ToString() != newVersion)
                     {
@@ -258,7 +258,7 @@ async Task UpdatePackagesLockVersionsAsync(string basePath, string newVersion)
         {
             foreach (var dep in depsObj.Properties())
             {
-                if (dep.Name.StartsWith("nexus.cross."))
+                if (dep.Name.StartsWith("com.nexus.cross."))
                 {
                     var depObj = dep.Value as JObject;
                     if (depObj != null)
@@ -268,7 +268,7 @@ async Task UpdatePackagesLockVersionsAsync(string basePath, string newVersion)
                         {
                             foreach (var nestedDep in nestedDepsObj.Properties())
                             {
-                                if (nestedDep.Name.StartsWith("nexus.cross."))
+                                if (nestedDep.Name.StartsWith("com.nexus.cross."))
                                 {
                                     var oldVersion = nestedDepsObj[nestedDep.Name].ToString();
                                     if (oldVersion != newVersion)

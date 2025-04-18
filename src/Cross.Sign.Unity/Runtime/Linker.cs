@@ -131,7 +131,7 @@ namespace Cross.Sign.Unity
 #if !UNITY_EDITOR && UNITY_IOS
                 return _CanOpenURL(url);
 #elif !UNITY_EDITOR && UNITY_ANDROID 
-                using var urlCheckerClass = new AndroidJavaClass("nexus.cross.sign.unity.Linker");
+                using var urlCheckerClass = new AndroidJavaClass("com.nexus.cross.sign.unity.Linker");
                 using var unityPlayerClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
                 using var currentContext = unityPlayerClass.GetStatic<AndroidJavaObject>("currentActivity");
                 var result = urlCheckerClass.CallStatic<bool>("canOpenURL", currentContext, url);

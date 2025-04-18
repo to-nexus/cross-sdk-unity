@@ -1,5 +1,5 @@
 {
-  "name": "nexus.cross.core.crypto",
+  "name": "com.nexus.cross.core.crypto",
   "version": "1.0.0",
   "displayName": "Cross.Core.Crypto",
   "unity": "2022.3",
@@ -8,9 +8,9 @@
     "cross"
   ],
   "dependencies": {
-    "nexus.cross.core.common": "1.0.0",
-    "nexus.cross.core.network": "1.0.0",
-    "nexus.cross.core.storage": "1.0.0",
-    "nexus.cross.unity.dependencies": "1.0.0"
+    "com.nexus.cross.core.common": "1.0.0",
+    "com.nexus.cross.core.network": "1.0.0",
+    "com.nexus.cross.core.storage": "1.0.0",
+    "com.nexus.cross.unity.dependencies": "1.0.0"
   }
 }

@@ -1,4 +1,4 @@
-package nexus.cross.sign.unity;
+package com.nexus.cross.sign.unity;
 
 import android.content.Context;
 import android.content.Intent;

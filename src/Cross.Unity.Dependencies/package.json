@@ -1,5 +1,5 @@
 {
-  "name": "nexus.cross.unity.dependencies",
+  "name": "com.nexus.cross.unity.dependencies",
   "version": "1.0.0",
   "displayName": "Cross.Unity.Dependencies",
   "unity": "2022.3",

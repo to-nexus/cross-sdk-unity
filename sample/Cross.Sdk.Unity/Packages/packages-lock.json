@@ -119,19 +119,19 @@
       "dependencies": {},
       "url": "https://package.openupm.com"
     },
-    "nexus.cross.core": {
+    "com.nexus.cross.core": {
       "version": "file:./../../../src/Cross.Core",
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "nexus.cross.core.common": "1.0.0",
-        "nexus.cross.core.network": "1.0.0",
-        "nexus.cross.core.storage": "1.0.0",
-        "nexus.cross.core.crypto": "1.0.0",
-        "nexus.cross.unity.dependencies": "1.0.0"
+        "com.nexus.cross.core.common": "1.0.0",
+        "com.nexus.cross.core.network": "1.0.0",
+        "com.nexus.cross.core.storage": "1.0.0",
+        "com.nexus.cross.core.crypto": "1.0.0",
+        "com.nexus.cross.unity.dependencies": "1.0.0"
       }
     },
-    "nexus.cross.core.common": {
+    "com.nexus.cross.core.common": {
       "version": "file:./../../../src/Cross.Core.Common",
       "depth": 0,
       "source": "local",
@@ -139,81 +139,81 @@
         "com.unity.nuget.newtonsoft-json": "3.2.1"
       }
     },
-    "nexus.cross.core.crypto": {
+    "com.nexus.cross.core.crypto": {
       "version": "file:./../../../src/Cross.Core.Crypto",
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "nexus.cross.core.common": "1.0.0",
-        "nexus.cross.core.network": "1.0.0",
-        "nexus.cross.core.storage": "1.0.0",
-        "nexus.cross.unity.dependencies": "1.0.0"
+        "com.nexus.cross.core.common": "1.0.0",
+        "com.nexus.cross.core.network": "1.0.0",
+        "com.nexus.cross.core.storage": "1.0.0",
+        "com.nexus.cross.unity.dependencies": "1.0.0"
       }
     },
-    "nexus.cross.core.network": {
+    "com.nexus.cross.core.network": {
       "version": "file:./../../../src/Cross.Core.Network",
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "nexus.cross.core.common": "1.0.0"
+        "com.nexus.cross.core.common": "1.0.0"
       }
     },
-    "nexus.cross.core.storage": {
+    "com.nexus.cross.core.storage": {
       "version": "file:./../../../src/Cross.Core.Storage",
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "nexus.cross.core.common": "1.0.0"
+        "com.nexus.cross.core.common": "1.0.0"
       }
     },
-    "nexus.cross.sdk.unity": {
+    "com.nexus.cross.sdk.unity": {
       "version": "file:./../../../src/Cross.Sdk.Unity",
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "nexus.cross.sign.nethereum.unity": "1.0.0",
-        "nexus.cross.sign.unity": "1.0.0",
-        "nexus.cross.core": "1.0.0",
-        "nexus.cross.unity.dependencies": "1.0.0",
+        "com.nexus.cross.sign.nethereum.unity": "1.0.0",
+        "com.nexus.cross.sign.unity": "1.0.0",
+        "com.nexus.cross.core": "1.0.0",
+        "com.nexus.cross.unity.dependencies": "1.0.0",
         "com.unity.vectorgraphics": "2.0.0-preview.24"
       }
     },
-    "nexus.cross.sign": {
+    "com.nexus.cross.sign": {
       "version": "file:./../../../src/Cross.Sign",
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "nexus.cross.core": "1.0.0",
-        "nexus.cross.sign.nethereum": "1.0.0"
+        "com.nexus.cross.core": "1.0.0",
+        "com.nexus.cross.sign.nethereum": "1.0.0"
       }
     },
-    "nexus.cross.sign.nethereum": {
+    "com.nexus.cross.sign.nethereum": {
       "version": "file:./../../../src/Cross.Sign.Nethereum",
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "nexus.cross.sign": "1.0.0",
+        "com.nexus.cross.sign": "1.0.0",
         "com.nethereum.unity": "4.26.0"
       }
     },
-    "nexus.cross.sign.nethereum.unity": {
+    "com.nexus.cross.sign.nethereum.unity": {
       "version": "file:./../../../src/Cross.Sign.Nethereum.Unity",
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "nexus.cross.sign.nethereum": "1.0.0",
-        "nexus.cross.sign.unity": "1.0.0"
+        "com.nexus.cross.sign.nethereum": "1.0.0",
+        "com.nexus.cross.sign.unity": "1.0.0"
       }
     },
-    "nexus.cross.sign.unity": {
+    "com.nexus.cross.sign.unity": {
       "version": "file:./../../../src/Cross.Sign.Unity",
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "nexus.cross.sign": "1.0.0"
+        "com.nexus.cross.sign": "1.0.0"
       }
     },
-    "nexus.cross.unity.dependencies": {
+    "com.nexus.cross.unity.dependencies": {
       "version": "file:./../../../src/Cross.Unity.Dependencies",
       "depth": 0,
       "source": "local",

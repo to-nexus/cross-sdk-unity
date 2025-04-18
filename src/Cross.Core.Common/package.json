@@ -1,5 +1,5 @@
 {
-  "name": "nexus.cross.core.common",
+  "name": "com.nexus.cross.core.common",
   "version": "1.0.0",
   "displayName": "Cross.Core.Common",
   "unity": "2022.3",
