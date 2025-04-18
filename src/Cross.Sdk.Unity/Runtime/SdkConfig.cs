@@ -71,11 +71,11 @@ namespace Cross.Sdk.Unity
                 new Wallet
                 {
                     Name = "Cross Wallet",
-                    ImageUrl = "https://raw.githubusercontent.com/reown-com/reown-dotnet/refs/heads/main/media/walletkit-icon.png",
+                    ImageUrl = "https://contents.crosstoken.io/img/CROSSx_AppIcon.png",
                     MobileLink = "crossx://",
                     DesktopLink = "crossx://",
-                    AppStore = "https://to.nexus",
-                    PlayStore = "https://to.nexus"
+                    AppStore = "https://apps.apple.com/us/app/crossx-games/id6741250674",
+                    PlayStore = "https://play.google.com/store/apps/details?id=com.nexus.crosswallet"
                 }
             };
         }

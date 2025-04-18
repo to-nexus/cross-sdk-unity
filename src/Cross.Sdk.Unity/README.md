@@ -1,6 +1,6 @@
 # Cross - Sdk Unity
 
-<img width="60px" src="https://raw.githubusercontent.com/reown-com/reown-dotnet/main/media/appkit-icon.png">
+<img width="60px" src="https://contents.crosstoken.io/wallet/token/images/CROSSx.svg">
 
 The all-in-one stack to build apps for the new internet.
 

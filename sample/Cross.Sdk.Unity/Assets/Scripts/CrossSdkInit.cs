@@ -30,7 +30,7 @@ namespace Sample
                     "CrossSdk Unity",
                     "CrossSdk Unity Sample",
                     "https://to.nexus",
-                    "https://raw.githubusercontent.com/reown-com/reown-dotnet/main/media/appkit-icon.png",
+                    "https://contents.crosstoken.io/wallet/token/images/CROSSx.svg",
                     new RedirectData
                     {
                         // Used by native wallets to redirect back to the app after approving requests
