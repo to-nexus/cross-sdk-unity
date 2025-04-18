@@ -241,7 +241,7 @@ namespace Sample
                     int decimals = int.Parse(token.Quantity.decimals);
 
                     var balance = Web3.Convert.FromWei(BigInteger.Parse(numeric), decimals);
-                    message += $"{symbol}: {balance}";
+                    message += $"{symbol}: {balance}\n";
                 }
 
                 Notification.ShowMessage(message);
