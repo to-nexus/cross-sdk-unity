@@ -51,17 +51,17 @@ jobs:
     # 스텝 이름 변경 및 스크립트 수정
     - name: Deploy Packages using version from package_version
       run: |
-        # package_version 파일에서 버전 읽기 (Node.js 사용)
-        if [[ ! -f package_version ]]; then
-          echo "Error: package_version file not found in the root directory."
+        # package_version.json 파일에서 버전 읽기 (Node.js 사용)
+        if [[ ! -f package_version.json ]]; then
+          echo "Error: package_version.json file not found in the root directory."
           exit 1
         fi
-        VERSION=$(node -p "require('./package_version').version")
+        VERSION=$(node -p "require('./package_version.json').version")
         if [[ -z "$VERSION" ]]; then
-          echo "Error: Could not read version from package_version"
+          echo "Error: Could not read version from package_version.json"
           exit 1
         fi
-        echo "Deploying version specified in package_version: $VERSION"
+        echo "Deploying version specified in package_version.json: $VERSION"
 
         echo "Finding packages in src/ directory..."
         PACKAGES=$(find src/ -name package.json -not -path "*/.idea/*" -exec dirname {} \;)
