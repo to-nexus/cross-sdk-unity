@@ -1,0 +1,52 @@
+name: Deploy Unity Packages to Nexus
+
+on:
+  push:
+    branches: [ main, 'ci/*' ] # main 브랜치에 푸시될 때 실행 (필요시 변경)
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x' # 필요시 Node.js 버전 변경
+
+    - name: Configure npm for Nexus
+      run: echo "//${NEXUS_REGISTRY_URL#https://}:_auth=${{ secrets.NEXUS_CREDENTIALS_BASE64 }}" > .npmrc
+      env:
+        NEXUS_REGISTRY_URL: ${{ secrets.NEXUS_REGISTRY_URL }}
+
+    - name: Verify npm authentication
+      run: cat .npmrc
+      #npm whoami --registry ${{ secrets.NEXUS_REGISTRY_URL }}
+
+    - name: Deploy Packages
+      run: |
+        PACKAGES=(
+          "src/Cross.Core.Common"
+          "src/Cross.Core.Crypto"
+          "src/Cross.Core.Network"
+          "src/Cross.Core.Network.WebSocket"
+          "src/Cross.Core.Storage"
+          "src/Cross.Core"
+          "src/Cross.Sign.Nethereum"
+          "src/Cross.Sign"
+          "src/Cross.Sign.Nethereum.Unity"
+          "src/Cross.Sign.Unity"
+          "src/Cross.Sdk.Unity"
+          "src/Cross.Unity.Dependencies"
+        )
+
+        for pkg_dir in "${PACKAGES[@]}"; do
+          echo "Deploying $pkg_dir..."
+          cd "$pkg_dir"
+          cp ../../.npmrc .npmrc
+          npm publish --registry ${{ secrets.NEXUS_REGISTRY_URL }}
+          cd ../.. # 프로젝트 루트로 이동
+        done
+      env:
+        NEXUS_REGISTRY_URL: ${{ secrets.NEXUS_REGISTRY_URL }} # 예: my-nexus.com/repository/npm-internal/
