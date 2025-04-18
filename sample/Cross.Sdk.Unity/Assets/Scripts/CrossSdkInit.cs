@@ -24,13 +24,13 @@ namespace Sample
             // CrossSdk configuration
             var CrossSdkConfig = new CrossSdkConfig
             {
-                // Project ID from cross test
+                // Project ID provided by cross team
                 projectId = "ef21cf313a63dbf63f2e9e04f3614029",
                 metadata = new Metadata(
-                    "CrossSdk Unity",
-                    "CrossSdk Unity Sample",
-                    "https://to.nexus",
-                    "https://contents.crosstoken.io/wallet/token/images/CROSSx.svg",
+                    "CrossSdk Unity",   // your project name
+                    "CrossSdk Unity Sample",    // your project description
+                    "https://to.nexus",     // your project website
+                    "https://contents.crosstoken.io/wallet/token/images/CROSSx.svg",    // your project logo icon
                     new RedirectData
                     {
                         // Used by native wallets to redirect back to the app after approving requests
@@ -44,13 +44,11 @@ namespace Sample
             await CrossSdk.InitializeAsync(
                 CrossSdkConfig
             );
-            
 #if !UNITY_WEBGL
             // The Mixpanel is used by the sample project to collect telemetry
             var clientId = await CrossSdk.Instance.SignClient.CoreClient.Crypto.GetClientId();
             Mixpanel.Identify(clientId);
 #endif
-
             Debug.Log($"[CrossSdk Init] CrossSdk initialized. Loading menu scene...");
             SceneManager.LoadScene(_menuScene);
         }
