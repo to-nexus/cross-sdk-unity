@@ -44,27 +44,35 @@ jobs:
 
     - name: Deploy Packages
       run: |
-        PACKAGES=(
-          "src/Cross.Core.Common"
-          "src/Cross.Core.Crypto"
-          "src/Cross.Core.Network"
-          "src/Cross.Core.Network.WebSocket"
-          "src/Cross.Core.Storage"
-          "src/Cross.Core"
-          "src/Cross.Sign.Nethereum"
-          "src/Cross.Sign"
-          "src/Cross.Sign.Nethereum.Unity"
-          "src/Cross.Sign.Unity"
-          "src/Cross.Sdk.Unity"
-          "src/Cross.Unity.Dependencies"
-        )
+        echo "Finding packages in src/ directory..."
+        # src/ 아래에서 package.json 파일을 찾되, .idea 경로는 제외하고, 해당 파일이 있는 디렉토리 목록을 가져옴
+        PACKAGES=$(find src/ -name package.json -not -path "*/.idea/*" -exec dirname {} \;)
 
-        for pkg_dir in "${PACKAGES[@]}"; do
+        if [ -z "$PACKAGES" ]; then
+          echo "No packages found to deploy."
+          exit 0
+        fi
+
+        echo "Found packages:"
+        echo "$PACKAGES"
+        echo "---"
+
+        for pkg_dir in $PACKAGES; do
           echo "Deploying $pkg_dir..."
-          cd "$pkg_dir"
-          cp ../../.npmrc .npmrc
+          # pushd/popd를 사용하여 안전하게 디렉토리 이동
+          pushd "$pkg_dir" || exit 1
+          # 루트의 .npmrc 파일을 현재 디렉토리로 복사
+          if [[ -f ../../.npmrc ]]; then
+             cp ../../.npmrc .npmrc
+          else
+             echo "Warning: .npmrc not found in project root."
+             # .npmrc가 없으면 publish가 실패할 가능성이 높으므로 오류로 처리하거나 경고만 표시할 수 있습니다.
+             # 여기서는 일단 진행합니다.
+          fi
           npm publish --registry ${{ secrets.NEXUS_REGISTRY_URL }}
-          cd ../.. # 프로젝트 루트로 이동
+          # 원래 디렉토리로 복귀
+          popd || exit 1
+          echo "---"
         done
       env:
         NEXUS_REGISTRY_URL: ${{ secrets.NEXUS_REGISTRY_URL }} # 예: my-nexus.com/repository/npm-internal/
