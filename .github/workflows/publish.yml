@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - ci/*
+    tags:        # tags 트리거 추가
+      - 'v*'     # v로 시작하는 태그
   pull_request:
     branches:
       - main
@@ -76,3 +78,82 @@ jobs:
         done
       env:
         NEXUS_REGISTRY_URL: ${{ secrets.NEXUS_REGISTRY_URL }} # 예: my-nexus.com/repository/npm-internal/
+
+  deploy-tag: # 새 Job 추가
+    name: Deploy Tagged Release
+    # needs: sonarqube # 필요에 따라 SonarQube 이후 실행하도록 설정 가능
+    if: startsWith(github.ref, 'refs/tags/v') # 태그 푸시일 때만 실행
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+
+    - name: Configure npm for Nexus
+      run: echo "//${NEXUS_REGISTRY_URL#https://}:_auth=${{ secrets.NEXUS_CREDENTIALS_BASE64 }}" > .npmrc
+      env:
+        NEXUS_REGISTRY_URL: ${{ secrets.NEXUS_REGISTRY_URL }}
+
+    - name: Extract version and Deploy Packages from Tag
+      run: |
+        # 태그에서 'v' 제거하여 버전 추출 (예: v1.2.3 -> 1.2.3)
+        VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
+        echo "Deploying version: $VERSION"
+
+        echo "Finding packages in src/ directory..."
+        PACKAGES=$(find src/ -name package.json -not -path "*/.idea/*" -exec dirname {} \;)
+
+        if [ -z "$PACKAGES" ]; then
+          echo "No packages found to deploy."
+          exit 1 # 태그 배포인데 패키지가 없으면 오류
+        fi
+
+        echo "Found packages:"
+        echo "$PACKAGES"
+        echo "---"
+
+        for pkg_dir in $PACKAGES; do
+          echo "Processing package: $pkg_dir..."
+          pushd "$pkg_dir" || exit 1
+
+          echo "Updating package.json version to $VERSION..."
+          # package.json 버전 업데이트 (Git 태그 추가 방지)
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
+          if [[ $? -ne 0 ]]; then
+            echo "Error updating version for $pkg_dir"
+            popd
+            exit 1
+          fi
+
+          echo "Publishing $pkg_dir@$VERSION..."
+          # 루트의 .npmrc 파일을 현재 디렉토리로 복사
+          if [[ -f ../../.npmrc ]]; then
+             cp ../../.npmrc .npmrc
+          else
+             echo "Error: .npmrc not found in project root for $pkg_dir. Cannot publish."
+             popd
+             exit 1
+          fi
+          # npm publish 실행
+          npm publish --registry ${{ secrets.NEXUS_REGISTRY_URL }}
+          if [[ $? -ne 0 ]]; then
+            echo "Error publishing $pkg_dir"
+            popd
+            exit 1
+          fi
+
+          popd || exit 1
+          echo "---"
+        done
+
+        echo "All packages deployed successfully for tag ${{ github.ref_name }}."
+      env:
+        NEXUS_REGISTRY_URL: ${{ secrets.NEXUS_REGISTRY_URL }}
+        # npm version이 사용자 정보 필요시 설정
+        # GIT_COMMITTER_NAME: github-actions[bot]
+        # GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        # GIT_AUTHOR_NAME: ${{ github.actor }}
+        # GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
