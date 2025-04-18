@@ -2,10 +2,28 @@ name: Deploy Unity Packages to Nexus
 
 on:
   push:
-    branches: [ main, 'ci/*' ] # main 브랜치에 푸시될 때 실행 (필요시 변경)
-
+    branches:
+      - main
+      - ci/*
+  pull_request:
+    branches:
+      - main
 jobs:
+  sonarqube:
+    name: SonarQube
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   deploy:
+    needs: sonarqube
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/ci/'))
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
