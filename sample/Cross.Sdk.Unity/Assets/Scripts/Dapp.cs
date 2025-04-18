@@ -48,12 +48,6 @@ namespace Sample
                 },
                 new ButtonStruct
                 {
-                    Text = "Account",
-                    OnClick = OnAccountButton,
-                    AccountRequired = true
-                },
-                new ButtonStruct
-                {
                     Text = "Personal Sign",
                     OnClick = OnPersonalSignButton,
                     AccountRequired = true
@@ -195,11 +189,7 @@ namespace Sample
             CrossSdk.OpenModal(ViewType.NetworkSearch);
         }
 
-        public void OnAccountButton()
-        {
-            CrossSdk.OpenModal(ViewType.Account);
-        }
-
+        // retrieve native coin from blockchain node
         public async void OnGetBalanceButton()
         {
             Debug.Log("[CrossSdk Sample] OnGetBalanceButton");
@@ -221,10 +211,9 @@ namespace Sample
             }
         }
 
+        // retrieve all native coin and tokens from cross api
         public async void OnGetTokensButton()
         {
-            Debug.Log("[CrossSdk Sample] OnGetTokensButton");
-
             try
             {
                 Notification.ShowMessage("Getting tokens...");
@@ -253,6 +242,7 @@ namespace Sample
             }
         }
 
+        // sign message via wallet
         public async void OnPersonalSignButton()
         {
             Debug.Log("[CrossSdk Sample] OnPersonalSignButton");
@@ -300,6 +290,7 @@ namespace Sample
             }
         }
 
+        // send 1 cross coin to specified address
         public async void OnSendNativeButton()
         {
             Debug.Log("[CrossSdk Sample] OnSendNativeButton");
@@ -340,6 +331,7 @@ namespace Sample
             }
         }
 
+        // send 1 ERC20 token to specified address
         public async void OnSendERC20Button()
         {
             Debug.Log("[CrossSdk Sample] OnSendERC20Button");
@@ -349,7 +341,7 @@ namespace Sample
             string abi = abiText.text;
             var customData = new CustomData
                 {
-                    Metadata = "Meta data is mandatory in Unity Sdk."
+                    Metadata = "Meta data is required in Unity Sdk."
                 };
             try
             {
@@ -357,10 +349,12 @@ namespace Sample
 
                 var value = Web3.Convert.ToWei(1);
 
+                // Call any contract method with arbitrary parameters
+                // In this case, WriteContractAsync executes a contract method ('transfer') with custom data and parameters
                 var result = await CrossSdk.Evm.WriteContractAsync(
-                    ERC20_ADDRESS,  // token contract address
+                    ERC20_ADDRESS,  // contract address
                     abi,  //abi
-                    "transfer", // method
+                    "transfer", // method name in contract code
                     customData,
                     toAddress,
                     value
@@ -371,6 +365,7 @@ namespace Sample
                 Notification.ShowMessage($"Tx hash: {result} now polling tx...");
 
                 try {
+                    // Poll transaction with received tx hash to see if it is mined on blockchain
                     var tx = await CrossSdk.Evm.PollTransaction(result);
                     Notification.ShowMessage($"Successfully retrieved transaction {result}");
                 }
@@ -387,6 +382,7 @@ namespace Sample
             }
         }
 
+        // planned to beused for permit, but not supported in wallet yet
         public async void OnSignTypedDataV4Button()
         {
             Debug.Log("[CrossSdk Sample] OnSignTypedDataV4Button");
@@ -448,6 +444,7 @@ namespace Sample
             }
         }
 
+        // read contract state such as balance of token or other data
         public async void OnReadContractClicked()
         {
             if (CrossSdk.NetworkController.ActiveChain.ChainId != "eip155:612044")
