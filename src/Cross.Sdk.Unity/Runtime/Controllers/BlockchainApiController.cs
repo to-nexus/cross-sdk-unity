@@ -9,7 +9,7 @@ namespace Cross.Sdk.Unity
 {
     public class BlockchainApiController
     {
-        private const string BasePath = "https://stg-wallet-server.crosstoken.io";
+        private const string BasePath = "https://wallet-server.crosstoken.io";
         private const int TimoutSeconds = 5;
 
         private readonly IDictionary<string, string> _getBalanceHeaders = new Dictionary<string, string>

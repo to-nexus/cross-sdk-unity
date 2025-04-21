@@ -11,7 +11,7 @@ namespace Cross.Sdk.Unity
 {
     public class ApiController
     {
-        private const string BasePath = "https://stg-wallet-server.crosstoken.io";
+        private const string BasePath = "https://wallet-server.crosstoken.io";
         private const int TimoutSeconds = 5;
 
         private readonly string _includedWalletIdsString = CrossSdk.Config.includedWalletIds is { Length: > 0 }
