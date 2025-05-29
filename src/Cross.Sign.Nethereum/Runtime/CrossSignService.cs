@@ -33,11 +33,11 @@ namespace Cross.Sign.Nethereum
             return PersonalSignAsyncCore(message, address, customData);
         }
 
-        public Task<object> EthSignTypedDataV4Async(string data, string address = null)
+        public Task<object> EthSignTypedDataV4Async(string data, CustomData customData = null)
         {
             if (string.IsNullOrEmpty(data))
                 throw new System.ArgumentException("Data cannot be null or empty", nameof(data));
-            return EthSignTypedDataV4AsyncCore(data, address);
+            return EthSignTypedDataV4AsyncCore(data, customData);
         }
 
         public Task<object> WalletSwitchEthereumChainAsync(SwitchEthereumChain arg)
@@ -65,7 +65,7 @@ namespace Cross.Sign.Nethereum
         protected abstract bool IsMethodSupportedCore(string method);
         protected abstract Task<object> SendTransactionAsyncCore(TransactionInput transaction, CustomData customData = null);
         protected abstract Task<object> PersonalSignAsyncCore(string message, string address, CustomData customData = null);
-        protected abstract Task<object> EthSignTypedDataV4AsyncCore(string data, string address = null);
+        protected abstract Task<object> EthSignTypedDataV4AsyncCore(string data, CustomData customData = null);
         protected abstract Task<object> WalletSwitchEthereumChainAsyncCore(SwitchEthereumChain arg);
         protected abstract Task<object> WalletAddEthereumChainAsyncCore(EthereumChain chain);
     }

@@ -73,11 +73,13 @@ namespace Cross.Sign.Nethereum
             return await _signClient.RequestWithAddress<PersonalSign, string>(signDataRequest, address, customData);
         }
 
-        protected override async Task<object> EthSignTypedDataV4AsyncCore(string data, string address = null)
+        protected override async Task<object> EthSignTypedDataV4AsyncCore(string data, CustomData customData = null)
         {
-            address ??= GetDefaultAddress();
-            var signDataRequest = new EthSignTypedDataV4(address, data);
-            return await _signClient.Request<EthSignTypedDataV4, string>(signDataRequest);
+            var signDataRequest = new EthSignTypedDataV4(data);
+
+            _logger.Log($"signDataRequest: {JsonConvert.SerializeObject(signDataRequest, Formatting.Indented)}");
+
+            return await _signClient.Request<EthSignTypedDataV4, string>(signDataRequest, customData);
         }
 
         protected override async Task<object> WalletSwitchEthereumChainAsyncCore(SwitchEthereumChain arg)

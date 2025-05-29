@@ -62,8 +62,10 @@ namespace Cross.Sign.Nethereum
                 {
                     if (request.RawParameters.Length == 1)
                         return await _crossSignService.EthSignTypedDataV4Async((string)request.RawParameters[0]);
-
-                    return await _crossSignService.EthSignTypedDataV4Async((string)request.RawParameters[1], (string)request.RawParameters[0]);
+                    else if (request.RawParameters.Length == 2)
+                        return await _crossSignService.EthSignTypedDataV4Async((string)request.RawParameters[0], (CustomData)request.RawParameters[1]);
+                    else
+                        throw new NotImplementedException();
                 }
 
                 if (request.Method == ApiMethods.wallet_switchEthereumChain.ToString())
@@ -117,10 +119,14 @@ namespace Cross.Sign.Nethereum
 
                 if (method == ApiMethods.eth_signTypedData_v4.ToString())
                 {
+                    Debug.Log($"eth_signTypedData_v4: {paramList.Length}");
+                    Debug.Log($"eth_signTypedData_v4 param 0: {(string)paramList[0]??"undefined"}");
                     if (paramList.Length == 1)
                         return await _crossSignService.EthSignTypedDataV4Async((string)paramList[0]);
-
-                    return await _crossSignService.EthSignTypedDataV4Async((string)paramList[1], (string)paramList[0]);
+                    else if (paramList.Length == 2)
+                        return await _crossSignService.EthSignTypedDataV4Async((string)paramList[0], (CustomData)paramList[1]);
+                    else
+                        throw new NotImplementedException();
                 }
 
                 if (method == ApiMethods.wallet_switchEthereumChain.ToString())

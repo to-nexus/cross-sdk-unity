@@ -17,6 +17,8 @@ namespace Cross.Sign.Nethereum.Model
             Value = transaction.Value;
             Data = transaction.Data;
             Type = transaction.Type;
+            MaxPriorityFeePerGas = transaction.MaxPriorityFeePerGas;
+            MaxFeePerGas = transaction.MaxFeePerGas;
         }
 
         [Preserve]

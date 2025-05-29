@@ -21,6 +21,12 @@ namespace Cross.Sign.Nethereum.Model
         [JsonProperty("gasPrice", NullValueHandling = NullValueHandling.Ignore)]
         public string GasPrice { get; set; }
 
+        [JsonProperty("maxFeePerGas", NullValueHandling = NullValueHandling.Ignore)]
+        public string MaxFeePerGas { get; set; }
+
+        [JsonProperty("maxPriorityFeePerGas", NullValueHandling = NullValueHandling.Ignore)]
+        public string MaxPriorityFeePerGas { get; set; }
+
         [JsonProperty("value")]
         public string Value { get; set; }
 
