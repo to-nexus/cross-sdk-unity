@@ -5,6 +5,6 @@ namespace Cross.Sign.Unity
     public class SignMetadata
     {
         [VersionMarker]
-        public const string Version = "v1.3.0";
+        public const string Version = "v1.1.0";
     }
 }
