@@ -54,6 +54,9 @@ namespace Cross.Sign.Nethereum
                 Gas = transaction.Gas?.HexValue,
                 GasPrice = transaction.GasPrice?.HexValue,
                 Data = transaction.Data,
+                Type = transaction.Type?.HexValue,
+                MaxFeePerGas = transaction.MaxFeePerGas?.HexValue,
+                MaxPriorityFeePerGas = transaction.MaxPriorityFeePerGas?.HexValue,
             };
             var sendTransactionRequest = new EthSendTransaction(txData);
 

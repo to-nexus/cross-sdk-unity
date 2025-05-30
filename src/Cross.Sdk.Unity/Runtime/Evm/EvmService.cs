@@ -96,28 +96,23 @@ namespace Cross.Sdk.Unity
 
         public Task<string> WriteContractAsync(string contractAddress, string contractAbi, string methodName, CustomData customData, params object[] arguments)
         {
-            return WriteContractAsync(contractAddress, contractAbi, methodName, customData, default, default, arguments);
+            return WriteContractAsync(contractAddress, contractAbi, methodName, customData, default, default, default, arguments);
         }
 
-        public Task<string> WriteContractAsync(string contractAddress, string contractAbi, string methodName, CustomData customData, BigInteger gas = default, params object[] arguments)
+        public Task<string> WriteContractAsync(string contractAddress, string contractAbi, string methodName, CustomData customData, BigInteger value = default, BigInteger gas = default, int type = default, params object[] arguments)
         {
-            return WriteContractAsyncCore(contractAddress, contractAbi, methodName, customData, default, gas, arguments);
-        }
-
-        public Task<string> WriteContractAsync(string contractAddress, string contractAbi, string methodName, CustomData customData, BigInteger value = default, BigInteger gas = default, params object[] arguments)
-        {
-            return WriteContractAsyncCore(contractAddress, contractAbi, methodName, customData, value, gas, arguments);
+            return WriteContractAsyncCore(contractAddress, contractAbi, methodName, customData, value, gas, type, arguments);
         }
 
 
         // -- Send Transaction ----------------------------------------
 
-        public Task<string> SendTransactionAsync(string addressTo, BigInteger value, string data = null, CustomData customData = null)
+        public Task<string> SendTransactionAsync(string addressTo, BigInteger value, string data = null, int type = 0, CustomData customData = null)
         {
             if (string.IsNullOrWhiteSpace(addressTo))
                 throw new ArgumentNullException(nameof(addressTo));
 
-            return SendTransactionAsyncCore(addressTo, value, data, customData);
+            return SendTransactionAsyncCore(addressTo, value, data, type, customData);
         }
         
         
@@ -173,8 +168,8 @@ namespace Cross.Sdk.Unity
         protected abstract Task<string> SignTypedDataAsyncCore(string dataJson);
         protected abstract Task<bool> VerifyTypedDataSignatureAsyncCore(string address, string dataJson, string signature);
         protected abstract Task<TReturn> ReadContractAsyncCore<TReturn>(string contractAddress, string contractAbi, string methodName, object[] arguments = null);
-        protected abstract Task<string> WriteContractAsyncCore(string contractAddress, string contractAbi, string methodName, CustomData customData, BigInteger value = default, BigInteger gas = default, params object[] arguments);
-        protected abstract Task<string> SendTransactionAsyncCore(string addressTo, BigInteger value, string data = null, CustomData customData = null);
+        protected abstract Task<string> WriteContractAsyncCore(string contractAddress, string contractAbi, string methodName, CustomData customData, BigInteger value = default, BigInteger gas = default, int type = default, params object[] arguments);
+        protected abstract Task<string> SendTransactionAsyncCore(string addressTo, BigInteger value, string data = null, int type = 0, CustomData customData = null);
         protected abstract Task<string> SendRawTransactionAsyncCore(string signedTransaction);
         protected abstract Task<BigInteger> EstimateGasAsyncCore(string addressTo, BigInteger value, string data = null);
         protected abstract Task<BigInteger> EstimateGasAsyncCore(string contractAddress, string contractAbi, string methodName, BigInteger value = default, params object[] arguments);

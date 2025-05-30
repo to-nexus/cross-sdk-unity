@@ -165,7 +165,7 @@ namespace Cross.Sdk.Unity
                 }
                 catch (System.Exception ex)
                 {
-                    throw new Exception($"Transaction not found: {hash}");
+                    throw new Exception($"Transaction not found. hash: {hash} errors: {ex}");
                 }
 
                 int delay = timeouts.Count > 0 ? timeouts.Dequeue() : 4000;
@@ -290,26 +290,114 @@ namespace Cross.Sdk.Unity
 
         // -- Write Contract ------------------------------------------
 
-        protected override async Task<string> WriteContractAsyncCore(string contractAddress, string contractAbi, string methodName, CustomData customData, BigInteger value = default, BigInteger gas = default, params object[] arguments)
+        private async Task<(HexBigInteger maxFeePerGas, HexBigInteger maxPriorityFeePerGas)> CalculateEIP1559Fees()
+        {
+            // 현재 블록의 base fee per gas 조회
+            var feeHistory = await Web3.Client.SendRequestAsync<FeeHistoryResult>("eth_feeHistory", null, 1, "latest", new[] { 25, 75 });
+            
+            // maxPriorityFeePerGas 계산 (25th percentile)
+            var maxPriorityFeePerGas = feeHistory.Reward[0][0];
+            
+            // base fee per gas 계산
+            var baseFeePerGas = feeHistory.BaseFeePerGas[0];
+            
+            // maxFeePerGas 계산 (base fee + max priority fee)
+            var maxFeePerGas = new HexBigInteger(baseFeePerGas.Value + maxPriorityFeePerGas.Value);
+            
+            return (maxFeePerGas, maxPriorityFeePerGas);
+        }
+
+        private async Task<TransactionInput> CreateTransactionInput(Nethereum.Contracts.Function function, string contractAddress, BigInteger value, BigInteger gas, int type, object[] arguments)
+        {
+            string addressFrom = default; // will be overrided using GetDefaultAddress within intercetper(CrossSignServiceCore). just send 0x here.
+            var data = function.GetData(arguments);
+            var gasLimit = gas == default ? await EstimateGasAsyncCore(contractAddress, value, data) : gas;
+            
+            if (type == 0) // Legacy 트랜잭션
+            {
+                var gasPrice = await GetGasPriceAsyncCore();
+                
+                return new TransactionInput(
+                    data,
+                    contractAddress,
+                    addressFrom,
+                    new HexBigInteger(gasLimit),
+                    new HexBigInteger(gasPrice),
+                    new HexBigInteger(value)
+                );
+            }
+            else if (type == 2) // EIP-1559 트랜잭션
+            {
+                var (maxFeePerGas, maxPriorityFeePerGas) = await CalculateEIP1559Fees();
+                
+                return new TransactionInput(
+                    new HexBigInteger(type),
+                    data,
+                    contractAddress,
+                    addressFrom,
+                    new HexBigInteger(gasLimit),
+                    new HexBigInteger(value),
+                    maxFeePerGas,
+                    maxPriorityFeePerGas
+                );
+            }
+            else
+            {
+                throw new ArgumentException("Unsupported transaction type. Use 0 for Legacy or 2 for EIP-1559 transactions.");
+            }
+        }
+
+        protected override async Task<string> WriteContractAsyncCore(string contractAddress, string contractAbi, string methodName, CustomData customData, BigInteger value = default, BigInteger gas = default, int type = default, params object[] arguments)
         {
             var contract = Web3.Eth.GetContract(contractAbi, contractAddress);
             var function = contract.GetFunction(methodName);
-
-            var transactionInput = CreateTransactionInput(function, contractAddress, value, gas, arguments);
+            
+            var transactionInput = await CreateTransactionInput(function, contractAddress, value, gas, type, arguments);
             return await Web3.Client.SendRequestAsync<string>("eth_sendTransaction", null, transactionInput, customData);
-        }
-
-        private TransactionInput CreateTransactionInput(Nethereum.Contracts.Function function, string contractAddress, BigInteger value, BigInteger gas, object[] arguments)
-        {
-            return new TransactionInput(function.GetData(arguments), contractAddress, new HexBigInteger(value));
         }
 
         // -- Send Transaction ----------------------------------------
 
-        protected override Task<string> SendTransactionAsyncCore(string addressTo, BigInteger value, string data = null, CustomData customData = null)
+        protected override async Task<string> SendTransactionAsyncCore(string addressTo, BigInteger value, string data = null, int type = 0, CustomData customData = null)
         {
-            var transactionInput = new TransactionInput(data, addressTo, new HexBigInteger(value));
-            return Web3.Client.SendRequestAsync<string>("eth_sendTransaction", null, transactionInput, customData);
+            var gasLimit = await EstimateGasAsyncCore(addressTo, value, data);
+            string addressFrom = default; // will be overrided using GetDefaultAddress within intercetper(CrossSignServiceCore). just send 0x here.
+            TransactionInput transactionInput;
+            
+            if (type == 0) // Legacy 트랜잭션
+            {
+                var gasPrice = await GetGasPriceAsyncCore();
+                
+                transactionInput = new TransactionInput(
+                    data,
+                    addressTo,
+                    addressFrom,
+                    new HexBigInteger(gasLimit),
+                    new HexBigInteger(gasPrice),
+                    new HexBigInteger(value)
+                );
+            }
+            else if (type == 2) // EIP-1559 트랜잭션
+            {
+                var (maxFeePerGas, maxPriorityFeePerGas) = await CalculateEIP1559Fees();
+                
+                transactionInput = new TransactionInput(
+                    new HexBigInteger(type),
+                    data,
+                    addressTo,
+                    addressFrom,
+                    new HexBigInteger(gasLimit),
+                    new HexBigInteger(value),
+                    maxFeePerGas,
+                    maxPriorityFeePerGas
+                );
+            }
+            else
+            {
+                throw new ArgumentException("Unsupported transaction type. Use 0 for Legacy or 2 for EIP-1559 transactions.");
+            }
+            
+            return await Web3.Client.SendRequestAsync<string>("eth_sendTransaction", null, transactionInput, customData);
         }
         
         
@@ -346,5 +434,21 @@ namespace Cross.Sdk.Unity
             var hexBigInt = await Web3.Eth.GasPrice.SendRequestAsync();
             return hexBigInt.Value;
         }
+    }
+
+    // FeeHistory 응답을 위한 클래스
+    public class FeeHistoryResult
+    {
+        [JsonProperty("baseFeePerGas")]
+        public HexBigInteger[] BaseFeePerGas { get; set; }
+        
+        [JsonProperty("gasUsedRatio")]
+        public decimal[] GasUsedRatio { get; set; }
+        
+        [JsonProperty("oldestBlock")]
+        public HexBigInteger OldestBlock { get; set; }
+        
+        [JsonProperty("reward")]
+        public HexBigInteger[][] Reward { get; set; }
     }
 }
