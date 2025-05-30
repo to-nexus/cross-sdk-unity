@@ -105,17 +105,13 @@ Cross Unity SDK enables seamless integration of blockchain wallet connectivity i
     TextAsset abiText = Resources.Load<TextAsset>("Contracts/SampleERC20abi");  // JSON formatted abi for the token contract file
     string abi = abiText.text;
 
-    var value = Web3.Convert.ToWei(1);
-
-    // Call any contract method with arbitrary parameters
-    // In this case, WriteContractAsync executes a contract method ('transfer') with custom data and parameters
     var result = await CrossSdk.Evm.WriteContractAsync(
         ERC20_ADDRESS,  // contract address
-        abi,  //abi
-        "transfer", // method name in contract code
-        null,   // custom data can be null
-        toAddress,
-        value
+        abi,            // abi
+        "transfer",     // method name in contract code
+        null,           // customData can be null
+        toAddress,      // to: recepient address
+        amount          // amount: token amount to send
     );
   ```
 
