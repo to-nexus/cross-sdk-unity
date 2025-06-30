@@ -35,6 +35,12 @@ namespace Cross.Sign.Nethereum
             RpcRequest request,
             string route = null)
         {
+            // eth_estimateGas는 읽기 전용 작업이므로 인터셉터를 거치지 않고 직접 처리
+            if (request.Method == "eth_estimateGas")
+            {
+                return await interceptedSendRequestAsync(request, route);
+            }
+
             if (!SignMethods.Contains(request.Method))
             {
                 return await base
@@ -92,6 +98,12 @@ namespace Cross.Sign.Nethereum
             string route = null,
             params object[] paramList)
         {
+            // eth_estimateGas는 읽기 전용 작업이므로 인터셉터를 거치지 않고 직접 처리
+            if (method == "eth_estimateGas")
+            {
+                return await interceptedSendRequestAsync(method, route, paramList);
+            }
+
             if (!SignMethods.Contains(method))
             {
                 return await base

@@ -2,7 +2,7 @@
   "name": "com.nexus.cross.unity.dependencies",
   "version": "1.2.0",
   "displayName": "Cross.Unity.Dependencies",
-  "unity": "2021.3",
+  "unity": "2022.3",
   "author": "Nexus",
   "keywords": [
     "cross"

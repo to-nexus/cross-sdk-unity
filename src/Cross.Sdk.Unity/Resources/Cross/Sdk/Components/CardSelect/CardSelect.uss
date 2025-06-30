@@ -5,7 +5,7 @@
 
 #card-select__container {
     width: 77px;
-    height: 95px;
+    height: 107px;
     padding: 8px 8px 10px;
     align-items: center;
     border-radius: var(--ro-border-radius-xs);
@@ -45,7 +45,7 @@
 
 #card-select__label {
     width: 60px;
-    height: 16px;
+    height: 32px;
     margin: 8px 0 0;
     padding: 0;
     overflow: hidden;

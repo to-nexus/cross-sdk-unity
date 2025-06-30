@@ -152,24 +152,24 @@ namespace Cross.Sdk.Unity
             public static readonly Chain CrossTestnet = new(
                 Namespaces.Evm,
                 References.CrossTestnet,
-                "Cross Testnet",
+                "CROSS Testnet",
                 new Currency("CROSS", "CROSS", 18),
                 new BlockExplorer("Cross Scan", "https://testnet.crossscan.io"),
                 "https://testnet.crosstoken.io:22001",
                 true,
-                $"{ChainImageUrl}/{ImageIds[References.Ethereum]}",
-                "mainnet"
+                "https://contents.crosstoken.io/img/CROSSx_AppIcon.png",
+                "testnet"
             );
 
             public static readonly Chain CrossMainnet = new(
                 Namespaces.Evm,
                 References.CrossMainnet,
-                "Cross Mainnet",
+                "CROSS Mainnet",
                 new Currency("CROSS", "CROSS", 18),
                 new BlockExplorer("Cross Scan", "https://mainnet.crossscan.io"),
                 "https://mainnet.crosstoken.io:22001",
                 false,
-                $"{ChainImageUrl}/{ImageIds[References.Ethereum]}",
+                "https://contents.crosstoken.io/img/CROSSx_AppIcon.png",
                 "mainnet"
             );
 

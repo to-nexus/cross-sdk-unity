@@ -297,6 +297,10 @@ namespace Cross.Sdk.Unity
             
             // maxPriorityFeePerGas 계산 (25th percentile)
             var maxPriorityFeePerGas = feeHistory.Reward[0][0];
+            if (maxPriorityFeePerGas.Value == 0)
+            {
+                maxPriorityFeePerGas = new HexBigInteger(1000000000); // 1 Gwei 기본값
+            }
             
             // base fee per gas 계산
             var baseFeePerGas = feeHistory.BaseFeePerGas[0];
@@ -307,11 +311,13 @@ namespace Cross.Sdk.Unity
             return (maxFeePerGas, maxPriorityFeePerGas);
         }
 
-        private async Task<TransactionInput> CreateTransactionInput(Nethereum.Contracts.Function function, string contractAddress, BigInteger value, BigInteger gas, int type, object[] arguments)
+        private async Task<TransactionInput> CreateTransactionInput(Nethereum.Contracts.Function function, string contractAddress, string contractAbi, string methodName, BigInteger value, BigInteger gas, int type, object[] arguments)
         {
             string addressFrom = default; // will be overrided using GetDefaultAddress within intercetper(CrossSignServiceCore). just send 0x here.
             var data = function.GetData(arguments);
-            var gasLimit = gas == default ? await EstimateGasAsyncCore(contractAddress, value, data) : gas;
+            var gasLimit = gas == default 
+                ? await EstimateGasAsyncCore(contractAddress, contractAbi, methodName, value, arguments)
+                : gas;
             
             if (type == 0) // Legacy 트랜잭션
             {
@@ -330,6 +336,8 @@ namespace Cross.Sdk.Unity
             {
                 var (maxFeePerGas, maxPriorityFeePerGas) = await CalculateEIP1559Fees();
                 
+                Debug.Log($"maxFeePerGas: {maxFeePerGas}, maxPriorityFeePerGas: {maxPriorityFeePerGas}");
+
                 return new TransactionInput(
                     new HexBigInteger(type),
                     data,
@@ -352,7 +360,7 @@ namespace Cross.Sdk.Unity
             var contract = Web3.Eth.GetContract(contractAbi, contractAddress);
             var function = contract.GetFunction(methodName);
             
-            var transactionInput = await CreateTransactionInput(function, contractAddress, value, gas, type, arguments);
+            var transactionInput = await CreateTransactionInput(function, contractAddress, contractAbi, methodName, value, gas, type, arguments);
             return await Web3.Client.SendRequestAsync<string>("eth_sendTransaction", null, transactionInput, customData);
         }
 
@@ -422,7 +430,17 @@ namespace Cross.Sdk.Unity
             var contract = Web3.Eth.GetContract(contractAbi, contractAddress);
             var function = contract.GetFunction(methodName);
             
-            var transactionInput = new TransactionInput(function.GetData(arguments), contractAddress, new HexBigInteger(value));
+            // 가스 추정을 위해 현재 연결된 계정의 주소를 가져옴
+            var account = await CrossSdk.GetAccountAsync();
+            var fromAddress = account.Address ?? "0x0000000000000000000000000000000000000000";
+            
+            var transactionInput = new TransactionInput(
+                function.GetData(arguments), 
+                contractAddress, 
+                fromAddress,
+                default,  // gas - 가스 추정이므로 default
+                new HexBigInteger(value)
+            );
             return await Web3.Eth.Transactions.EstimateGas.SendRequestAsync(transactionInput);
         }
         
