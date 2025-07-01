@@ -21,9 +21,10 @@ Cross Unity SDK enables seamless integration of blockchain wallet connectivity i
 
 1. **Required Unity Version**
 
-   Unity version should be equal or greater than 6000.0.23f1. If you encounter any version compatibility issues, please feel free to contact us.​
+   Unity version must be 2022.3 or higher. We recommend using 2022.3.62f1 or later for best compatibility.
+   If you encounter any version-related issues, please don’t hesitate to contact us.
 
-3. **Add Scoped Registry**
+2. **Add Scoped Registry**
 
    Modify your Unity project's `manifest.json` to include the Cross SDK scoped registry:
 
@@ -39,18 +40,18 @@ Cross Unity SDK enables seamless integration of blockchain wallet connectivity i
        }
      ],
      "dependencies": {
-       "com.nexus.cross.sdk.unity": "1.0.0",
-       "com.nexus.cross.core": "1.0.0",
-       "com.nexus.cross.core.common": "1.0.0",
-       "com.nexus.cross.core.crypto": "1.0.0",
-       "com.nexus.cross.core.network": "1.0.0",
-       "com.nexus.cross.core.storage": "1.0.0",
-       "com.nexus.cross.sdk.unity": "1.0.0",
-       "com.nexus.cross.sign": "1.0.0",
-       "com.nexus.cross.sign.nethereum": "1.0.0",
-       "com.nexus.cross.sign.nethereum.unity": "1.0.0",
-       "com.nexus.cross.sign.unity": "1.0.0",
-       "com.nexus.cross.unity.dependencies": "1.0.0"
+       "com.nexus.cross.sdk.unity": "1.3.0",
+       "com.nexus.cross.core": "1.3.0",
+       "com.nexus.cross.core.common": "1.3.0",
+       "com.nexus.cross.core.crypto": "1.3.0",
+       "com.nexus.cross.core.network": "1.3.0",
+       "com.nexus.cross.core.storage": "1.3.0",
+       "com.nexus.cross.sdk.unity": "1.3.0",
+       "com.nexus.cross.sign": "1.3.0",
+       "com.nexus.cross.sign.nethereum": "1.3.0",
+       "com.nexus.cross.sign.nethereum.unity": "1.3.0",
+       "com.nexus.cross.sign.unity": "1.3.0",
+       "com.nexus.cross.unity.dependencies": "1.3.0"
        // add more wanted dependencies
      }
    }
