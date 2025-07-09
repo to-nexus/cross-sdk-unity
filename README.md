@@ -46,7 +46,6 @@ Cross Unity SDK enables seamless integration of blockchain wallet connectivity i
        "com.nexus.cross.core.crypto": "1.3.0",
        "com.nexus.cross.core.network": "1.3.0",
        "com.nexus.cross.core.storage": "1.3.0",
-       "com.nexus.cross.sdk.unity": "1.3.0",
        "com.nexus.cross.sign": "1.3.0",
        "com.nexus.cross.sign.nethereum": "1.3.0",
        "com.nexus.cross.sign.nethereum.unity": "1.3.0",
