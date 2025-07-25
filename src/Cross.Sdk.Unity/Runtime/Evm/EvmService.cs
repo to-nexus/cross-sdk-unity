@@ -96,11 +96,15 @@ namespace Cross.Sdk.Unity
 
         public Task<string> WriteContractAsync(string contractAddress, string contractAbi, string methodName, CustomData customData, params object[] arguments)
         {
-            return WriteContractAsync(contractAddress, contractAbi, methodName, customData, default, default, default, arguments);
+            return WriteContractAsync(contractAddress, contractAbi, methodName, customData, BigInteger.Zero, default, default, arguments);
         }
 
         public Task<string> WriteContractAsync(string contractAddress, string contractAbi, string methodName, CustomData customData, BigInteger value = default, BigInteger gas = default, int type = default, params object[] arguments)
         {
+            // Ensure value is zero for contract interactions (not ETH transfers)
+            if (value == default)
+                value = BigInteger.Zero;
+                
             return WriteContractAsyncCore(contractAddress, contractAbi, methodName, customData, value, gas, type, arguments);
         }
 
