@@ -372,8 +372,8 @@ namespace Sample
                     abi,            // abi
                     "transfer",     // method name in contract code
                     customData,
-                    toAddress,      // to: 받는 사람 주소
-                    amount          // amount: 전송할 토큰 양
+                    (object)toAddress,      // to: 받는 사람 주소
+                    (object)amount          // amount: 전송할 토큰 양
                 );
 
                 Debug.Log("Transaction hash: " + result);
@@ -428,7 +428,7 @@ namespace Sample
                     default,        // gas는 기본값 사용
                     txType,         // type: 0 is legacy transaction, 2 is EIP-1559 transaction. If you want FeePayer, set 2.
                     toAddress,      // to: 받는 사람 주소
-                    amount     // amount: 전송할 토큰 양
+                    (object)amount     // amount: 전송할 토큰 양
                 );
 
                 Debug.Log("Transaction hash: " + result);
