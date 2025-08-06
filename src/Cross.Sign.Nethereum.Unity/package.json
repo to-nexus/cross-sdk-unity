@@ -1,6 +1,6 @@
 {
   "name": "com.nexus.cross.sign.nethereum.unity",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "displayName": "Cross.Sign.Nethereum.Unity",
   "unity": "2022.3",
   "author": "Nexus",
@@ -9,7 +9,7 @@
     "walletconnect"
   ],
   "dependencies": {
-    "com.nexus.cross.sign.nethereum": "1.3.2",
-    "com.nexus.cross.sign.unity": "1.3.2"
+    "com.nexus.cross.sign.nethereum": "1.3.3",
+    "com.nexus.cross.sign.unity": "1.3.3"
   }
 }

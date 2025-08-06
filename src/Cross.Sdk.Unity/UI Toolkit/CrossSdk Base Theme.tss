@@ -1,7 +1,7 @@
 @import url("unity-theme://default");
 
 * {
-    -unity-font-definition: resource("Fonts & Materials/Inter/Inter-Regular SDF");
+    -unity-font-definition: resource("Fonts & Materials/Inter/Inter-Regular");
     /* Fallback fonts for better compatibility */
     -unity-font-definition-fallback: "Arial", "Helvetica", "Times New Roman", "Inter";
 
