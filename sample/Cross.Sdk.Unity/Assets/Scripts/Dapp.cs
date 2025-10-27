@@ -190,7 +190,8 @@ namespace Sample
 
         public void OnConnectButton()
         {
-            CrossSdk.Connect();
+            // Connect directly to Cross Wallet instead of showing wallet list
+            CrossSdk.ConnectWithWallet("cross_wallet");
         }
 
         public void OnNetworkButton()

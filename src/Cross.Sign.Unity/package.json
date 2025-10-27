@@ -1,6 +1,6 @@
 {
   "name": "com.nexus.cross.sign.unity",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "displayName": "Cross.Sign.Unity",
   "unity": "2022.3",
   "author": "Nexus",
@@ -8,6 +8,6 @@
     "cross"
   ],
   "dependencies": {
-    "com.nexus.cross.sign": "1.3.3"
+    "com.nexus.cross.sign": "1.3.4"
   }
 }

@@ -70,6 +70,7 @@ namespace Cross.Sdk.Unity
             {
                 new Wallet
                 {
+                    Id = "cross_wallet",
                     Name = "Cross Wallet",
                     ImageUrl = "https://contents.crosstoken.io/img/CROSSx_AppIcon.png",
                     MobileLink = "crossx://",

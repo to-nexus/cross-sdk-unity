@@ -99,6 +99,17 @@ namespace Cross.Sdk.Unity
             OpenModal();
         }
 
+        public static void ConnectWithWallet(string walletId)
+        {
+            if (IsModalOpen)
+                return;
+
+            if (!IsInitialized)
+                throw new Exception("CrossSdk not initialized");
+
+            Instance.ConnectWithWalletCore(walletId);
+        }
+
         public static void CloseModal()
         {
             if (!IsModalOpen)
@@ -140,6 +151,8 @@ namespace Cross.Sdk.Unity
         protected abstract void CloseModalCore();
 
         protected abstract Task DisconnectAsyncCore();
+
+        protected abstract void ConnectWithWalletCore(string walletId);
 
         public class InitializeEventArgs : EventArgs
         {

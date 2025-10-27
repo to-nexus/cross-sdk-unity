@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Cross.Sdk.Unity.Model;
 using Cross.Sdk.Unity.Utils;
 using Cross.Sign.Models;
 using Cross.Sign.Unity;
@@ -88,6 +89,39 @@ namespace Cross.Sdk.Unity
         protected override Task DisconnectAsyncCore()
         {
             return ConnectorController.DisconnectAsync();
+        }
+
+        protected override void ConnectWithWalletCore(string walletId)
+        {
+            // Find wallet by ID in custom wallets
+            var wallet = FindWalletById(walletId);
+            if (wallet != null)
+            {
+                // Set the wallet as last viewed and open wallet view directly
+                WalletUtils.SetLastViewedWallet(wallet);
+                ModalController.Open(ViewType.Wallet);
+            }
+            else
+            {
+                Debug.LogError($"[CrossSdk] Wallet with ID '{walletId}' not found");
+                // Fallback to normal connect flow
+                OpenModalCore();
+            }
+        }
+
+        private Wallet FindWalletById(string walletId)
+        {
+            // Check custom wallets
+            if (Config.customWallets != null)
+            {
+                foreach (var wallet in Config.customWallets)
+                {
+                    if (wallet.Id == walletId)
+                        return wallet;
+                }
+            }
+
+            return null;
         }
 
         protected virtual ModalController CreateModalController()

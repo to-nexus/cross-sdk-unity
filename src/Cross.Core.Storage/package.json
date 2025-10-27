@@ -1,6 +1,6 @@
 {
   "name": "com.nexus.cross.core.storage",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "displayName": "Cross.Core.Storage",
   "unity": "2022.3",
   "author": "Nexus",
@@ -8,6 +8,6 @@
     "cross"
   ],
   "dependencies": {
-    "com.nexus.cross.core.common": "1.3.3"
+    "com.nexus.cross.core.common": "1.3.4"
   }
 }
