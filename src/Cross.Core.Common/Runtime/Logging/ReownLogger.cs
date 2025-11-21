@@ -14,7 +14,12 @@ namespace Cross.Core.Common.Logging
         public static void Log(string message)
         {
             if (Instance == null)
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                UnityEngine.Debug.Log($"[CrossSdk] {message}");
+#endif
                 return;
+            }
 
             Instance.Log(message);
         }
@@ -22,7 +27,12 @@ namespace Cross.Core.Common.Logging
         public static void LogError(string message)
         {
             if (Instance == null)
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                UnityEngine.Debug.LogError($"[CrossSdk] {message}");
+#endif
                 return;
+            }
 
             Instance.LogError(message);
         }
@@ -30,7 +40,12 @@ namespace Cross.Core.Common.Logging
         public static void LogError(Exception e)
         {
             if (Instance == null)
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                UnityEngine.Debug.LogException(e);
+#endif
                 return;
+            }
 
             Instance.LogError(e);
         }
