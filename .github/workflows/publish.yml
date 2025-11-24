@@ -41,7 +41,17 @@ jobs:
         node-version: '20.x'
 
     - name: Configure npm for Nexus
-      run: echo "//${NEXUS_REGISTRY_URL#https://}:_auth=${{ secrets.NEXUS_CREDENTIALS_BASE64 }}" > .npmrc
+      run: |
+        # NEXUS_REGISTRY_URL에서 https:// 제거 (있을 경우)
+        REGISTRY_HOST="${NEXUS_REGISTRY_URL#https://}"
+        REGISTRY_HOST="${REGISTRY_HOST#http://}"
+        
+        # .npmrc 파일 생성 (registry와 인증 정보 포함)
+        cat > .npmrc << EOF
+        registry=https://${REGISTRY_HOST}/
+        //${REGISTRY_HOST}/:_auth=${{ secrets.NEXUS_CREDENTIALS_BASE64 }}
+        always-auth=true
+        EOF
       env:
         NEXUS_REGISTRY_URL: ${{ secrets.NEXUS_REGISTRY_URL }}
 
@@ -97,8 +107,15 @@ jobs:
              popd
              exit 1
           fi
+          
+          # NEXUS_REGISTRY_URL에 https:// 추가 (없을 경우)
+          REGISTRY_URL="${NEXUS_REGISTRY_URL}"
+          if [[ ! "$REGISTRY_URL" =~ ^https?:// ]]; then
+            REGISTRY_URL="https://${REGISTRY_URL}"
+          fi
+          
           # npm publish 실행
-          npm publish --registry ${{ secrets.NEXUS_REGISTRY_URL }}
+          npm publish --registry "${REGISTRY_URL}/"
           if [[ $? -ne 0 ]]; then
             echo "Error publishing $pkg_dir"
             popd
@@ -112,5 +129,6 @@ jobs:
         echo "All packages deployed successfully with version $VERSION."
       env:
         NEXUS_REGISTRY_URL: ${{ secrets.NEXUS_REGISTRY_URL }}
+        NEXUS_CREDENTIALS_BASE64: ${{ secrets.NEXUS_CREDENTIALS_BASE64 }}
         # 필요시 npm 인증 토큰 설정 (npm version은 일반적으로 필요 없음)
         # NODE_AUTH_TOKEN: ${{ secrets.NEXUS_CREDENTIALS_BASE64 }}
