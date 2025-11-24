@@ -3,7 +3,7 @@ name: Deploy Unity Packages to Nexus
 on:
   push:
     branches:
-      - main
+      - master
       - ci/*
   # 태그 트리거 제거
   # pull_request: # 필요하다면 PR 트리거는 유지하거나 제거
@@ -21,7 +21,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
