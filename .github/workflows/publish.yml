@@ -15,7 +15,7 @@ jobs:
     name: SonarQube
     runs-on: ubuntu-latest
     # main/ci 푸시 또는 main PR 시에만 실행 (이전 조건 유지)
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/ci/')) || github.event_name == 'pull_request'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/ci/')) || github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,7 +30,7 @@ jobs:
     name: Deploy Packages from package_version
     needs: sonarqube
     # main 또는 ci/* 브랜치 푸시 시에만 실행
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/ci/'))
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/ci/'))
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
