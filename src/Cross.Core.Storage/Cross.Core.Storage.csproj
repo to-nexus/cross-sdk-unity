@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>$(DefaultTargetFrameworks)</TargetFrameworks>
+        <PackageVersion>$(DefaultVersion)</PackageVersion>
+        <AssemblyVersion>$(DefaultVersion)</AssemblyVersion>
+        <PackageId>Cross.Core.Storage</PackageId>
+        <Title>Cross.Core.Storage</Title>
+        <Authors>pedrouid, gigajuwels, edkek, skibitsky</Authors>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Cross.Core.Common\Cross.Core.Common.csproj"/>
+    </ItemGroup>
+</Project>

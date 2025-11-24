@@ -1,0 +1,13 @@
+{
+  "name": "com.nexus.cross.core.common",
+  "version": "1.3.4",
+  "displayName": "Cross.Core.Common",
+  "unity": "2022.3",
+  "author": "Nexus",
+  "keywords": [
+    "cross"
+  ],
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.2.1"
+  }
+}

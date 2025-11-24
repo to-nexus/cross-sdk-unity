@@ -1,0 +1,15 @@
+﻿{
+  "solution": {
+    "path": "Cross.sln",
+    "projects": [
+      "src\\Cross.Core.Common\\Cross.Core.Common.csproj",
+      "src\\Cross.Core.Crypto\\Cross.Core.Crypto.csproj",
+      "src\\Cross.Core.Network.WebSocket\\Cross.Core.Network.WebSocket.csproj",
+      "src\\Cross.Core.Network\\Cross.Core.Network.csproj",
+      "src\\Cross.Core.Storage\\Cross.Core.Storage.csproj",
+      "src\\Cross.Core\\Cross.Core.csproj",
+      "src\\Cross.Sign.Nethereum\\Cross.Sign.Nethereum.csproj",
+      "src\\Cross.Sign\\Cross.Sign.csproj",
+    ]
+  }
+}

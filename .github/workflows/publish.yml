@@ -1,0 +1,116 @@
+name: Deploy Unity Packages to Nexus
+
+on:
+  push:
+    branches:
+      - main
+      - ci/*
+  # 태그 트리거 제거
+  # pull_request: # 필요하다면 PR 트리거는 유지하거나 제거
+  #   branches:
+  #     - main
+
+jobs:
+  sonarqube:
+    name: SonarQube
+    runs-on: ubuntu-latest
+    # main/ci 푸시 또는 main PR 시에만 실행 (이전 조건 유지)
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/ci/')) || github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  deploy:
+    # 잡 이름 변경
+    name: Deploy Packages from package_version
+    needs: sonarqube
+    # main 또는 ci/* 브랜치 푸시 시에만 실행
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/ci/'))
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+
+    - name: Configure npm for Nexus
+      run: echo "//${NEXUS_REGISTRY_URL#https://}:_auth=${{ secrets.NEXUS_CREDENTIALS_BASE64 }}" > .npmrc
+      env:
+        NEXUS_REGISTRY_URL: ${{ secrets.NEXUS_REGISTRY_URL }}
+
+    - name: Verify npm authentication
+      run: cat .npmrc
+
+    # 스텝 이름 변경 및 스크립트 수정
+    - name: Deploy Packages using version from package_version
+      run: |
+        # package_version.json 파일에서 버전 읽기 (Node.js 사용)
+        if [[ ! -f package_version.json ]]; then
+          echo "Error: package_version.json file not found in the root directory."
+          exit 1
+        fi
+        VERSION=$(node -p "require('./package_version.json').version")
+        if [[ -z "$VERSION" ]]; then
+          echo "Error: Could not read version from package_version.json"
+          exit 1
+        fi
+        echo "Deploying version specified in package_version.json: $VERSION"
+
+        echo "Finding packages in src/ directory..."
+        PACKAGES=$(find src/ -name package.json -not -path "*/.idea/*" -exec dirname {} \;)
+
+        if [ -z "$PACKAGES" ]; then
+          echo "No packages found to deploy."
+          exit 0 # 패키지가 없으면 성공으로 종료
+        fi
+
+        echo "Found packages:"
+        echo "$PACKAGES"
+        echo "---"
+
+        for pkg_dir in $PACKAGES; do
+          echo "Processing package: $pkg_dir..."
+          pushd "$pkg_dir" || exit 1
+
+          echo "Updating package.json version to $VERSION..."
+          # package.json 버전 업데이트 (Git 태그 추가 방지, 동일 버전 허용)
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
+          if [[ $? -ne 0 ]]; then
+            echo "Error updating version for $pkg_dir"
+            popd
+            exit 1
+          fi
+
+          echo "Publishing $pkg_dir@$VERSION..."
+          # 루트의 .npmrc 파일을 현재 디렉토리로 복사
+          if [[ -f ../../.npmrc ]]; then
+             cp ../../.npmrc .npmrc
+          else
+             echo "Error: .npmrc not found in project root for $pkg_dir. Cannot publish."
+             popd
+             exit 1
+          fi
+          # npm publish 실행
+          npm publish --registry ${{ secrets.NEXUS_REGISTRY_URL }}
+          if [[ $? -ne 0 ]]; then
+            echo "Error publishing $pkg_dir"
+            popd
+            exit 1
+          fi
+
+          popd || exit 1
+          echo "---"
+        done
+
+        echo "All packages deployed successfully with version $VERSION."
+      env:
+        NEXUS_REGISTRY_URL: ${{ secrets.NEXUS_REGISTRY_URL }}
+        # 필요시 npm 인증 토큰 설정 (npm version은 일반적으로 필요 없음)
+        # NODE_AUTH_TOKEN: ${{ secrets.NEXUS_CREDENTIALS_BASE64 }}

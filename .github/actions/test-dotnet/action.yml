@@ -1,0 +1,33 @@
+name: 'test-dotnet'
+description: 'Runs unit and integration tests with dotnet cli'
+
+inputs:
+  type:
+    description: 'The type of CI step to run'
+    required: true
+  relay-endpoint:
+    description: 'The endpoint of the relay e.g. wss://cross-relay.crosstoken.io/ws'
+    required: false
+    default: 'wss://cross-relay.crosstoken.io/ws'
+  project-id:
+    description: 'Cross project id'
+    required: true
+  dotnet-version:
+    description: 'The .NET version to use for testing'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run tests
+      if: inputs.type == 'unit-tests'
+      shell: bash
+      run: dotnet test Cross.NoUnity.slnf --verbosity minimal --filter Category=unit --framework net$(echo ${{ inputs.dotnet-version }} | cut -d'.' -f1).0
+
+    - name: Run integration tests
+      if: inputs.type == 'integration-tests'
+      shell: bash
+      env:
+        RELAY_ENDPOINT: ${{ inputs.relay-endpoint }}
+        PROJECT_ID: ${{ inputs.project-id }}
+      run: dotnet test -m:1 Cross.NoUnity.slnf --verbosity normal --filter Category=integration --framework net$(echo ${{ inputs.dotnet-version }} | cut -d'.' -f1).0
