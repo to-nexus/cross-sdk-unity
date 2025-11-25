@@ -87,11 +87,6 @@ namespace Cross.Sign.Models.Cacao
 
         public string FormatMessage()
         {
-            UnityEngine.Debug.Log($"[CacaoPayload] FormatMessage called:");
-            UnityEngine.Debug.Log($"[CacaoPayload] Domain: {Domain}");
-            UnityEngine.Debug.Log($"[CacaoPayload] Aud (URI): {Aud}");
-            UnityEngine.Debug.Log($"[CacaoPayload] Iss: {Iss}");
-            
             if (!Iss.StartsWith("did:pkh:"))
             {
                 throw new InvalidOperationException($"Invalid issuer: {Iss}. Expected 'did:pkh:'.");
@@ -99,7 +94,6 @@ namespace Cross.Sign.Models.Cacao
 
             var header = $"{Domain} wants you to sign in with your Ethereum account:";
             var walletAddress = CacaoUtils.ExtractDidAddress(Iss);
-            var statement = Statement != null ? $"\n{Statement}\n" : null;
             var uri = $"URI: {Aud}";
             var version = $"Version: {Version}";
             var chainId = $"Chain ID: {CacaoUtils.ExtractDidChainIdReference(Iss)}";
@@ -111,28 +105,40 @@ namespace Cross.Sign.Models.Cacao
                 ? $"Resources:\n{string.Join('\n', Resources.Select(resource => $"- {resource}"))}"
                 : null;
 
+            var statement = Statement;
             if (ReCap.TryGetRecapFromResources(Resources, out var recapStr))
             {
                 var decoded = ReCap.Decode(recapStr);
-                statement ??= decoded.FormatStatement(statement);
+                statement = decoded.FormatStatement(statement);
             }
 
-            var message = string.Join('\n', new[]
-                {
-                    header,
-                    walletAddress,
-                    statement,
-                    uri,
-                    version,
-                    chainId,
-                    nonce,
-                    issuedAt,
-                    expirationTime,
-                    notBefore,
-                    resources
-                }
-                .Where(val => !string.IsNullOrWhiteSpace(val))
-            );
+            // Build message parts
+            var messageParts = new System.Collections.Generic.List<string> { header, walletAddress };
+            
+            // Always add 2 blank lines (with optional statement in between)
+            // This matches the EIP-4361 standard format
+            messageParts.Add("");  // First blank line
+            if (!string.IsNullOrWhiteSpace(statement))
+            {
+                messageParts.Add(statement);
+            }
+            messageParts.Add("");  // Second blank line
+            
+            // Add remaining fields
+            messageParts.Add(uri);
+            messageParts.Add(version);
+            messageParts.Add(chainId);
+            messageParts.Add(nonce);
+            messageParts.Add(issuedAt);
+            
+            if (!string.IsNullOrWhiteSpace(expirationTime))
+                messageParts.Add(expirationTime);
+            if (!string.IsNullOrWhiteSpace(notBefore))
+                messageParts.Add(notBefore);
+            if (!string.IsNullOrWhiteSpace(resources))
+                messageParts.Add(resources);
+
+            var message = string.Join('\n', messageParts);
 
             return message;
         }

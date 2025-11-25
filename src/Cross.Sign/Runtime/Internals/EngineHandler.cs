@@ -380,17 +380,11 @@ namespace Cross.Sign
                 var cacaos = payload.Result.Cacaos;
                 var responder = payload.Result.Responder;
 
-                UnityEngine.Debug.Log($"[EngineHandler] OnAuthenticateResponse: Verifying {cacaos.Length} CACAO(s)...");
-
                 var approvedMethods = new HashSet<string>();
                 var approvedAccounts = new HashSet<string>();
                 foreach (var cacao in cacaos)
                 {
-                    UnityEngine.Debug.Log($"[EngineHandler] Verifying CACAO: Domain={cacao.Payload.Domain}, Aud={cacao.Payload.Aud}, Iss={cacao.Payload.Iss}");
-                    
                     var isValid = await cacao.VerifySignature(Client.CoreClient.ProjectId);
-                    
-                    UnityEngine.Debug.Log($"[EngineHandler] CACAO verification result: {isValid}");
                     
                     if (!isValid)
                     {
@@ -408,8 +402,13 @@ namespace Cross.Sign
                     {
                         var methodsFromRecap = ReCap.GetActionsFromEncodedRecap(recapStr);
                         var chainsFromRecap = ReCap.GetChainsFromEncodedRecap(recapStr);
+                        
                         approvedMethods.UnionWith(methodsFromRecap);
                         approvedChains.UnionWith(chainsFromRecap);
+                    }
+                    else
+                    {
+                        UnityEngine.Debug.LogWarning($"[EngineHandler] No ReCap found in CACAO resources");
                     }
 
                     approvedAccounts.UnionWith(approvedChains.Select(chain => $"{chain}:{parsedAddress}"));
@@ -445,6 +444,10 @@ namespace Cross.Sign
                     await Client.Session.Set(sessionTopic, session);
 
                     session = Client.Session.Get(sessionTopic);
+                }
+                else
+                {
+                    UnityEngine.Debug.LogError($"[EngineHandler] No approved methods found - session will not be created");
                 }
 
                 SessionAuthenticated?.Invoke(this, new SessionAuthenticatedEventArgs

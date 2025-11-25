@@ -240,7 +240,18 @@ namespace Sample
                 Debug.Log($"[CrossSdk Sample] Address: {result.Session.EthAddress}");
                 Debug.Log($"[CrossSdk Sample] Chain IDs: {string.Join(", ", result.Session.EthChainIds)}");
                 
-                Notification.ShowMessage($"✅ Authenticated!\n\nAddress: {result.Session.EthAddress}");
+                // Format message similar to cross-sdk-js
+                var chainId = result.Session.EthChainIds.Length > 0 ? result.Session.EthChainIds[0] : "Unknown";
+                var address = result.Session.EthAddress;
+                
+                Notification.ShowMessage(
+                    $"🎉 SIWE 인증 성공!\n\n" +
+                    $"지갑이 연결되고 SIWE 인증이 완료되었습니다!\n\n" +
+                    $"━━━━━━━━━━━━━━━━━━━━━━\n" +
+                    $"📍 Address:\n{address}\n\n" +
+                    $"🔗 Chain ID:\n{chainId}\n" +
+                    $"━━━━━━━━━━━━━━━━━━━━━━"
+                );
             }
             else
             {

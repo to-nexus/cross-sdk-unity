@@ -45,9 +45,9 @@ namespace Cross.Sign.Utils
 
         public static string ToRfc3339(this DateTimeOffset dateTimeOffset)
         {
-            // Use 3-digit milliseconds (fff) for ISO 8601 / RFC 3339 compatibility
-            // JavaScript's Date.toISOString() also uses 3 digits
-            return dateTimeOffset.ToString("yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+            // Use ISO 8601 format without milliseconds for SIWE (EIP-4361) compatibility
+            // Example: 2025-11-25T06:34:33Z
+            return dateTimeOffset.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
         }
     }
 }

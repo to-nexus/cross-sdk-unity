@@ -45,10 +45,6 @@ namespace Cross.Sdk.Unity
                 var cacao = e.Auths[0];
                 var message = cacao.FormatMessage();
 
-                Debug.Log($"[WalletConnectConnectionProposal] SessionAuthenticated: Verifying signature...");
-                Debug.Log($"[WalletConnectConnectionProposal] CACAO Payload: Domain={cacao.Payload.Domain}, Aud={cacao.Payload.Aud}, Iss={cacao.Payload.Iss}");
-                Debug.Log($"[WalletConnectConnectionProposal] Formatted Message:\n{message}");
-
                 var isSignatureValid = await _siweController.VerifyMessageAsync(new SiweVerifyMessageArgs
                 {
                     Message = message,
@@ -56,17 +52,15 @@ namespace Cross.Sdk.Unity
                     Cacao = cacao
                 });
 
-                Debug.Log($"[WalletConnectConnectionProposal] Signature verification result: {isSignatureValid}");
-
                 if (!isSignatureValid)
                 {
-                    Debug.LogError("[WalletConnectConnectionProposal] Signature verification failed! Disconnecting...");
+                    Debug.LogError("[WalletConnectConnectionProposal] SIWE signature verification failed");
                     await _client.Disconnect();
                     return;
                 }
 
                 var chainId = CacaoUtils.ExtractDidChainId(cacao.Payload.Iss);
-                _ = await _siweController.GetSessionAsync(new GetSiweSessionArgs
+                await _siweController.GetSessionAsync(new GetSiweSessionArgs
                 {
                     Address = CacaoUtils.ExtractDidAddress(cacao.Payload.Iss),
                     ChainIds = new[]
@@ -77,6 +71,8 @@ namespace Cross.Sdk.Unity
 
                 IsSignarureRequested = false;
                 IsConnected = true;
+                
+                // Note: Modal will be closed by SiwePresenter.SignInSuccessHandler via OnSignInSuccess event
                 connected?.Invoke(this);
             }
             catch (Exception)
@@ -130,10 +126,7 @@ namespace Cross.Sdk.Unity
             {
                 // Use sessionAuthenticate (WC_sessionAuthenticate) if SIWE is enabled
                 // The Required flag is managed by Authenticate() methods in Sdk.cs
-                var isEnabled = _siweController.IsEnabled;
-                Debug.Log($"[WalletConnectConnectionProposal] RefreshConnection: IsEnabled={isEnabled}");
-                
-                if (isEnabled)
+                if (_siweController.IsEnabled)
                 {
                     var nonce = await _siweController.GetNonceAsync();
                     var siweParams = _siweController.Config.GetMessageParams();
@@ -155,7 +148,6 @@ namespace Cross.Sdk.Unity
                         methods
                     );
 
-                    Debug.Log($"[WalletConnectConnectionProposal] AuthParams: Domain={siweParams.Domain}, Uri={siweParams.Uri}");
                     var authData = await _client.Authenticate(authParams);
                     Uri = authData.Uri;
 
