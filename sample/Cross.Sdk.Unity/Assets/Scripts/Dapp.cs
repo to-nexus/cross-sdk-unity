@@ -181,6 +181,13 @@ namespace Sample
                 CrossSdk.AccountConnected += async (_, e) =>
                 {
                     RefreshButtons();
+                    
+                    // Re-enable SIWE for session management after connection
+                    if (CrossSdk.Config.siweConfig != null)
+                    {
+                        CrossSdk.Config.siweConfig.Enabled = true;
+                        Debug.Log("[CrossSdk Sample] AccountConnected: SIWE re-enabled for session management");
+                    }
                 };
 
                 CrossSdk.AccountDisconnected += (_, _) => RefreshButtons();
@@ -201,15 +208,28 @@ namespace Sample
         public void OnConnectButton()
         {
             // Connect without SIWE authentication
-            // Required = false in config, so SIWE modal won't appear
+            // Enabled is already false from initial config
+            if (CrossSdk.Config.siweConfig != null)
+            {
+                CrossSdk.Config.siweConfig.Enabled = false;
+                Debug.Log($"[CrossSdk Sample] Connect: SIWE disabled (Enabled={CrossSdk.Config.siweConfig.Enabled})");
+            }
+
             CrossSdk.ConnectWithWallet("cross_wallet");
-            Debug.Log("[CrossSdk Sample] Connect: SIWE is optional, authentication skipped");
         }
 
         public async void OnConnectWithAuthButton()
         {
             // Connect WITH SIWE authentication
             // This will always prompt for SIWE, regardless of the Required setting
+            
+            // Ensure SIWE is enabled for authentication
+            if (CrossSdk.Config.siweConfig != null)
+            {
+                CrossSdk.Config.siweConfig.Enabled = true;
+                Debug.Log("[CrossSdk Sample] Connect + Auth: SIWE enabled for authentication");
+            }
+            
             Debug.Log("[CrossSdk Sample] Connect + Auth: Starting SIWE authentication...");
             
             var result = await CrossSdk.AuthenticateWithWallet("cross_wallet");

@@ -87,6 +87,11 @@ namespace Cross.Sign.Models.Cacao
 
         public string FormatMessage()
         {
+            UnityEngine.Debug.Log($"[CacaoPayload] FormatMessage called:");
+            UnityEngine.Debug.Log($"[CacaoPayload] Domain: {Domain}");
+            UnityEngine.Debug.Log($"[CacaoPayload] Aud (URI): {Aud}");
+            UnityEngine.Debug.Log($"[CacaoPayload] Iss: {Iss}");
+            
             if (!Iss.StartsWith("did:pkh:"))
             {
                 throw new InvalidOperationException($"Invalid issuer: {Iss}. Expected 'did:pkh:'.");
@@ -94,8 +99,8 @@ namespace Cross.Sign.Models.Cacao
 
             var header = $"{Domain} wants you to sign in with your Ethereum account:";
             var walletAddress = CacaoUtils.ExtractDidAddress(Iss);
-            var statement = Statement != null ? $"\n{Statement}" : null;
-            var uri = $"\nURI: {Aud}";
+            var statement = Statement != null ? $"\n{Statement}\n" : null;
+            var uri = $"URI: {Aud}";
             var version = $"Version: {Version}";
             var chainId = $"Chain ID: {CacaoUtils.ExtractDidChainIdReference(Iss)}";
             var nonce = $"Nonce: {Nonce}";

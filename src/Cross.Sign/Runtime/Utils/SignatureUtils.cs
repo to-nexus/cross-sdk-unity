@@ -24,6 +24,12 @@ namespace Cross.Sign.Utils
             string projectId,
             string rpcUrl = null)
         {
+            UnityEngine.Debug.Log($"[SignatureUtils] VerifySignature called:");
+            UnityEngine.Debug.Log($"[SignatureUtils] Address: {address}");
+            UnityEngine.Debug.Log($"[SignatureUtils] ChainId: {chainId}");
+            UnityEngine.Debug.Log($"[SignatureUtils] Signature Type: {cacaoSignature.T}");
+            UnityEngine.Debug.Log($"[SignatureUtils] Message:\n{reconstructedMessage}");
+            
             if (string.IsNullOrWhiteSpace(cacaoSignature.S))
                 throw new ArgumentException("VerifySignature Failed: CacaoSignature S is null or empty");
             
@@ -39,7 +45,16 @@ namespace Cross.Sign.Utils
         {
             var signer = new EthereumMessageSigner();
             var recoveredAddress = signer.EncodeUTF8AndEcRecover(reconstructedMessage, cacaoSignature);
-            return recoveredAddress.IsTheSameAddress(address);
+            var isValid = recoveredAddress.IsTheSameAddress(address);
+            
+            UnityEngine.Debug.Log($"[SignatureUtils] EIP191 Verification:");
+            UnityEngine.Debug.Log($"[SignatureUtils] Expected Address: {address}");
+            UnityEngine.Debug.Log($"[SignatureUtils] Recovered Address: {recoveredAddress}");
+            UnityEngine.Debug.Log($"[SignatureUtils] Is Valid: {isValid}");
+            UnityEngine.Debug.Log($"[SignatureUtils] Signature: {cacaoSignature}");
+            UnityEngine.Debug.Log($"[SignatureUtils] Message:\n{reconstructedMessage}");
+            
+            return isValid;
         }
 
         private static async Task<bool> IsValidEip1271Signature(

@@ -380,13 +380,24 @@ namespace Cross.Sign
                 var cacaos = payload.Result.Cacaos;
                 var responder = payload.Result.Responder;
 
+                UnityEngine.Debug.Log($"[EngineHandler] OnAuthenticateResponse: Verifying {cacaos.Length} CACAO(s)...");
+
                 var approvedMethods = new HashSet<string>();
                 var approvedAccounts = new HashSet<string>();
                 foreach (var cacao in cacaos)
                 {
+                    UnityEngine.Debug.Log($"[EngineHandler] Verifying CACAO: Domain={cacao.Payload.Domain}, Aud={cacao.Payload.Aud}, Iss={cacao.Payload.Iss}");
+                    
                     var isValid = await cacao.VerifySignature(Client.CoreClient.ProjectId);
+                    
+                    UnityEngine.Debug.Log($"[EngineHandler] CACAO verification result: {isValid}");
+                    
                     if (!isValid)
                     {
+                        UnityEngine.Debug.LogError($"[EngineHandler] CACAO signature verification failed!");
+                        UnityEngine.Debug.LogError($"[EngineHandler] CACAO Domain: {cacao.Payload.Domain}");
+                        UnityEngine.Debug.LogError($"[EngineHandler] CACAO Aud: {cacao.Payload.Aud}");
+                        UnityEngine.Debug.LogError($"[EngineHandler] CACAO Iss: {cacao.Payload.Iss}");
                         throw new IOException("CACAO signature verification failed");
                     }
 

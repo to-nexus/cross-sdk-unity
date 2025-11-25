@@ -45,6 +45,10 @@ namespace Cross.Sdk.Unity
                 var cacao = e.Auths[0];
                 var message = cacao.FormatMessage();
 
+                Debug.Log($"[WalletConnectConnectionProposal] SessionAuthenticated: Verifying signature...");
+                Debug.Log($"[WalletConnectConnectionProposal] CACAO Payload: Domain={cacao.Payload.Domain}, Aud={cacao.Payload.Aud}, Iss={cacao.Payload.Iss}");
+                Debug.Log($"[WalletConnectConnectionProposal] Formatted Message:\n{message}");
+
                 var isSignatureValid = await _siweController.VerifyMessageAsync(new SiweVerifyMessageArgs
                 {
                     Message = message,
@@ -52,8 +56,11 @@ namespace Cross.Sdk.Unity
                     Cacao = cacao
                 });
 
+                Debug.Log($"[WalletConnectConnectionProposal] Signature verification result: {isSignatureValid}");
+
                 if (!isSignatureValid)
                 {
+                    Debug.LogError("[WalletConnectConnectionProposal] Signature verification failed! Disconnecting...");
                     await _client.Disconnect();
                     return;
                 }
@@ -121,9 +128,12 @@ namespace Cross.Sdk.Unity
 
             try
             {
-                // Use sessionAuthenticate (WC_sessionAuthenticate) if SIWE is enabled AND required
-                // Otherwise, use regular connect
-                if (_siweController.IsEnabled && _siweController.Config.IsRequired())
+                // Use sessionAuthenticate (WC_sessionAuthenticate) if SIWE is enabled
+                // The Required flag is managed by Authenticate() methods in Sdk.cs
+                var isEnabled = _siweController.IsEnabled;
+                Debug.Log($"[WalletConnectConnectionProposal] RefreshConnection: IsEnabled={isEnabled}");
+                
+                if (isEnabled)
                 {
                     var nonce = await _siweController.GetNonceAsync();
                     var siweParams = _siweController.Config.GetMessageParams();
@@ -136,7 +146,7 @@ namespace Cross.Sdk.Unity
                         chains,
                         siweParams.Domain,
                         nonce,
-                        siweParams.Domain,
+                        siweParams.Uri,
                         null,
                         null,
                         siweParams.Statement,
@@ -145,6 +155,7 @@ namespace Cross.Sdk.Unity
                         methods
                     );
 
+                    Debug.Log($"[WalletConnectConnectionProposal] AuthParams: Domain={siweParams.Domain}, Uri={siweParams.Uri}");
                     var authData = await _client.Authenticate(authParams);
                     Uri = authData.Uri;
 

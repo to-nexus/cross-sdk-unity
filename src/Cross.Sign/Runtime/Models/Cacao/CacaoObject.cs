@@ -27,10 +27,24 @@ namespace Cross.Sign.Models.Cacao
 
         public async Task<bool> VerifySignature(string projectId, string rpcUrl = null)
         {
+            UnityEngine.Debug.Log($"[CacaoObject] VerifySignature called");
+            UnityEngine.Debug.Log($"[CacaoObject] Payload.Domain: {Payload.Domain}");
+            UnityEngine.Debug.Log($"[CacaoObject] Payload.Aud: {Payload.Aud}");
+            UnityEngine.Debug.Log($"[CacaoObject] Payload.Iss: {Payload.Iss}");
+            
             var reconstructed = FormatMessage();
+            UnityEngine.Debug.Log($"[CacaoObject] Reconstructed message:\n{reconstructed}");
+            
             var walletAddress = CacaoUtils.ExtractDidAddress(Payload.Iss);
             var chainId = CacaoUtils.ExtractDidChainId(Payload.Iss);
-            return await SignatureUtils.VerifySignature(walletAddress, reconstructed, Signature, chainId, projectId, rpcUrl);
+            
+            UnityEngine.Debug.Log($"[CacaoObject] Extracted wallet: {walletAddress}");
+            UnityEngine.Debug.Log($"[CacaoObject] Extracted chainId: {chainId}");
+            
+            var result = await SignatureUtils.VerifySignature(walletAddress, reconstructed, Signature, chainId, projectId, rpcUrl);
+            UnityEngine.Debug.Log($"[CacaoObject] Verification result: {result}");
+            
+            return result;
         }
 
         public string FormatMessage()

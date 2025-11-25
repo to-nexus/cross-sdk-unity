@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Cross.Core.Common.Utils;
 using Cross.Sign.Models;
@@ -101,6 +102,12 @@ namespace Cross.Sdk.Unity
 
         public static void ConnectWithWallet(string walletId)
         {
+            Debug.Log($"[CrossSdk] ConnectWithWallet called: walletId={walletId}");
+            if (Config.siweConfig != null)
+            {
+                Debug.Log($"[CrossSdk] ConnectWithWallet: SIWE Enabled={Config.siweConfig.Enabled}");
+            }
+            
             if (IsModalOpen)
                 return;
 

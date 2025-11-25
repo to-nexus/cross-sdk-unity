@@ -41,13 +41,11 @@ namespace Sample
                 // SIWE (Sign-In with Ethereum) configuration for Connect + Auth
                 siweConfig = new SiweConfig
                 {
-                    // Enabled: SIWE feature is configured and session management is active
-                    Enabled = true,
+                    // Enabled: Controls whether to use SIWE authentication
+                    // Start with false, will be set to true after successful connection for session management
+                    Enabled = false,
                     
-                    // Required: Set to false to demonstrate separate "Connect" and "Connect + Auth" buttons
-                    // - false: Connect() uses regular connect, Authenticate() uses sessionAuthenticate
-                    // - true (default): Both Connect() and Authenticate() use sessionAuthenticate
-                    // Note: If omitted, defaults to true for backward compatibility with existing apps
+                    // Required: Not used in this sample (we control SIWE via Enabled flag)
                     Required = false,
                     
                     // Generate nonce for SIWE message (for production, get from backend!)
