@@ -47,6 +47,12 @@ namespace Sample
                 },
                 new ButtonStruct
                 {
+                    Text = "Connect + Auth (SIWE)",
+                    OnClick = OnConnectWithAuthButton,
+                    AccountRequired = false
+                },
+                new ButtonStruct
+                {
                     Text = "Network",
                     OnClick = OnNetworkButton
                 },
@@ -172,7 +178,17 @@ namespace Sample
                     }
                 };
 
-                CrossSdk.AccountConnected += async (_, e) => RefreshButtons();
+                CrossSdk.AccountConnected += async (_, e) =>
+                {
+                    RefreshButtons();
+                    
+                    // Reset SIWE enabled state after connection
+                    if (CrossSdk.Config.siweConfig != null)
+                    {
+                        CrossSdk.Config.siweConfig.Enabled = false;
+                        Debug.Log("[CrossSdk Sample] Connection complete: SIWE disabled");
+                    }
+                };
 
                 CrossSdk.AccountDisconnected += (_, _) => RefreshButtons();
 
@@ -192,6 +208,19 @@ namespace Sample
         public void OnConnectButton()
         {
             // Connect directly to Cross Wallet instead of showing wallet list
+            CrossSdk.ConnectWithWallet("cross_wallet");
+        }
+
+        public void OnConnectWithAuthButton()
+        {
+            // Enable SIWE temporarily for this connection
+            if (CrossSdk.Config.siweConfig != null)
+            {
+                CrossSdk.Config.siweConfig.Enabled = true;
+                Debug.Log("[CrossSdk Sample] Connect + Auth: SIWE enabled");
+            }
+            
+            // Connect directly to Cross Wallet with SIWE
             CrossSdk.ConnectWithWallet("cross_wallet");
         }
 
