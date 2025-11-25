@@ -148,8 +148,21 @@ namespace Cross.Sdk.Unity
             if (WalletUtils.TryGetLastViewedWallet(out var lastViewedWallet))
                 WalletUtils.SetRecentWallet(lastViewedWallet);
 
+            // If SIWE is not enabled, close modal immediately
             if (!SiweController.IsEnabled)
+            {
                 CloseModal();
+                return;
+            }
+
+            // If SIWE is enabled but not required (optional), close modal
+            // The signature request will only be triggered if explicitly requested
+            if (!SiweController.Config.IsRequired())
+            {
+                CloseModal();
+            }
+            
+            // If SIWE is enabled and required, keep modal open and wait for signature request
         }
 
         private static void AccountDisconnectedHandler(object sender, Connector.AccountDisconnectedEventArgs e)

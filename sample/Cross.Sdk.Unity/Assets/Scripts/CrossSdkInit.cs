@@ -41,8 +41,14 @@ namespace Sample
                 // SIWE (Sign-In with Ethereum) configuration for Connect + Auth
                 siweConfig = new SiweConfig
                 {
-                    // Disabled by default - will be enabled only when "Connect + Auth" button is clicked
-                    Enabled = false,
+                    // Enabled: SIWE feature is configured and session management is active
+                    Enabled = true,
+                    
+                    // Required: Set to false to demonstrate separate "Connect" and "Connect + Auth" buttons
+                    // - false: Connect() uses regular connect, Authenticate() uses sessionAuthenticate
+                    // - true (default): Both Connect() and Authenticate() use sessionAuthenticate
+                    // Note: If omitted, defaults to true for backward compatibility with existing apps
+                    Required = false,
                     
                     // Generate nonce for SIWE message (for production, get from backend!)
                     GetNonce = async () =>
@@ -54,9 +60,9 @@ namespace Sample
                     // SIWE message parameters
                     GetMessageParams = () => new SiweMessageParams
                     {
-                        Domain = "cross-sdk-unity-sample",
-                        Uri = "https://to.nexus",
-                        Statement = "Sign in to Cross SDK Unity Sample with your wallet"
+                        Domain = "cross-sdk-unity-sample", // app or domain name
+                        Uri = "https://to.nexus", // app or domain url
+                        Statement = "Sign in to Cross SDK Unity Sample with your wallet" // statement to be signed by the wallet
                     },
                     
                     // Store session after successful authentication

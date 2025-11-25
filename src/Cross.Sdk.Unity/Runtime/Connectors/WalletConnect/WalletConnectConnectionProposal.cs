@@ -121,7 +121,9 @@ namespace Cross.Sdk.Unity
 
             try
             {
-                if (_siweController.IsEnabled)
+                // Use sessionAuthenticate (WC_sessionAuthenticate) if SIWE is enabled AND required
+                // Otherwise, use regular connect
+                if (_siweController.IsEnabled && _siweController.Config.IsRequired())
                 {
                     var nonce = await _siweController.GetNonceAsync();
                     var siweParams = _siweController.Config.GetMessageParams();

@@ -46,8 +46,23 @@ namespace Cross.Sdk.Unity
 
         /// <summary>
         ///     If true, the SIWE feature will be enabled.
+        ///     This controls whether SIWE configuration exists and session management is active.
         /// </summary>
         public bool Enabled { get; set; } = true;
+
+        /// <summary>
+        ///     If true, SIWE authentication is required for connection.
+        ///     When false, SIWE is optional and users can skip authentication.
+        ///     Default is true (required) to maintain backward compatibility.
+        ///     Set to false explicitly if you want to separate Connect and Authenticate flows.
+        /// </summary>
+        public bool Required { get; set; } = true;
+
+        /// <summary>
+        ///     Optional callback to dynamically determine if SIWE is required.
+        ///     If set, this takes precedence over the <see cref="Required" /> property.
+        /// </summary>
+        public Func<bool> GetRequired { get; set; }
 
         /// <summary>
         ///     If true, the SIWE UI will be opened automatically when a signature request is received.
@@ -73,6 +88,19 @@ namespace Cross.Sdk.Unity
         public event Action<SiweSession> SignInSuccess;
 
         public event Action SignOutSuccess;
+
+        /// <summary>
+        ///     Determines whether SIWE authentication is required.
+        ///     If <see cref="GetRequired" /> is set, it takes precedence.
+        ///     Otherwise, returns the value of <see cref="Required" />.
+        /// </summary>
+        /// <returns>True if SIWE is required, false if optional.</returns>
+        public bool IsRequired()
+        {
+            if (GetRequired != null)
+                return GetRequired();
+            return Required;
+        }
 
         internal void OnSignInSuccess(SiweSession session)
         {

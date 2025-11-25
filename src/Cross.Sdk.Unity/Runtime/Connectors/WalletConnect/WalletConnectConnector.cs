@@ -82,11 +82,19 @@ namespace Cross.Sdk.Unity
             {
                 var siweSessionJson = PlayerPrefs.GetString(SiweController.SessionPlayerPrefsKey);
 
-                // If no siwe session is found, request signature
+                // If no siwe session is found
                 if (string.IsNullOrWhiteSpace(siweSessionJson))
                 {
-                    Debug.Log("[WalletConnectConnector] No Siwe session found. Requesting signature.");
-                    OnSignatureRequested();
+                    // Only request signature if SIWE is required
+                    if (CrossSdk.SiweController.Config.IsRequired())
+                    {
+                        Debug.Log("[WalletConnectConnector] No Siwe session found. SIWE is required. Requesting signature.");
+                        OnSignatureRequested();
+                    }
+                    else
+                    {
+                        Debug.Log("[WalletConnectConnector] No Siwe session found. SIWE is optional, skipping signature request.");
+                    }
                     return true;
                 }
 
@@ -96,10 +104,20 @@ namespace Cross.Sdk.Unity
                 var addressesMatch = string.Equals(siweSession.EthAddress, account.Address, StringComparison.InvariantCultureIgnoreCase);
                 var chainsMatch = siweSession.EthChainIds.Contains(Core.Utils.ExtractChainReference(account.ChainId));
 
-                // If siwe session found, but it doesn't match the sign session, request signature (i.e. new siwe session)
+                // If siwe session found, but it doesn't match the sign session
                 if (!addressesMatch || !chainsMatch)
                 {
-                    OnSignatureRequested();
+                    // Only request signature if SIWE is required
+                    if (CrossSdk.SiweController.Config.IsRequired())
+                    {
+                        Debug.Log("[WalletConnectConnector] Siwe session mismatch. SIWE is required. Requesting signature.");
+                        OnSignatureRequested();
+                    }
+                    else
+                    {
+                        Debug.Log("[WalletConnectConnector] Siwe session mismatch. SIWE is optional, clearing old session.");
+                        PlayerPrefs.DeleteKey(SiweController.SessionPlayerPrefsKey);
+                    }
                     return true;
                 }
 

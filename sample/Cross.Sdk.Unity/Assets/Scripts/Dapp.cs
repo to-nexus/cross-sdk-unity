@@ -181,13 +181,6 @@ namespace Sample
                 CrossSdk.AccountConnected += async (_, e) =>
                 {
                     RefreshButtons();
-                    
-                    // Reset SIWE enabled state after connection
-                    if (CrossSdk.Config.siweConfig != null)
-                    {
-                        CrossSdk.Config.siweConfig.Enabled = false;
-                        Debug.Log("[CrossSdk Sample] Connection complete: SIWE disabled");
-                    }
                 };
 
                 CrossSdk.AccountDisconnected += (_, _) => RefreshButtons();
@@ -207,21 +200,32 @@ namespace Sample
 
         public void OnConnectButton()
         {
-            // Connect directly to Cross Wallet instead of showing wallet list
+            // Connect without SIWE authentication
+            // Required = false in config, so SIWE modal won't appear
             CrossSdk.ConnectWithWallet("cross_wallet");
+            Debug.Log("[CrossSdk Sample] Connect: SIWE is optional, authentication skipped");
         }
 
-        public void OnConnectWithAuthButton()
+        public async void OnConnectWithAuthButton()
         {
-            // Enable SIWE temporarily for this connection
-            if (CrossSdk.Config.siweConfig != null)
-            {
-                CrossSdk.Config.siweConfig.Enabled = true;
-                Debug.Log("[CrossSdk Sample] Connect + Auth: SIWE enabled");
-            }
+            // Connect WITH SIWE authentication
+            // This will always prompt for SIWE, regardless of the Required setting
+            Debug.Log("[CrossSdk Sample] Connect + Auth: Starting SIWE authentication...");
             
-            // Connect directly to Cross Wallet with SIWE
-            CrossSdk.ConnectWithWallet("cross_wallet");
+            var result = await CrossSdk.AuthenticateWithWallet("cross_wallet");
+            
+            if (result.Authenticated && result.Session != null)
+            {
+                Debug.Log($"[CrossSdk Sample] ✅ SIWE Authentication successful!");
+                Debug.Log($"[CrossSdk Sample] Address: {result.Session.EthAddress}");
+                Debug.Log($"[CrossSdk Sample] Chain IDs: {string.Join(", ", result.Session.EthChainIds)}");
+                
+                Notification.ShowMessage($"✅ Authenticated!\n\nAddress: {result.Session.EthAddress}");
+            }
+            else
+            {
+                Debug.Log($"[CrossSdk Sample] ⚠️ SIWE Authentication was not completed");
+            }
         }
 
         public void OnNetworkButton()
