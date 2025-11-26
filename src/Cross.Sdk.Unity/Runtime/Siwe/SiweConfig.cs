@@ -45,18 +45,19 @@ namespace Cross.Sdk.Unity
         public Func<ValueTask> SignOut { get; set; }
 
         /// <summary>
-        ///     If true, the SIWE feature will be enabled.
-        ///     This controls whether SIWE configuration exists and session management is active.
+        ///     Internal flag to control SIWE flow.
+        ///     This is automatically managed by Connect() and Authenticate() methods.
+        ///     Users should use Authenticate() for SIWE authentication instead of setting this directly.
         /// </summary>
-        public bool Enabled { get; set; } = true;
+        internal bool Enabled { get; set; } = false;
 
         /// <summary>
         ///     If true, SIWE authentication is required for connection.
         ///     When false, SIWE is optional and users can skip authentication.
-        ///     Default is true (required) to maintain backward compatibility.
-        ///     Set to false explicitly if you want to separate Connect and Authenticate flows.
+        ///     Note: This setting is only used in advanced scenarios.
+        ///     The Authenticate() methods always require SIWE regardless of this setting.
         /// </summary>
-        public bool Required { get; set; } = true;
+        public bool Required { get; set; } = false;
 
         /// <summary>
         ///     Optional callback to dynamically determine if SIWE is required.

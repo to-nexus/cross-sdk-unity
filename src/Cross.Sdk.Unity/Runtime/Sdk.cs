@@ -135,17 +135,17 @@ namespace Cross.Sdk.Unity
                 );
             }
 
-            // Temporarily set SIWE as required for this connection
+            // Temporarily enable and set SIWE as required for this connection
+            var originalEnabled = Config.siweConfig.Enabled;
             var originalRequired = Config.siweConfig.Required;
             var originalGetRequired = Config.siweConfig.GetRequired;
             
+            Config.siweConfig.Enabled = true;
             Config.siweConfig.Required = true;
             Config.siweConfig.GetRequired = () => true;
 
             try
             {
-                OpenModal();
-                
                 // Wait for connection to complete with timeout
                 var tcs = new TaskCompletionSource<bool>();
                 var cts = new CancellationTokenSource();
@@ -160,8 +160,11 @@ namespace Cross.Sdk.Unity
                     tcs.TrySetResult(false);
                 }
                 
+                // Subscribe to events BEFORE opening modal to avoid race condition
                 AccountConnected += OnConnected;
                 AccountDisconnected += OnDisconnected;
+                
+                OpenModal();
                 
                 try
                 {
@@ -179,6 +182,10 @@ namespace Cross.Sdk.Unity
                         
                         if (!connected)
                         {
+                            NotificationController.Notify(
+                                NotificationType.Error,
+                                "Connection failed. Please try again."
+                            );
                             return new AuthenticationResult { Authenticated = false };
                         }
                     }
@@ -186,6 +193,10 @@ namespace Cross.Sdk.Unity
                     {
                         // Timeout occurred
                         Debug.LogWarning("[CrossSdk] Authentication timeout after 4.5 minutes");
+                        NotificationController.Notify(
+                            NotificationType.Error,
+                            "Connection timeout. Please try again."
+                        );
                         return new AuthenticationResult { Authenticated = false };
                     }
                 }
@@ -213,6 +224,7 @@ namespace Cross.Sdk.Unity
                 // Restore original settings
                 if (Config.siweConfig != null)
                 {
+                    Config.siweConfig.Enabled = originalEnabled;
                     Config.siweConfig.Required = originalRequired;
                     Config.siweConfig.GetRequired = originalGetRequired;
                 }
@@ -244,17 +256,17 @@ namespace Cross.Sdk.Unity
                 );
             }
 
-            // Temporarily set SIWE as required for this connection
+            // Temporarily enable and set SIWE as required for this connection
+            var originalEnabled = Config.siweConfig.Enabled;
             var originalRequired = Config.siweConfig.Required;
             var originalGetRequired = Config.siweConfig.GetRequired;
             
+            Config.siweConfig.Enabled = true;
             Config.siweConfig.Required = true;
             Config.siweConfig.GetRequired = () => true;
 
             try
             {
-                Instance.ConnectWithWalletCore(walletId);
-                
                 // Wait for connection to complete with timeout
                 var tcs = new TaskCompletionSource<bool>();
                 var cts = new CancellationTokenSource();
@@ -269,8 +281,11 @@ namespace Cross.Sdk.Unity
                     tcs.TrySetResult(false);
                 }
                 
+                // Subscribe to events BEFORE initiating connection to avoid race condition
                 AccountConnected += OnConnected;
                 AccountDisconnected += OnDisconnected;
+                
+                Instance.ConnectWithWalletCore(walletId);
                 
                 try
                 {
@@ -288,6 +303,10 @@ namespace Cross.Sdk.Unity
                         
                         if (!connected)
                         {
+                            NotificationController.Notify(
+                                NotificationType.Error,
+                                "Connection failed. Please try again."
+                            );
                             return new AuthenticationResult { Authenticated = false };
                         }
                     }
@@ -295,6 +314,10 @@ namespace Cross.Sdk.Unity
                     {
                         // Timeout occurred
                         Debug.LogWarning("[CrossSdk] Authentication timeout after 4.5 minutes");
+                        NotificationController.Notify(
+                            NotificationType.Error,
+                            "Connection timeout. Please try again."
+                        );
                         return new AuthenticationResult { Authenticated = false };
                     }
                 }
@@ -322,6 +345,7 @@ namespace Cross.Sdk.Unity
                 // Restore original settings
                 if (Config.siweConfig != null)
                 {
+                    Config.siweConfig.Enabled = originalEnabled;
                     Config.siweConfig.Required = originalRequired;
                     Config.siweConfig.GetRequired = originalGetRequired;
                 }

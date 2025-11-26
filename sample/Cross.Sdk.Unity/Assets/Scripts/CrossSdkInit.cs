@@ -41,12 +41,8 @@ namespace Sample
                 // SIWE (Sign-In with Ethereum) configuration for Connect + Auth
                 siweConfig = new SiweConfig
                 {
-                    // Enabled: Controls whether to use SIWE authentication
-                    // Start with false, will be set to true after successful connection for session management
-                    Enabled = false,
-                    
-                    // Required: Not used in this sample (we control SIWE via Enabled flag)
-                    Required = false,
+                    // Note: SIWE is automatically enabled when using Authenticate() methods
+                    // Use Connect() for regular connection, Authenticate() for SIWE authentication
                     
                     // Generate nonce for SIWE message (for production, get from backend!)
                     GetNonce = async () =>
