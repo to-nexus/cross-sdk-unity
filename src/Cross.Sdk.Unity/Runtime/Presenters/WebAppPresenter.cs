@@ -68,6 +68,9 @@ namespace Cross.Sdk.Unity
             if (!IsVisible)
                 return;
 
+            // Save connection method for later use (webapp also doesn't need desktop deep link)
+            WalletUtils.SetConnectionMethod("webapp");
+
             CrossSdk.EventsController.SendEvent(new Event
             {
                 name = "CONNECT_SUCCESS",

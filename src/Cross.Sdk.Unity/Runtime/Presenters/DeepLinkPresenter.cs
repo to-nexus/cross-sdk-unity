@@ -139,6 +139,15 @@ namespace Cross.Sdk.Unity
             if (!IsVisible)
                 return;
 
+            // Save connection method for later use
+#if UNITY_IOS || UNITY_VISIONOS || UNITY_ANDROID
+            WalletUtils.SetConnectionMethod("mobile");
+#elif UNITY_STANDALONE
+            WalletUtils.SetConnectionMethod("desktop");
+#else
+            WalletUtils.SetConnectionMethod("undefined");
+#endif
+
             CrossSdk.EventsController.SendEvent(new Event
             {
                 name = "CONNECT_SUCCESS",

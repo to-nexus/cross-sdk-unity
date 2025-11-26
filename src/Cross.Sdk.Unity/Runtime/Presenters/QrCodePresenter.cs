@@ -73,6 +73,9 @@ namespace Cross.Sdk.Unity
             if (!IsVisible)
                 return;
 
+            // Save connection method for later use (to skip desktop deep link alert)
+            WalletUtils.SetConnectionMethod("qrcode");
+
             CrossSdk.EventsController.SendEvent(new Event
             {
                 name = "CONNECT_SUCCESS",
