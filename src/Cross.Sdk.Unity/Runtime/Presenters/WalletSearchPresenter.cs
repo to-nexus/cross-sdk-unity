@@ -32,12 +32,19 @@ namespace Cross.Sdk.Unity
         
         // Cache value to prevent recursive layout updates
         private float _lastPadding = -1f;
+        
+        // Store lambda to enable proper unsubscription
+        private readonly Action _qrCodeLinkClickedHandler;
+        
+        private bool _disposed;
 
         public WalletSearchPresenter(RouterController router, VisualElement parent) : base(router, parent)
         {
             View.ScrollValueChanged += OnScrollValueChanged;
             View.SearchInputValueChanged += OnSearchInputValueChanged;
-            View.QrCodeLinkClicked += () => Router.OpenView(ViewType.QrCode);
+            
+            _qrCodeLinkClickedHandler = () => Router.OpenView(ViewType.QrCode);
+            View.QrCodeLinkClicked += _qrCodeLinkClickedHandler;
         }
 
         private void OnSearchInputValueChanged(string value)
@@ -218,12 +225,17 @@ namespace Cross.Sdk.Unity
 
         protected override void Dispose(bool disposing)
         {
+            if (_disposed)
+                return;
+
             if (disposing)
             {
                 View.ScrollValueChanged -= OnScrollValueChanged;
                 View.SearchInputValueChanged -= OnSearchInputValueChanged;
+                View.QrCodeLinkClicked -= _qrCodeLinkClickedHandler;
             }
 
+            _disposed = true;
             base.Dispose(disposing);
         }
     }

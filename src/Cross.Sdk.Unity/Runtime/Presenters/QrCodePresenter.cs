@@ -94,6 +94,8 @@ namespace Cross.Sdk.Unity
 
             if (disposing)
             {
+                View.copyLink.Clicked -= OnCopyLinkClicked;
+                
                 if (_connectionProposal != null)
                 {
                     _connectionProposal.ConnectionUpdated -= ConnectionProposalUpdatedHandler;

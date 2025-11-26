@@ -240,6 +240,7 @@ namespace Cross.Sdk.Unity
 
             if (disposing)
             {
+                View.scrollView.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
                 CrossSdk.NetworkController.ChainChanged -= ChainChangedHandler;
             }
 

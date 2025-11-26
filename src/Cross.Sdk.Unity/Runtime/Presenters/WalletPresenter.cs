@@ -31,6 +31,8 @@ namespace Cross.Sdk.Unity
         // Store lambda delegates to enable proper unsubscription
         private readonly Action<VisualElement> _contentShownHandler;
         private readonly Action<VisualElement> _contentHiddenHandler;
+        
+        private bool _disposed;
 
         public WalletPresenter(RouterController router, VisualElement parent) : base(router, parent)
         {
@@ -220,6 +222,9 @@ namespace Cross.Sdk.Unity
 
         protected override void Dispose(bool disposing)
         {
+            if (_disposed)
+                return;
+
             if (disposing)
             {
                 _tabbed.ContentShown -= _contentShownHandler;
@@ -227,6 +232,7 @@ namespace Cross.Sdk.Unity
                 View.GetWalletClicked -= OnGetWalletClicked;
             }
 
+            _disposed = true;
             base.Dispose(disposing);
         }
     }
