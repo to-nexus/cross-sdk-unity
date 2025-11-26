@@ -164,10 +164,10 @@ namespace Cross.Sdk.Unity
                 AccountConnected += OnConnected;
                 AccountDisconnected += OnDisconnected;
                 
-                OpenModal();
-                
                 try
                 {
+                    OpenModal();
+                    
                     // Wait for either connection completion or timeout (4.5 minutes)
                     // Timeout is longer than URI refresh interval (4 minutes) to allow for URI renewal
                     var completedTask = await Task.WhenAny(
@@ -285,10 +285,10 @@ namespace Cross.Sdk.Unity
                 AccountConnected += OnConnected;
                 AccountDisconnected += OnDisconnected;
                 
-                Instance.ConnectWithWalletCore(walletId);
-                
                 try
                 {
+                    Instance.ConnectWithWalletCore(walletId);
+                    
                     // Wait for either connection completion or timeout (4.5 minutes)
                     // Timeout is longer than URI refresh interval (4 minutes) to allow for URI renewal
                     var completedTask = await Task.WhenAny(
