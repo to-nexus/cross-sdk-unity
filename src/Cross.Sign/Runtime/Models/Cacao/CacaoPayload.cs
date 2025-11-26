@@ -115,14 +115,13 @@ namespace Cross.Sign.Models.Cacao
             // Build message parts
             var messageParts = new System.Collections.Generic.List<string> { header, walletAddress };
             
-            // Always add 2 blank lines (with optional statement in between)
-            // This matches the EIP-4361 standard format
-            messageParts.Add("");  // First blank line
+            // Add blank line and optional statement per EIP-4361 standard
+            messageParts.Add("");  // Blank line before statement/URI
             if (!string.IsNullOrWhiteSpace(statement))
             {
                 messageParts.Add(statement);
+                messageParts.Add("");  // Blank line after statement (only when statement exists)
             }
-            messageParts.Add("");  // Second blank line
             
             // Add remaining fields
             messageParts.Add(uri);
