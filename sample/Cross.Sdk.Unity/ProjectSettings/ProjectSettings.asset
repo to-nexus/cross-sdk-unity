@@ -245,14 +245,14 @@ PlayerSettings:
   metalCompileShaderBinary: 0
   iOSRenderExtraFrameOnPause: 1
   iosCopyPluginsCodeInsteadOfSymlink: 0
-  appleDeveloperTeamID: YC94S4Z6CS
-  iOSManualSigningProvisioningProfileID: 59fdc073-5dbe-4bf6-9eec-3d355b5640d8
+  appleDeveloperTeamID: 
+  iOSManualSigningProvisioningProfileID: 
   tvOSManualSigningProvisioningProfileID: 
   VisionOSManualSigningProvisioningProfileID: 
-  iOSManualSigningProvisioningProfileType: 1
+  iOSManualSigningProvisioningProfileType: 0
   tvOSManualSigningProvisioningProfileType: 0
   VisionOSManualSigningProvisioningProfileType: 0
-  appleEnableAutomaticSigning: 0
+  appleEnableAutomaticSigning: 1
   iOSRequireARKit: 0
   iOSAutomaticallyDetectAndAddCapabilities: 1
   appleEnableProMotion: 1
