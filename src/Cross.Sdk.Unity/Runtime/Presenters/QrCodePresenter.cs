@@ -73,7 +73,7 @@ namespace Cross.Sdk.Unity
             if (!IsVisible)
                 return;
 
-            // Save connection method for later use (to skip desktop deep link alert)
+            // Store connection method to prevent desktop alert when signing
             WalletUtils.SetConnectionMethod("qrcode");
 
             CrossSdk.EventsController.SendEvent(new Event

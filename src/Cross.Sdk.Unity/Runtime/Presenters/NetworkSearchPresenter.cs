@@ -21,10 +21,16 @@ namespace Cross.Sdk.Unity
         private readonly Dictionary<string, CardSelect> _netowrkItems = new();
         private string _highlightedChainId;
         private bool _disposed;
+        
+        // Cache values to prevent recursive layout updates
+        private float _lastPadding = -1f;
+        private float _lastScrollViewWidth = -1f;
+        private bool _isUpdatingLayout = false;
 
         public NetworkSearchPresenter(RouterController router, VisualElement parent) : base(router, parent)
         {
-            View.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            // Register to scrollView only, not the entire View, to prevent recursive layout
+            View.scrollView.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
 
             CrossSdk.Initialized += (_, _) =>
             {
@@ -65,7 +71,42 @@ namespace Cross.Sdk.Unity
 
         private void OnGeometryChanged(GeometryChangedEvent evt)
         {
-            ConfigureItemPaddings();
+            // Skip if already updating to prevent recursive layout
+            if (_isUpdatingLayout)
+            {
+                Debug.Log($"[NetworkSearch] OnGeometryChanged SKIPPED - already updating");
+                return;
+            }
+                
+            var currentWidth = View.scrollView.resolvedStyle.width;
+            
+            Debug.Log($"[NetworkSearch] OnGeometryChanged - currentWidth: {currentWidth}, lastWidth: {_lastScrollViewWidth}, diff: {Mathf.Abs(currentWidth - _lastScrollViewWidth)}");
+            
+            // Skip if width hasn't changed significantly (less than 5px) to prevent recursive layout updates
+            const float WIDTH_CHANGE_THRESHOLD = 5f;
+            if (Mathf.Abs(currentWidth - _lastScrollViewWidth) < WIDTH_CHANGE_THRESHOLD)
+            {
+                Debug.Log($"[NetworkSearch] OnGeometryChanged SKIPPED - width change < {WIDTH_CHANGE_THRESHOLD}px");
+                return;
+            }
+            
+            _lastScrollViewWidth = currentWidth;
+            
+            Debug.Log($"[NetworkSearch] OnGeometryChanged - scheduling padding update in 10ms");
+            
+            // Defer padding update to next frame to prevent recursive layout
+            View.scrollView.schedule.Execute(() =>
+            {
+                if (!_isUpdatingLayout)
+                {
+                    Debug.Log($"[NetworkSearch] Scheduled padding update executing now");
+                    ConfigureItemPaddings();
+                }
+                else
+                {
+                    Debug.Log($"[NetworkSearch] Scheduled padding update CANCELLED - already updating");
+                }
+            }).ExecuteLater(10);
         }
 
         private CardSelect MakeNetworkItem(Chain chain)
@@ -135,18 +176,59 @@ namespace Cross.Sdk.Unity
 
         private void ConfigureItemPaddings(IList<VisualElement> items = null)
         {
-            var scrollViewWidth = View.scrollView.resolvedStyle.width;
-            const float itemWidth = 79;
-            var itemsCanFit = Mathf.FloorToInt(scrollViewWidth / itemWidth);
-
-            var padding = (scrollViewWidth - itemsCanFit * itemWidth) / itemsCanFit / 2;
-            items ??= _items;
-
-            for (var i = 0; i < items.Count; i++)
+            // Prevent recursive calls
+            if (_isUpdatingLayout)
             {
-                var item = items[i];
-                item.style.paddingLeft = padding;
-                item.style.paddingRight = padding;
+                Debug.LogWarning($"[NetworkSearch] ConfigureItemPaddings SKIPPED - already updating (recursive call detected)");
+                return;
+            }
+                
+            _isUpdatingLayout = true;
+            
+            try
+            {
+                var scrollViewWidth = View.scrollView.resolvedStyle.width;
+                const float itemWidth = 79;
+                var itemsCanFit = Mathf.FloorToInt(scrollViewWidth / itemWidth);
+                
+                Debug.Log($"[NetworkSearch] ConfigureItemPaddings - scrollViewWidth: {scrollViewWidth}, itemsCanFit: {itemsCanFit}");
+                
+                // Avoid division by zero
+                if (itemsCanFit <= 0)
+                {
+                    Debug.LogWarning($"[NetworkSearch] ConfigureItemPaddings SKIPPED - itemsCanFit is {itemsCanFit}");
+                    return;
+                }
+
+                // Round to avoid floating point precision issues causing jitter
+                var rawPadding = (scrollViewWidth - itemsCanFit * itemWidth) / itemsCanFit / 2;
+                var padding = Mathf.Round(rawPadding);
+                
+                Debug.Log($"[NetworkSearch] ConfigureItemPaddings - rawPadding: {rawPadding}, rounded: {padding}, lastPadding: {_lastPadding}, diff: {Mathf.Abs(padding - _lastPadding)}");
+                
+                // Use strict equality check since we're using rounded values
+                if (Mathf.Abs(padding - _lastPadding) < 0.5f)
+                {
+                    Debug.Log($"[NetworkSearch] ConfigureItemPaddings SKIPPED - padding hasn't changed significantly");
+                    return;
+                }
+                
+                _lastPadding = padding;
+                items ??= _items;
+
+                Debug.Log($"[NetworkSearch] ConfigureItemPaddings - APPLYING padding {padding}px to {items.Count} items");
+
+                for (var i = 0; i < items.Count; i++)
+                {
+                    var item = items[i];
+                    item.style.paddingLeft = padding;
+                    item.style.paddingRight = padding;
+                }
+            }
+            finally
+            {
+                _isUpdatingLayout = false;
+                Debug.Log($"[NetworkSearch] ConfigureItemPaddings - COMPLETED");
             }
         }
 

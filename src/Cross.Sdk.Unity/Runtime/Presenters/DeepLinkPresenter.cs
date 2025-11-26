@@ -139,7 +139,7 @@ namespace Cross.Sdk.Unity
             if (!IsVisible)
                 return;
 
-            // Save connection method for later use
+            // Store connection method to prevent desktop alert when signing (if connected via QR)
 #if UNITY_IOS || UNITY_VISIONOS || UNITY_ANDROID
             WalletUtils.SetConnectionMethod("mobile");
 #elif UNITY_STANDALONE
