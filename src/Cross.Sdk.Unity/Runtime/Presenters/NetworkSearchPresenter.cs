@@ -206,10 +206,11 @@ namespace Cross.Sdk.Unity
                 
                 Debug.Log($"[NetworkSearch] ConfigureItemPaddings - rawPadding: {rawPadding}, rounded: {padding}, lastPadding: {_lastPadding}, diff: {Mathf.Abs(padding - _lastPadding)}");
                 
-                // Use strict equality check since we're using rounded values
-                if (Mathf.Abs(padding - _lastPadding) < 0.5f)
+                // Skip if padding hasn't changed significantly (less than 2px)
+                const float PADDING_CHANGE_THRESHOLD = 2f;
+                if (Mathf.Abs(padding - _lastPadding) < PADDING_CHANGE_THRESHOLD)
                 {
-                    Debug.Log($"[NetworkSearch] ConfigureItemPaddings SKIPPED - padding hasn't changed significantly");
+                    Debug.Log($"[NetworkSearch] ConfigureItemPaddings SKIPPED - padding change < {PADDING_CHANGE_THRESHOLD}px");
                     return;
                 }
                 
