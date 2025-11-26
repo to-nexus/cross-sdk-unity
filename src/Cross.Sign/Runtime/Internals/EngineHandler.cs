@@ -385,8 +385,13 @@ namespace Cross.Sign
                 foreach (var cacao in cacaos)
                 {
                     var isValid = await cacao.VerifySignature(Client.CoreClient.ProjectId);
+                    
                     if (!isValid)
                     {
+                        UnityEngine.Debug.LogError($"[EngineHandler] CACAO signature verification failed!");
+                        UnityEngine.Debug.LogError($"[EngineHandler] CACAO Domain: {cacao.Payload.Domain}");
+                        UnityEngine.Debug.LogError($"[EngineHandler] CACAO Aud: {cacao.Payload.Aud}");
+                        UnityEngine.Debug.LogError($"[EngineHandler] CACAO Iss: {cacao.Payload.Iss}");
                         throw new IOException("CACAO signature verification failed");
                     }
 
@@ -397,8 +402,13 @@ namespace Cross.Sign
                     {
                         var methodsFromRecap = ReCap.GetActionsFromEncodedRecap(recapStr);
                         var chainsFromRecap = ReCap.GetChainsFromEncodedRecap(recapStr);
+                        
                         approvedMethods.UnionWith(methodsFromRecap);
                         approvedChains.UnionWith(chainsFromRecap);
+                    }
+                    else
+                    {
+                        UnityEngine.Debug.LogWarning($"[EngineHandler] No ReCap found in CACAO resources");
                     }
 
                     approvedAccounts.UnionWith(approvedChains.Select(chain => $"{chain}:{parsedAddress}"));
@@ -434,6 +444,10 @@ namespace Cross.Sign
                     await Client.Session.Set(sessionTopic, session);
 
                     session = Client.Session.Get(sessionTopic);
+                }
+                else
+                {
+                    UnityEngine.Debug.LogError($"[EngineHandler] No approved methods found - session will not be created");
                 }
 
                 SessionAuthenticated?.Invoke(this, new SessionAuthenticatedEventArgs

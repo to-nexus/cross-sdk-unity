@@ -54,12 +54,13 @@ namespace Cross.Sdk.Unity
 
                 if (!isSignatureValid)
                 {
+                    Debug.LogError("[WalletConnectConnectionProposal] SIWE signature verification failed");
                     await _client.Disconnect();
                     return;
                 }
 
                 var chainId = CacaoUtils.ExtractDidChainId(cacao.Payload.Iss);
-                _ = await _siweController.GetSessionAsync(new GetSiweSessionArgs
+                await _siweController.GetSessionAsync(new GetSiweSessionArgs
                 {
                     Address = CacaoUtils.ExtractDidAddress(cacao.Payload.Iss),
                     ChainIds = new[]
@@ -70,6 +71,8 @@ namespace Cross.Sdk.Unity
 
                 IsSignarureRequested = false;
                 IsConnected = true;
+                
+                // Note: Modal will be closed by SiwePresenter.SignInSuccessHandler via OnSignInSuccess event
                 connected?.Invoke(this);
             }
             catch (Exception)
@@ -121,6 +124,8 @@ namespace Cross.Sdk.Unity
 
             try
             {
+                // Use sessionAuthenticate (WC_sessionAuthenticate) if SIWE is enabled
+                // The Required flag is managed by Authenticate() methods in Sdk.cs
                 if (_siweController.IsEnabled)
                 {
                     var nonce = await _siweController.GetNonceAsync();
@@ -134,7 +139,7 @@ namespace Cross.Sdk.Unity
                         chains,
                         siweParams.Domain,
                         nonce,
-                        siweParams.Domain,
+                        siweParams.Uri,
                         null,
                         null,
                         siweParams.Statement,

@@ -97,7 +97,9 @@ namespace Cross.Sdk.Unity
             RegisterModalView(ViewType.NetworkSearch, new NetworkSearchPresenter(this, RootVisualElement));
             RegisterModalView(ViewType.NetworkLoading, new NetworkLoadingPresenter(this, RootVisualElement));
 
-            if (CrossSdk.SiweController.IsEnabled)
+            // Register SIWE view if SIWE config is provided (regardless of Enabled state)
+            // This allows Authenticate() to enable SIWE dynamically
+            if (CrossSdk.Config.siweConfig != null)
                 RegisterModalView(ViewType.Siwe, new SiwePresenter(this, RootVisualElement));
         }
     }

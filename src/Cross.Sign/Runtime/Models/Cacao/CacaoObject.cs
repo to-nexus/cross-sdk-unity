@@ -30,6 +30,7 @@ namespace Cross.Sign.Models.Cacao
             var reconstructed = FormatMessage();
             var walletAddress = CacaoUtils.ExtractDidAddress(Payload.Iss);
             var chainId = CacaoUtils.ExtractDidChainId(Payload.Iss);
+            
             return await SignatureUtils.VerifySignature(walletAddress, reconstructed, Signature, chainId, projectId, rpcUrl);
         }
 

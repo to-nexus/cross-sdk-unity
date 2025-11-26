@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Cross.Core.Common.Utils;
 using Cross.Sign.Models;
@@ -110,6 +111,247 @@ namespace Cross.Sdk.Unity
             Instance.ConnectWithWalletCore(walletId);
         }
 
+        /// <summary>
+        ///     Opens the modal to connect a wallet and performs SIWE authentication.
+        ///     This method will always prompt for SIWE, regardless of the <see cref="SiweConfig.Required" /> setting.
+        /// </summary>
+        /// <returns>A task that represents the authentication operation with the result.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when SIWE is not configured.</exception>
+        public static async Task<AuthenticationResult> Authenticate()
+        {
+            if (IsModalOpen)
+                return new AuthenticationResult { Authenticated = false };
+
+            if (!IsInitialized)
+                throw new Exception("CrossSdk not initialized");
+
+            // Check if SIWE is configured
+            if (Config.siweConfig == null)
+            {
+                throw new InvalidOperationException(
+                    "SIWE is not configured. Cannot authenticate without SiweConfig.\n" +
+                    "Please configure CrossSdkConfig.siweConfig before calling Authenticate(), " +
+                    "or use Connect()/ConnectWithWallet() for regular connection without authentication."
+                );
+            }
+
+            // Temporarily enable and set SIWE as required for this connection
+            var originalEnabled = Config.siweConfig.Enabled;
+            var originalRequired = Config.siweConfig.Required;
+            var originalGetRequired = Config.siweConfig.GetRequired;
+            
+            Config.siweConfig.Enabled = true;
+            Config.siweConfig.Required = true;
+            Config.siweConfig.GetRequired = () => true;
+
+            try
+            {
+                // Wait for connection to complete with timeout
+                var tcs = new TaskCompletionSource<bool>();
+                var cts = new CancellationTokenSource();
+                
+                void OnConnected(object sender, Connector.AccountConnectedEventArgs e)
+                {
+                    tcs.TrySetResult(true);
+                }
+                
+                void OnDisconnected(object sender, Connector.AccountDisconnectedEventArgs e)
+                {
+                    tcs.TrySetResult(false);
+                }
+                
+                // Subscribe to events BEFORE opening modal to avoid race condition
+                AccountConnected += OnConnected;
+                AccountDisconnected += OnDisconnected;
+                
+                try
+                {
+                    OpenModal();
+                    
+                    // Wait for either connection completion or timeout (4.5 minutes)
+                    // Timeout is longer than URI refresh interval (4 minutes) to allow for URI renewal
+                    var completedTask = await Task.WhenAny(
+                        tcs.Task,
+                        Task.Delay(270000, cts.Token) // 270 seconds = 4.5 minutes
+                    );
+                    
+                    if (completedTask == tcs.Task)
+                    {
+                        // Connection completed (success or failure)
+                        var connected = await tcs.Task;
+                        
+                        if (!connected)
+                        {
+                            NotificationController.Notify(
+                                NotificationType.Error,
+                                "Connection failed. Please try again."
+                            );
+                            return new AuthenticationResult { Authenticated = false };
+                        }
+                    }
+                    else
+                    {
+                        // Timeout occurred
+                        Debug.LogWarning("[CrossSdk] Authentication timeout after 4.5 minutes");
+                        NotificationController.Notify(
+                            NotificationType.Error,
+                            "Connection timeout. Please try again."
+                        );
+                        return new AuthenticationResult { Authenticated = false };
+                    }
+                }
+                finally
+                {
+                    cts.Cancel(); // Cancel the timeout task
+                    AccountConnected -= OnConnected;
+                    AccountDisconnected -= OnDisconnected;
+                }
+                
+                // Check if SIWE session exists
+                if (SiweController.TryLoadSiweSessionFromStorage(out var session))
+                {
+                    return new AuthenticationResult
+                    {
+                        Authenticated = true,
+                        Session = session
+                    };
+                }
+                
+                return new AuthenticationResult { Authenticated = false };
+            }
+            finally
+            {
+                // Restore original settings
+                if (Config.siweConfig != null)
+                {
+                    Config.siweConfig.Enabled = originalEnabled;
+                    Config.siweConfig.Required = originalRequired;
+                    Config.siweConfig.GetRequired = originalGetRequired;
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Connects to a specific wallet and performs SIWE authentication.
+        ///     This method will always prompt for SIWE, regardless of the <see cref="SiweConfig.Required" /> setting.
+        /// </summary>
+        /// <param name="walletId">The wallet ID to connect to (e.g., "cross_wallet").</param>
+        /// <returns>A task that represents the authentication operation with the result.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when SIWE is not configured.</exception>
+        public static async Task<AuthenticationResult> AuthenticateWithWallet(string walletId)
+        {
+            if (IsModalOpen)
+                return new AuthenticationResult { Authenticated = false };
+
+            if (!IsInitialized)
+                throw new Exception("CrossSdk not initialized");
+
+            // Check if SIWE is configured
+            if (Config.siweConfig == null)
+            {
+                throw new InvalidOperationException(
+                    "SIWE is not configured. Cannot authenticate without SiweConfig.\n" +
+                    "Please configure CrossSdkConfig.siweConfig before calling AuthenticateWithWallet(), " +
+                    "or use Connect()/ConnectWithWallet() for regular connection without authentication."
+                );
+            }
+
+            // Temporarily enable and set SIWE as required for this connection
+            var originalEnabled = Config.siweConfig.Enabled;
+            var originalRequired = Config.siweConfig.Required;
+            var originalGetRequired = Config.siweConfig.GetRequired;
+            
+            Config.siweConfig.Enabled = true;
+            Config.siweConfig.Required = true;
+            Config.siweConfig.GetRequired = () => true;
+
+            try
+            {
+                // Wait for connection to complete with timeout
+                var tcs = new TaskCompletionSource<bool>();
+                var cts = new CancellationTokenSource();
+                
+                void OnConnected(object sender, Connector.AccountConnectedEventArgs e)
+                {
+                    tcs.TrySetResult(true);
+                }
+                
+                void OnDisconnected(object sender, Connector.AccountDisconnectedEventArgs e)
+                {
+                    tcs.TrySetResult(false);
+                }
+                
+                // Subscribe to events BEFORE initiating connection to avoid race condition
+                AccountConnected += OnConnected;
+                AccountDisconnected += OnDisconnected;
+                
+                try
+                {
+                    Instance.ConnectWithWalletCore(walletId);
+                    
+                    // Wait for either connection completion or timeout (4.5 minutes)
+                    // Timeout is longer than URI refresh interval (4 minutes) to allow for URI renewal
+                    var completedTask = await Task.WhenAny(
+                        tcs.Task,
+                        Task.Delay(270000, cts.Token) // 270 seconds = 4.5 minutes
+                    );
+                    
+                    if (completedTask == tcs.Task)
+                    {
+                        // Connection completed (success or failure)
+                        var connected = await tcs.Task;
+                        
+                        if (!connected)
+                        {
+                            NotificationController.Notify(
+                                NotificationType.Error,
+                                "Connection failed. Please try again."
+                            );
+                            return new AuthenticationResult { Authenticated = false };
+                        }
+                    }
+                    else
+                    {
+                        // Timeout occurred
+                        Debug.LogWarning("[CrossSdk] Authentication timeout after 4.5 minutes");
+                        NotificationController.Notify(
+                            NotificationType.Error,
+                            "Connection timeout. Please try again."
+                        );
+                        return new AuthenticationResult { Authenticated = false };
+                    }
+                }
+                finally
+                {
+                    cts.Cancel(); // Cancel the timeout task
+                    AccountConnected -= OnConnected;
+                    AccountDisconnected -= OnDisconnected;
+                }
+                
+                // Check if SIWE session exists
+                if (SiweController.TryLoadSiweSessionFromStorage(out var session))
+                {
+                    return new AuthenticationResult
+                    {
+                        Authenticated = true,
+                        Session = session
+                    };
+                }
+                
+                return new AuthenticationResult { Authenticated = false };
+            }
+            finally
+            {
+                // Restore original settings
+                if (Config.siweConfig != null)
+                {
+                    Config.siweConfig.Enabled = originalEnabled;
+                    Config.siweConfig.Required = originalRequired;
+                    Config.siweConfig.GetRequired = originalGetRequired;
+                }
+            }
+        }
+
         public static void CloseModal()
         {
             if (!IsModalOpen)
@@ -161,5 +403,21 @@ namespace Cross.Sdk.Unity
             {
             }
         }
+    }
+
+    /// <summary>
+    ///     Result of authentication (Connect + SIWE) operation.
+    /// </summary>
+    public class AuthenticationResult
+    {
+        /// <summary>
+        ///     True if SIWE authentication was completed successfully.
+        /// </summary>
+        public bool Authenticated { get; set; }
+
+        /// <summary>
+        ///     The SIWE session, if authentication was successful.
+        /// </summary>
+        public SiweSession Session { get; set; }
     }
 }
