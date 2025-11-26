@@ -215,5 +215,16 @@ namespace Cross.Sdk.Unity
             _countPerPageRealtime = WalletsPerPage;
             LoadNextPage();
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                View.ScrollValueChanged -= OnScrollValueChanged;
+                View.SearchInputValueChanged -= OnSearchInputValueChanged;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

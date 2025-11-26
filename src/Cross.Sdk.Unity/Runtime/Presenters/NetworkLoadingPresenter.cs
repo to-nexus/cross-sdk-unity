@@ -34,5 +34,15 @@ namespace Cross.Sdk.Unity
             else
                 CrossSdk.CloseModal();
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                CrossSdk.NetworkController.ChainChanged -= ChainChangedHandler;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

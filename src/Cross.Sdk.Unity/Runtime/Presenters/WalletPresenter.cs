@@ -209,5 +209,17 @@ namespace Cross.Sdk.Unity
             if (tab.ClassListContains(Tabbed.ClassNameTabHidden))
                 tab.RemoveFromClassList(Tabbed.ClassNameTabHidden);
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _tabbed.ContentShown -= element => _tabContentToViewController[element].OnVisible();
+                _tabbed.ContentHidden -= element => _tabContentToViewController[element].OnDisable();
+                View.GetWalletClicked -= OnGetWalletClicked;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

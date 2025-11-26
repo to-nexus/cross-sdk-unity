@@ -183,6 +183,10 @@ namespace Cross.Sdk.Unity
                 }
 #endif
 
+#if (UNITY_IOS || UNITY_ANDROID) && !UNITY_EDITOR
+                UnityEventsDispatcher.Instance.ApplicationFocus -= OnApplicationHandler;
+#endif
+
                 _connectionProposal?.Dispose();
 
                 View.CopyLinkClicked -= OnCopyLinkClicked;

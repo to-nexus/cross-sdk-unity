@@ -240,7 +240,7 @@ namespace Cross.Sdk.Unity
 
             if (disposing)
             {
-                CrossSdk.NetworkController.ChainChanged += ChainChangedHandler;
+                CrossSdk.NetworkController.ChainChanged -= ChainChangedHandler;
             }
 
             _disposed = true;

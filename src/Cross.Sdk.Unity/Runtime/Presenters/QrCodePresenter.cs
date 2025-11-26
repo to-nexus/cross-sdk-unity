@@ -94,6 +94,12 @@ namespace Cross.Sdk.Unity
 
             if (disposing)
             {
+                if (_connectionProposal != null)
+                {
+                    _connectionProposal.ConnectionUpdated -= ConnectionProposalUpdatedHandler;
+                    _connectionProposal.Dispose();
+                }
+                
                 CrossSdk.AccountConnected -= AccountConnectedHandler;
             }
 

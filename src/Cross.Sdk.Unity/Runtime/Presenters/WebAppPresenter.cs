@@ -90,6 +90,11 @@ namespace Cross.Sdk.Unity
 
             if (disposing)
             {
+                _connectionProposal?.Dispose();
+                
+                View.OpenLinkClicked -= OnOpenLinkClicked;
+                View.CopyLinkClicked -= OnCopyLinkClicked;
+                
                 CrossSdk.AccountConnected -= AccountConnectedHandler;
             }
 
