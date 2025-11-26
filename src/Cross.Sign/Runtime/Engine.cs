@@ -1016,7 +1016,14 @@ namespace Cross.Sign
             {
                 var chainId = authParams.Chains[0];
                 var @namespace = Core.Utils.ExtractChainNamespace(chainId);
-                var recapStr = ReCap.CreateEncodedRecap(@namespace, "request", authParams.Methods);
+                
+                // Include chains in ReCap limits so they can be extracted later for session namespace creation
+                var limits = new Dictionary<string, object>
+                {
+                    { "chains", authParams.Chains }
+                };
+                
+                var recapStr = ReCap.CreateEncodedRecap(@namespace, "request", authParams.Methods, limits);
                 
                 authParams.Resources ??= new List<string>();
 

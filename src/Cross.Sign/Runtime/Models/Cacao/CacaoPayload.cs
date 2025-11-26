@@ -94,8 +94,7 @@ namespace Cross.Sign.Models.Cacao
 
             var header = $"{Domain} wants you to sign in with your Ethereum account:";
             var walletAddress = CacaoUtils.ExtractDidAddress(Iss);
-            var statement = Statement != null ? $"\n{Statement}" : null;
-            var uri = $"\nURI: {Aud}";
+            var uri = $"URI: {Aud}";
             var version = $"Version: {Version}";
             var chainId = $"Chain ID: {CacaoUtils.ExtractDidChainIdReference(Iss)}";
             var nonce = $"Nonce: {Nonce}";
@@ -106,28 +105,39 @@ namespace Cross.Sign.Models.Cacao
                 ? $"Resources:\n{string.Join('\n', Resources.Select(resource => $"- {resource}"))}"
                 : null;
 
+            var statement = Statement;
             if (ReCap.TryGetRecapFromResources(Resources, out var recapStr))
             {
                 var decoded = ReCap.Decode(recapStr);
-                statement ??= decoded.FormatStatement(statement);
+                statement = decoded.FormatStatement(statement);
             }
 
-            var message = string.Join('\n', new[]
-                {
-                    header,
-                    walletAddress,
-                    statement,
-                    uri,
-                    version,
-                    chainId,
-                    nonce,
-                    issuedAt,
-                    expirationTime,
-                    notBefore,
-                    resources
-                }
-                .Where(val => !string.IsNullOrWhiteSpace(val))
-            );
+            // Build message parts
+            var messageParts = new System.Collections.Generic.List<string> { header, walletAddress };
+            
+            // Add blank line and optional statement per EIP-4361 standard
+            messageParts.Add("");  // Blank line before statement/URI
+            if (!string.IsNullOrWhiteSpace(statement))
+            {
+                messageParts.Add(statement);
+                messageParts.Add("");  // Blank line after statement (only when statement exists)
+            }
+            
+            // Add remaining fields
+            messageParts.Add(uri);
+            messageParts.Add(version);
+            messageParts.Add(chainId);
+            messageParts.Add(nonce);
+            messageParts.Add(issuedAt);
+            
+            if (!string.IsNullOrWhiteSpace(expirationTime))
+                messageParts.Add(expirationTime);
+            if (!string.IsNullOrWhiteSpace(notBefore))
+                messageParts.Add(notBefore);
+            if (!string.IsNullOrWhiteSpace(resources))
+                messageParts.Add(resources);
+
+            var message = string.Join('\n', messageParts);
 
             return message;
         }
