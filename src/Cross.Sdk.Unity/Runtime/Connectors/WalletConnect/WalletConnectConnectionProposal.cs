@@ -181,7 +181,11 @@ namespace Cross.Sdk.Unity
             if (!_disposed)
             {
                 if (disposing)
+                {
+                    _client.SessionAuthenticated -= SessionAuthenticatedHandler;
+                    _client.SessionConnected -= SessionConnectedHandler;
                     _client.SessionConnectionErrored -= SessionConnectionErroredHandler;
+                }
 
                 _disposed = true;
                 base.Dispose(disposing);

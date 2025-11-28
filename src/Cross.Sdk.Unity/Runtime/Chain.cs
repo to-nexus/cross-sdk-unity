@@ -103,49 +103,16 @@ namespace Cross.Sdk.Unity
         public static class References
         {
             public const string Ethereum = "1";
-            public const string EthereumGoerli = "5";
-            public const string Optimism = "10";
+            public const string EthereumSepolia = "11155111";
+            public const string BscMainnet = "56";
+            public const string BscTestnet = "97";
+            public const string KaiaMainnet = "8217";
+            public const string KaiaTestnet = "1001";
             public const string Ronin = "2020";
             public const string RoninSaigon = "2021";
-            public const string Base = "8453";
-            public const string BaseGoerli = "84531";
-            public const string Arbitrum = "42161";
-            public const string Celo = "42220";
-            public const string CeloAlfajores = "44787";
-            public const string Polygon = "137";
-            public const string Avalanche = "43114";
             public const string CrossTestnet = "612044";
             public const string CrossMainnet = "612055";
         }
-
-        // https://specs.walletconnect.com/2.0/specs/meta-clients/web3modal/api#known-static-asset-ids
-        public static Dictionary<string, string> ImageIds { get; } = new()
-        {
-            // Ethereum
-            { References.Ethereum, "692ed6ba-e569-459a-556a-776476829e00" },
-            // Ethereum Goerli
-            { References.EthereumGoerli, "692ed6ba-e569-459a-556a-776476829e00" },
-            // Optimism
-            { References.Optimism, "ab9c186a-c52f-464b-2906-ca59d760a400" },
-            // Ronin
-            { References.Ronin, "b8101fc0-9c19-4b6f-ec65-f6dfff106e00" },
-            // RoninSaigon
-            { References.RoninSaigon, "b8101fc0-9c19-4b6f-ec65-f6dfff106e00" },
-            // Arbitrum
-            { References.Arbitrum, "600a9a04-c1b9-42ca-6785-9b4b6ff85200" },
-            // Celo
-            { References.Celo, "ab781bbc-ccc6-418d-d32d-789b15da1f00" },
-            // Celo Alfajores
-            { References.CeloAlfajores, "ab781bbc-ccc6-418d-d32d-789b15da1f00" },
-            // Base
-            { References.Base, "7289c336-3981-4081-c5f4-efc26ac64a00" },
-            // Base Goerli
-            { References.BaseGoerli, "7289c336-3981-4081-c5f4-efc26ac64a00" },
-            // Polygon
-            { References.Polygon, "41d04d42-da3b-4453-8506-668cc0727900" },
-            // Avalanche
-            { References.Avalanche, "30c46e53-e989-45fb-4549-be3bd4eb3b00" },
-        };
 
         public static class Chains
         {
@@ -154,11 +121,10 @@ namespace Cross.Sdk.Unity
                 References.CrossTestnet,
                 "CROSS Testnet",
                 new Currency("CROSS", "CROSS", 18),
-                new BlockExplorer("Cross Scan", "https://testnet.crossscan.io"),
+                new BlockExplorer("Blockscout", "https://testnet.crossscan.io/"),
                 "https://testnet.crosstoken.io:22001",
                 true,
-                "https://contents.crosstoken.io/img/CROSSx_AppIcon.png",
-                "testnet"
+                "https://dev-imgproxy-api.crosstoken.io/rs:fit:512:512:1/plain/https://contents.crosstoken.io/wallet/token/images/CROSSx.svg@png"
             );
 
             public static readonly Chain CrossMainnet = new(
@@ -166,173 +132,112 @@ namespace Cross.Sdk.Unity
                 References.CrossMainnet,
                 "CROSS Mainnet",
                 new Currency("CROSS", "CROSS", 18),
-                new BlockExplorer("Cross Scan", "https://mainnet.crossscan.io"),
+                new BlockExplorer("Blockscout", "https://www.crossscan.io"),
                 "https://mainnet.crosstoken.io:22001",
                 false,
-                "https://contents.crosstoken.io/img/CROSSx_AppIcon.png",
-                "mainnet"
+                "https://dev-imgproxy-api.crosstoken.io/rs:fit:512:512:1/plain/https://contents.crosstoken.io/wallet/token/images/CROSSx.svg@png"
             );
 
             public static readonly Chain Ethereum = new(
                 Namespaces.Evm,
                 References.Ethereum,
-                "Ethereum",
+                "Ether Mainnet",
                 new Currency("Ether", "ETH", 18),
-                new BlockExplorer("Etherscan", "https://etherscan.io"),
-                "https://cloudflare-eth.com",
+                new BlockExplorer("Ether scan", "https://etherscan.io/"),
+                "https://eth-mainnet.crosstoken.io/fad29a23391f6d6e8fb41fb8eecbcca82343b378",
                 false,
-                $"{ChainImageUrl}/{ImageIds[References.Ethereum]}",
-                "mainnet"
+                "https://dev-imgproxy-api.crosstoken.io/rs:fit:512:512:1/plain/https://contents.crosstoken.io/wallet/token/images/ETH.svg@png"
             );
 
-            public static readonly Chain EthereumGoerli = new(
+            public static readonly Chain EthereumSepolia = new(
                 Namespaces.Evm,
-                References.EthereumGoerli,
-                "Ethereum Goerli",
-                new Currency("Ether", "ETH", 18),
-                new BlockExplorer("Etherscan", "https://goerli.etherscan.io"),
-                "https://goerli.infura.io/v3/",
+                References.EthereumSepolia,
+                "Ether Testnet (Sepolia)",
+                new Currency("Sepolia", "ETH", 18),
+                new BlockExplorer("Ether Sepolia scan", "https://sepolia.etherscan.io/"),
+                "https://sepolia.crosstoken.io/8de52516c154dce8cc2ceaae39d657a1e1e74d2f",
                 true,
-                $"{ChainImageUrl}/{ImageIds[References.EthereumGoerli]}",
-                "goerli"
+                "https://dev-imgproxy-api.crosstoken.io/rs:fit:512:512:1/plain/https://contents.crosstoken.io/wallet/token/images/ETH.svg@png"
             );
 
-            public static readonly Chain Optimism = new(
+            public static readonly Chain BscMainnet = new(
                 Namespaces.Evm,
-                References.Optimism,
-                "Optimism",
-                new Currency("Ether", "ETH", 18),
-                new BlockExplorer("Optimistic Etherscan", "https://optimistic.etherscan.io"),
-                "https://mainnet.optimism.io",
+                References.BscMainnet,
+                "BSC Mainnet",
+                new Currency("BNB", "BNB", 18),
+                new BlockExplorer("BscScan", "https://bscscan.com"),
+                "https://bsc-mainnet.crosstoken.io/2272489872e4f1475ff25d57ce93b51989f933c7",
                 false,
-                $"{ChainImageUrl}/{ImageIds[References.Optimism]}",
-                "optimism"
+                "https://dev-imgproxy-api.crosstoken.io/rs:fit:512:512:1/plain/https://contents.crosstoken.io/wallet/token/images/BNB.svg@png"
+            );
+
+            public static readonly Chain BscTestnet = new(
+                Namespaces.Evm,
+                References.BscTestnet,
+                "BSC Testnet",
+                new Currency("BNB", "tBNB", 18),
+                new BlockExplorer("BscScan", "https://testnet.bscscan.com"),
+                "https://bsc-testnet.crosstoken.io/110ea3628b77f244e5dbab16790d81bba874b962",
+                true,
+                "https://dev-imgproxy-api.crosstoken.io/rs:fit:512:512:1/plain/https://contents.crosstoken.io/wallet/token/images/BNB.svg@png"
+            );
+
+            public static readonly Chain KaiaMainnet = new(
+                Namespaces.Evm,
+                References.KaiaMainnet,
+                "Kaia Mainnet",
+                new Currency("KAIA", "KAIA", 18),
+                new BlockExplorer("Kaia Scan", "https://kaiascan.io/"),
+                "https://kaia-mainnet-ext.crosstoken.io/815b8a6e389b34a4f82cfd1e501692dee2f4e8f5",
+                false,
+                "https://dev-imgproxy-api.crosstoken.io/rs:fit:512:512:1/plain/https://contents.crosstoken.io/wallet/token/images/KAIA.svg@png"
+            );
+
+            public static readonly Chain KaiaTestnet = new(
+                Namespaces.Evm,
+                References.KaiaTestnet,
+                "Kaia Testnet (Kairos)",
+                new Currency("KAIA", "tKAIA", 18),
+                new BlockExplorer("Kairos Scan", "https://kairos.kaiascan.io/"),
+                "https://kaia-testnet.crosstoken.io/fda0d5a47e2d0768e9329444295a3f0681fff365",
+                true,
+                "https://dev-imgproxy-api.crosstoken.io/rs:fit:512:512:1/plain/https://contents.crosstoken.io/wallet/token/images/KAIA.svg@png"
             );
 
             public static readonly Chain Ronin = new(
                 Namespaces.Evm,
                 References.Ronin,
-                "Ronin",
-                new Currency("Ronin", "RON", 18),
-                new BlockExplorer("Ronin Explorer", "https://app.roninchain.com/"),
-                "https://api.roninchain.com/rpc",
+                "Ronin Mainnet",
+                new Currency("RON", "RON", 18),
+                new BlockExplorer("RoninScan", "https://app.roninchain.com/"),
+                "https://ronin-mainnet.cross-api.in:8545",
                 false,
-                $"{ChainImageUrl}/{ImageIds[References.Ronin]}",
-                "ronin"
+                "https://dev-imgproxy-api.crosstoken.io/rs:fit:512:512:1/plain/https://contents.crosstoken.io/wallet/token/images/RON.svg@png"
             );
 
             public static readonly Chain RoninSaigon = new(
                 Namespaces.Evm,
                 References.RoninSaigon,
-                "Ronin Saigon",
-                new Currency("Ronin", "RON", 18),
-                new BlockExplorer("Ronin Explorer", "https://explorer.roninchain.com"),
-                "\thttps://api-gateway.skymavis.com/rpc/testnet",
-                false,
-                $"{ChainImageUrl}/{ImageIds[References.Ronin]}",
-                "saigon"
-            );
-
-            public static readonly Chain Arbitrum = new(
-                Namespaces.Evm,
-                References.Arbitrum,
-                "Arbitrum",
-                new Currency("Ether", "ETH", 18),
-                new BlockExplorer("Arbitrum Explorer", "https://arbiscan.io"),
-                "https://arb1.arbitrum.io/rpc",
-                false,
-                $"{ChainImageUrl}/{ImageIds[References.Arbitrum]}",
-                "arbitrum"
-            );
-
-            public static readonly Chain Celo = new(
-                Namespaces.Evm,
-                References.Celo,
-                "Celo",
-                new Currency("Celo", "CELO", 18),
-                new BlockExplorer("Celo Explorer", "https://explorer.celo.org"),
-                "https://forno.celo.org",
-                false,
-                $"{ChainImageUrl}/{ImageIds[References.Celo]}",
-                "celo"
-            );
-
-            public static readonly Chain CeloAlfajores = new(
-                Namespaces.Evm,
-                References.CeloAlfajores,
-                "Celo Alfajores",
-                new Currency("Celo", "CELO", 18),
-                new BlockExplorer("Celo Explorer", "https://alfajores-blockscout.celo-testnet.org"),
-                "https://alfajores-forno.celo-testnet.org",
+                "Ronin Testnet",
+                new Currency("tRON", "tRON", 18),
+                new BlockExplorer("SaigonScan", "https://saigon-app.roninchain.com"),
+                "https://ronin-testnet.cross-api.in:8545",
                 true,
-                $"{ChainImageUrl}/{ImageIds[References.CeloAlfajores]}",
-                "celoAlfajores"
-            );
-
-            public static readonly Chain Base = new(
-                Namespaces.Evm,
-                References.Base,
-                "Base",
-                new Currency("Ether", "ETH", 18),
-                new BlockExplorer("BaseScan", "https://basescan.org/"),
-                "https://mainnet.base.org",
-                false,
-                $"{ChainImageUrl}/{ImageIds[References.Base]}",
-                "base"
-            );
-
-            public static readonly Chain BaseGoerli = new(
-                Namespaces.Evm,
-                References.BaseGoerli,
-                "Base Goerli",
-                new Currency("Ether", "ETH", 18),
-                new BlockExplorer("BaseScan", "https://goerli.basescan.org/"),
-                "https://goerli.base.org",
-                true,
-                $"{ChainImageUrl}/{ImageIds[References.BaseGoerli]}",
-                "baseGoerli"
-            );
-
-            public static readonly Chain Polygon = new(
-                Namespaces.Evm,
-                "137",
-                "Polygon",
-                new Currency("Polygon Ecosystem Token", "POL", 18),
-                new BlockExplorer("Polygon Explorer", "https://polygonscan.com"),
-                "https://polygon-rpc.com",
-                false,
-                $"{ChainImageUrl}/{ImageIds[References.Polygon]}",
-                "polygon"
-            );
-
-            public static readonly Chain Avalanche = new(
-                Namespaces.Evm,
-                References.Avalanche,
-                "Avalanche",
-                new Currency("AVAX", "AVAX", 18),
-                new BlockExplorer("Avalanche Explorer", "https://snowtrace.io/"),
-                "https://api.avax.network/ext/bc/C/rpc",
-                false,
-                $"{ChainImageUrl}/{ImageIds[References.Avalanche]}",
-                "avalanche"
+                "https://dev-imgproxy-api.crosstoken.io/rs:fit:512:512:1/plain/https://contents.crosstoken.io/wallet/token/images/RON.svg@png"
             );
 
             public static readonly IReadOnlyCollection<Chain> All = new HashSet<Chain>
             {
-                Ethereum,
-                EthereumGoerli,
-                Optimism,
-                Ronin,
-                RoninSaigon,
-                Arbitrum,
-                Celo,
-                CeloAlfajores,
-                Base,
-                BaseGoerli,
-                Polygon,
-                Avalanche,
+                CrossMainnet,
                 CrossTestnet,
-                CrossMainnet
+                Ethereum,
+                EthereumSepolia,
+                BscMainnet,
+                BscTestnet,
+                KaiaMainnet,
+                KaiaTestnet,
+                Ronin,
+                RoninSaigon
             };
         }
     }

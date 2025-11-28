@@ -216,6 +216,9 @@ namespace Cross.Sdk.Unity
 
             if (disposing)
             {
+                View.ExplorerButton.Clicked -= OnBlockExplorerButtonClick;
+                View.CopyLink.Clicked -= OnCopyAddressButtonClick;
+                
                 CrossSdk.AccountController.PropertyChanged -= AccountPropertyChangedHandler;
                 CrossSdk.NetworkController.ChainChanged -= ChainChangedHandler;
 

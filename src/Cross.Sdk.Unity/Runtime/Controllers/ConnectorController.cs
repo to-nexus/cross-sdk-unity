@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cross.Sdk.Unity.Utils;
 using Cross.Sign.Models;
 using Cross.Sign.Unity;
 using UnityEngine;
@@ -100,6 +101,9 @@ namespace Cross.Sdk.Unity
         protected override async Task DisconnectAsyncCore()
         {
             await ActiveConnector.DisconnectAsync();
+            
+            // Clear connection method when disconnecting
+            WalletUtils.ClearConnectionMethod();
         }
 
         protected override Task ChangeActiveChainAsyncCore(Chain chain)

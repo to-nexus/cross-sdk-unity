@@ -139,6 +139,15 @@ namespace Cross.Sdk.Unity
             if (!IsVisible)
                 return;
 
+            // Store connection method to prevent desktop alert when signing (if connected via QR)
+#if UNITY_IOS || UNITY_VISIONOS || UNITY_ANDROID
+            WalletUtils.SetConnectionMethod("mobile");
+#elif UNITY_STANDALONE
+            WalletUtils.SetConnectionMethod("desktop");
+#else
+            WalletUtils.SetConnectionMethod("undefined");
+#endif
+
             CrossSdk.EventsController.SendEvent(new Event
             {
                 name = "CONNECT_SUCCESS",
@@ -172,6 +181,10 @@ namespace Cross.Sdk.Unity
                 {
                     StopLoadingCoroutine();
                 }
+#endif
+
+#if (UNITY_IOS || UNITY_ANDROID) && !UNITY_EDITOR
+                UnityEventsDispatcher.Instance.ApplicationFocus -= OnApplicationHandler;
 #endif
 
                 _connectionProposal?.Dispose();

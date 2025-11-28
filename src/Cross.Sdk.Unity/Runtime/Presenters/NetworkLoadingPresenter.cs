@@ -7,6 +7,8 @@ namespace Cross.Sdk.Unity
 {
     public class NetworkLoadingPresenter : Presenter<NetworkLoadingView>
     {
+        private bool _disposed;
+
         public NetworkLoadingPresenter(RouterController router, VisualElement parent) : base(router, parent)
         {
             CrossSdk.NetworkController.ChainChanged += ChainChangedHandler;
@@ -33,6 +35,20 @@ namespace Cross.Sdk.Unity
                 Router.GoBack();
             else
                 CrossSdk.CloseModal();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                CrossSdk.NetworkController.ChainChanged -= ChainChangedHandler;
+            }
+
+            _disposed = true;
+            base.Dispose(disposing);
         }
     }
 }
