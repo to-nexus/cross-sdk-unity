@@ -24,12 +24,12 @@ namespace Cross.Sdk.Unity
         {
             ChainConstants.Chains.CrossMainnet,
             ChainConstants.Chains.CrossTestnet,
-            ChainConstants.Chains.Ethereum,
-            ChainConstants.Chains.EthereumSepolia,
+            // ChainConstants.Chains.Ethereum,
+            // ChainConstants.Chains.EthereumSepolia,
             ChainConstants.Chains.BscMainnet,
             ChainConstants.Chains.BscTestnet,
-            ChainConstants.Chains.KaiaMainnet,
-            ChainConstants.Chains.KaiaTestnet,
+            // ChainConstants.Chains.KaiaMainnet,
+            // ChainConstants.Chains.KaiaTestnet,
             ChainConstants.Chains.Ronin,
             ChainConstants.Chains.RoninSaigon
         };
