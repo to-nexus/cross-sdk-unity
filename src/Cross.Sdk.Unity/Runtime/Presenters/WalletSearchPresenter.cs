@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cross.Sdk.Unity.Components;
@@ -29,12 +30,22 @@ namespace Cross.Sdk.Unity
         private const int WalletsPerPage = 32;
 
         private readonly List<VisualElement> _items = new();
+        
+        // Cache value to prevent recursive layout updates
+        private float _lastPadding = -1f;
+        
+        // Store lambda to enable proper unsubscription
+        private readonly Action _qrCodeLinkClickedHandler;
+        
+        private bool _disposed;
 
         public WalletSearchPresenter(RouterController router, VisualElement parent) : base(router, parent)
         {
             View.ScrollValueChanged += OnScrollValueChanged;
             View.SearchInputValueChanged += OnSearchInputValueChanged;
-            View.QrCodeLinkClicked += () => Router.OpenView(ViewType.QrCode);
+            
+            _qrCodeLinkClickedHandler = () => Router.OpenView(ViewType.QrCode);
+            View.QrCodeLinkClicked += _qrCodeLinkClickedHandler;
         }
 
         private void OnSearchInputValueChanged(string value)
@@ -52,6 +63,9 @@ namespace Cross.Sdk.Unity
                 item.RemoveFromHierarchy();
 
             _items.Clear();
+            
+            // Reset cached padding when clearing items to ensure proper recalculation
+            _lastPadding = -1f;
 
             LoadNextPage();
         }
@@ -61,9 +75,34 @@ namespace Cross.Sdk.Unity
             var scrollViewWidth = View.scrollView.resolvedStyle.width;
             const float itemWidth = 79;
             var itemsCanFit = Mathf.FloorToInt(scrollViewWidth / itemWidth);
+            
+            Debug.Log($"[WalletSearch] ConfigureItemPaddings - scrollViewWidth: {scrollViewWidth}, itemsCanFit: {itemsCanFit}");
+            
+            // Avoid division by zero
+            if (itemsCanFit <= 0)
+            {
+                Debug.LogWarning($"[WalletSearch] ConfigureItemPaddings SKIPPED - itemsCanFit is {itemsCanFit}");
+                return;
+            }
 
-            var padding = (scrollViewWidth - itemsCanFit * itemWidth) / itemsCanFit / 2;
+            // Round to avoid floating point precision issues causing jitter
+            var rawPadding = (scrollViewWidth - itemsCanFit * itemWidth) / itemsCanFit / 2;
+            var padding = Mathf.Round(rawPadding);
+            
+            Debug.Log($"[WalletSearch] ConfigureItemPaddings - rawPadding: {rawPadding}, rounded: {padding}, lastPadding: {_lastPadding}, diff: {Mathf.Abs(padding - _lastPadding)}");
+            
+            // Skip if padding hasn't changed significantly (less than 2px)
+            const float PADDING_CHANGE_THRESHOLD = 2f;
+            if (Mathf.Abs(padding - _lastPadding) < PADDING_CHANGE_THRESHOLD)
+            {
+                Debug.Log($"[WalletSearch] ConfigureItemPaddings SKIPPED - padding change < {PADDING_CHANGE_THRESHOLD}px");
+                return;
+            }
+            
+            _lastPadding = padding;
             items ??= _items;
+
+            Debug.Log($"[WalletSearch] ConfigureItemPaddings - APPLYING padding {padding}px to {items.Count} items");
 
             for (var i = 0; i < items.Count; i++)
             {
@@ -71,6 +110,8 @@ namespace Cross.Sdk.Unity
                 item.style.paddingLeft = padding;
                 item.style.paddingRight = padding;
             }
+            
+            Debug.Log($"[WalletSearch] ConfigureItemPaddings - COMPLETED");
         }
 
         private void OnScrollValueChanged(float value)
@@ -162,7 +203,14 @@ namespace Cross.Sdk.Unity
 
             ConfigureItemPaddings(items);
 
-            View.scrollView.ForceUpdate();
+            // ForceUpdate can trigger recursive layout - only call if items were actually added
+            if (walletsCount > 0)
+            {
+                View.scrollView.schedule.Execute(() =>
+                {
+                    View.scrollView.ForceUpdate();
+                }).ExecuteLater(10); // Delay to next frame to prevent recursive layout
+            }
 
             _isPageLoading = false;
         }
@@ -174,6 +222,22 @@ namespace Cross.Sdk.Unity
 
             _countPerPageRealtime = WalletsPerPage;
             LoadNextPage();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                View.ScrollValueChanged -= OnScrollValueChanged;
+                View.SearchInputValueChanged -= OnSearchInputValueChanged;
+                View.QrCodeLinkClicked -= _qrCodeLinkClickedHandler;
+            }
+
+            _disposed = true;
+            base.Dispose(disposing);
         }
     }
 }

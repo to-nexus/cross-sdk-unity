@@ -73,6 +73,9 @@ namespace Cross.Sdk.Unity
             if (!IsVisible)
                 return;
 
+            // Store connection method to prevent desktop alert when signing
+            WalletUtils.SetConnectionMethod("qrcode");
+
             CrossSdk.EventsController.SendEvent(new Event
             {
                 name = "CONNECT_SUCCESS",
@@ -91,6 +94,14 @@ namespace Cross.Sdk.Unity
 
             if (disposing)
             {
+                View.copyLink.Clicked -= OnCopyLinkClicked;
+                
+                if (_connectionProposal != null)
+                {
+                    _connectionProposal.ConnectionUpdated -= ConnectionProposalUpdatedHandler;
+                    _connectionProposal.Dispose();
+                }
+                
                 CrossSdk.AccountConnected -= AccountConnectedHandler;
             }
 

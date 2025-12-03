@@ -22,8 +22,16 @@ namespace Cross.Sdk.Unity
 
         public Chain[] supportedChains =
         {
+            ChainConstants.Chains.CrossMainnet,
             ChainConstants.Chains.CrossTestnet,
-            ChainConstants.Chains.CrossMainnet
+            // ChainConstants.Chains.Ethereum,
+            // ChainConstants.Chains.EthereumSepolia,
+            ChainConstants.Chains.BscMainnet,
+            ChainConstants.Chains.BscTestnet,
+            // ChainConstants.Chains.KaiaMainnet,
+            // ChainConstants.Chains.KaiaTestnet,
+            ChainConstants.Chains.Ronin,
+            ChainConstants.Chains.RoninSaigon
         };
 
         public Wallet[] customWallets = GetCustomWallets();

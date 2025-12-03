@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Cross.Sdk.Unity.Components;
 using Cross.Sdk.Unity.Model;
@@ -27,6 +28,12 @@ namespace Cross.Sdk.Unity
         private readonly VisualElement _webAppContent;
 
         private readonly Dictionary<VisualElement, PresenterBase> _tabContentToViewController = new();
+        
+        // Store lambda delegates to enable proper unsubscription
+        private readonly Action<VisualElement> _contentShownHandler;
+        private readonly Action<VisualElement> _contentHiddenHandler;
+        
+        private bool _disposed;
 
         public WalletPresenter(RouterController router, VisualElement parent) : base(router, parent)
         {
@@ -53,8 +60,12 @@ namespace Cross.Sdk.Unity
             _tabContentToViewController.Add(_webAppContent, _webAppPresenter);
 
             // --- Events
-            _tabbed.ContentShown += element => _tabContentToViewController[element].OnVisible();
-            _tabbed.ContentHidden += element => _tabContentToViewController[element].OnDisable();
+            // Store lambdas in fields to enable proper unsubscription in Dispose
+            _contentShownHandler = element => _tabContentToViewController[element].OnVisible();
+            _contentHiddenHandler = element => _tabContentToViewController[element].OnDisable();
+            
+            _tabbed.ContentShown += _contentShownHandler;
+            _tabbed.ContentHidden += _contentHiddenHandler;
             View.GetWalletClicked += OnGetWalletClicked;
 
             // --- Additional Setup
@@ -208,6 +219,27 @@ namespace Cross.Sdk.Unity
         {
             if (tab.ClassListContains(Tabbed.ClassNameTabHidden))
                 tab.RemoveFromClassList(Tabbed.ClassNameTabHidden);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                _tabbed.ContentShown -= _contentShownHandler;
+                _tabbed.ContentHidden -= _contentHiddenHandler;
+                View.GetWalletClicked -= OnGetWalletClicked;
+                
+                // Dispose child presenters to prevent event handler leaks
+                _qrCodePresenter?.Dispose();
+                _deepLinkPresenter?.Dispose();
+                _webAppPresenter?.Dispose();
+            }
+
+            _disposed = true;
+            base.Dispose(disposing);
         }
     }
 }

@@ -133,6 +133,9 @@ namespace Cross.Sdk.Unity
 
             if (disposing)
             {
+                View.CancelButtonClicked -= RejectButtonClickedHandler;
+                View.ApproveButtonClicked -= ApproveButtonClickedHandler;
+                
                 CrossSdk.SiweController.Config.SignInSuccess -= SignInSuccessHandler;
                 CrossSdk.SiweController.Config.SignOutSuccess -= SignOutSuccessHandler;
                 CrossSdk.ConnectorController.SignatureRequested -= SignatureRequestedHandler;

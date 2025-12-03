@@ -71,5 +71,25 @@ namespace Cross.Sdk.Unity.Utils
 
             return wallet != null;
         }
+
+        public static void SetConnectionMethod(string method)
+        {
+            PlayerPrefs.SetString("RE_CONNECTION_METHOD", method);
+        }
+
+        public static string GetConnectionMethod()
+        {
+            return PlayerPrefs.GetString("RE_CONNECTION_METHOD", "");
+        }
+
+        public static bool IsQrCodeConnection()
+        {
+            return GetConnectionMethod() == "qrcode";
+        }
+
+        public static void ClearConnectionMethod()
+        {
+            PlayerPrefs.DeleteKey("RE_CONNECTION_METHOD");
+        }
     }
 }

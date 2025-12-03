@@ -65,6 +65,18 @@ namespace Cross.Sign.Unity
             if (session.Peer.Metadata == null)
                 return;
 
+#if UNITY_STANDALONE
+            // Skip desktop deep link if connected via QR Code or WebApp
+            // These connections use WalletConnect protocol to push notifications to mobile/web wallets
+            // Opening desktop deep link would show an alert when no desktop wallet app is installed
+            var connectionMethod = PlayerPrefs.GetString("RE_CONNECTION_METHOD", "");
+            if (connectionMethod == "qrcode" || connectionMethod == "webapp")
+            {
+                CrossLogger.Log($"[Linker] Connection method is '{connectionMethod}'. Skipping desktop deep link to avoid alert.");
+                return;
+            }
+#endif
+
             var redirectNative = session.Peer.Metadata.Redirect?.Native;
             string deeplink;
 
