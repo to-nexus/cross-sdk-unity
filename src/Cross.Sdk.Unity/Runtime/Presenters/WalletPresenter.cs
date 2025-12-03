@@ -231,6 +231,11 @@ namespace Cross.Sdk.Unity
                 _tabbed.ContentShown -= _contentShownHandler;
                 _tabbed.ContentHidden -= _contentHiddenHandler;
                 View.GetWalletClicked -= OnGetWalletClicked;
+                
+                // Dispose child presenters to prevent event handler leaks
+                _qrCodePresenter?.Dispose();
+                _deepLinkPresenter?.Dispose();
+                _webAppPresenter?.Dispose();
             }
 
             _disposed = true;

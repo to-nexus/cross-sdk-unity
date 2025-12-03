@@ -73,39 +73,22 @@ namespace Cross.Sdk.Unity
         {
             // Skip if already updating to prevent recursive layout
             if (_isUpdatingLayout)
-            {
-                Debug.Log($"[NetworkSearch] OnGeometryChanged SKIPPED - already updating");
                 return;
-            }
                 
             var currentWidth = View.scrollView.resolvedStyle.width;
-            
-            Debug.Log($"[NetworkSearch] OnGeometryChanged - currentWidth: {currentWidth}, lastWidth: {_lastScrollViewWidth}, diff: {Mathf.Abs(currentWidth - _lastScrollViewWidth)}");
             
             // Skip if width hasn't changed significantly (less than 5px) to prevent recursive layout updates
             const float WIDTH_CHANGE_THRESHOLD = 5f;
             if (Mathf.Abs(currentWidth - _lastScrollViewWidth) < WIDTH_CHANGE_THRESHOLD)
-            {
-                Debug.Log($"[NetworkSearch] OnGeometryChanged SKIPPED - width change < {WIDTH_CHANGE_THRESHOLD}px");
                 return;
-            }
             
             _lastScrollViewWidth = currentWidth;
-            
-            Debug.Log($"[NetworkSearch] OnGeometryChanged - scheduling padding update in 10ms");
             
             // Defer padding update to next frame to prevent recursive layout
             View.scrollView.schedule.Execute(() =>
             {
                 if (!_isUpdatingLayout)
-                {
-                    Debug.Log($"[NetworkSearch] Scheduled padding update executing now");
                     ConfigureItemPaddings();
-                }
-                else
-                {
-                    Debug.Log($"[NetworkSearch] Scheduled padding update CANCELLED - already updating");
-                }
             }).ExecuteLater(10);
         }
 
@@ -178,10 +161,7 @@ namespace Cross.Sdk.Unity
         {
             // Prevent recursive calls
             if (_isUpdatingLayout)
-            {
-                Debug.LogWarning($"[NetworkSearch] ConfigureItemPaddings SKIPPED - already updating (recursive call detected)");
                 return;
-            }
                 
             _isUpdatingLayout = true;
             
@@ -191,33 +171,21 @@ namespace Cross.Sdk.Unity
                 const float itemWidth = 79;
                 var itemsCanFit = Mathf.FloorToInt(scrollViewWidth / itemWidth);
                 
-                Debug.Log($"[NetworkSearch] ConfigureItemPaddings - scrollViewWidth: {scrollViewWidth}, itemsCanFit: {itemsCanFit}");
-                
                 // Avoid division by zero
                 if (itemsCanFit <= 0)
-                {
-                    Debug.LogWarning($"[NetworkSearch] ConfigureItemPaddings SKIPPED - itemsCanFit is {itemsCanFit}");
                     return;
-                }
 
                 // Round to avoid floating point precision issues causing jitter
                 var rawPadding = (scrollViewWidth - itemsCanFit * itemWidth) / itemsCanFit / 2;
                 var padding = Mathf.Round(rawPadding);
                 
-                Debug.Log($"[NetworkSearch] ConfigureItemPaddings - rawPadding: {rawPadding}, rounded: {padding}, lastPadding: {_lastPadding}, diff: {Mathf.Abs(padding - _lastPadding)}");
-                
                 // Skip if padding hasn't changed significantly (less than 2px)
                 const float PADDING_CHANGE_THRESHOLD = 2f;
                 if (Mathf.Abs(padding - _lastPadding) < PADDING_CHANGE_THRESHOLD)
-                {
-                    Debug.Log($"[NetworkSearch] ConfigureItemPaddings SKIPPED - padding change < {PADDING_CHANGE_THRESHOLD}px");
                     return;
-                }
                 
                 _lastPadding = padding;
                 items ??= _items;
-
-                Debug.Log($"[NetworkSearch] ConfigureItemPaddings - APPLYING padding {padding}px to {items.Count} items");
 
                 for (var i = 0; i < items.Count; i++)
                 {
@@ -229,7 +197,6 @@ namespace Cross.Sdk.Unity
             finally
             {
                 _isUpdatingLayout = false;
-                Debug.Log($"[NetworkSearch] ConfigureItemPaddings - COMPLETED");
             }
         }
 
