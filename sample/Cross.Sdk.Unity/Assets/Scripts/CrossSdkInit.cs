@@ -35,7 +35,12 @@ namespace Sample
                     new RedirectData
                     {
                         // Used by native wallets to redirect back to the app after approving requests
+                        // Only set on mobile platforms to prevent desktop QR connections from redirecting to mobile app
+#if UNITY_IOS || UNITY_ANDROID
                         Native = "cross-sdk-unity-sample://wc"
+#else
+                        Native = string.Empty  // Desktop/Editor: No redirect needed for QR code connections
+#endif
                     }
                 ),
                 // SIWE (Sign-In with Ethereum) configuration for Connect + Auth
