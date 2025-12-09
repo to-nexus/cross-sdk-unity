@@ -18,6 +18,9 @@ namespace Cross.Sign.Nethereum.Model
         [JsonProperty("types")]
         public object Types { get; set; }
 
+        [JsonProperty("primaryType")]
+        public string PrimaryType { get; set; }
+
         [JsonProperty("message")]
         public object Message { get; set; }
 
@@ -28,6 +31,7 @@ namespace Cross.Sign.Nethereum.Model
             var jsonObject = JObject.Parse(data);
             
             Domain = jsonObject["domain"]?.ToObject<object>();
+            PrimaryType = jsonObject["primaryType"]?.ToString();
             Message = jsonObject["message"]?.ToObject<object>();
             
             // Filter out EIP712Domain from types (wallets don't expect it)
