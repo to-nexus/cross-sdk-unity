@@ -23,9 +23,6 @@ namespace Sample
         private ButtonStruct[] _buttons;
         private VisualElement _buttonsContainer;
 
-        // Constants
-        private const string ERC20_ADDRESS = "0xe934057Ac314cD9bA9BC17AE2378959fd39Aa2E3";
-
         private void Awake()
         {
             Application.targetFrameRate = Screen.currentResolution.refreshRate;
@@ -410,6 +407,13 @@ namespace Sample
             };
             try
             {
+                var erc20Address = GetERC20Address();
+                if (string.IsNullOrEmpty(erc20Address))
+                {
+                    Notification.ShowMessage("ERC20 contract does not exist on this network.");
+                    return;
+                }
+
                 Notification.ShowMessage("Sending transaction...");
 
                 var amount = Web3.Convert.ToWei(1);  // 1 토큰을 wei로 변환
@@ -418,7 +422,7 @@ namespace Sample
                 // Using WriteContractAsync overload with value, gas, and type parameters:
                 // - arguments: toAddress and amount for the transfer function
                 var result = await CrossSdk.Evm.WriteContractAsync(
-                    ERC20_ADDRESS,  // contract address
+                    erc20Address,   // contract address (network-specific)
                     abi,            // abi
                     "transfer",     // method name in contract code
                     customData,
@@ -460,6 +464,13 @@ namespace Sample
             };
             try
             {
+                var erc20Address = GetERC20Address();
+                if (string.IsNullOrEmpty(erc20Address))
+                {
+                    Notification.ShowMessage("ERC20 contract does not exist on this network.");
+                    return;
+                }
+
                 Notification.ShowMessage("Sending transaction...");
 
                 var amount = Web3.Convert.ToWei(1);  // 1 토큰을 wei로 변환
@@ -469,7 +480,7 @@ namespace Sample
                 // Using WriteContractAsync overload with value, gas, and type parameters:
                 // - arguments: toAddress and amount for the transfer function
                 var result = await CrossSdk.Evm.WriteContractAsync(
-                    ERC20_ADDRESS,  // contract address
+                    erc20Address,   // contract address (network-specific)
                     abi,            // abi
                     "transfer",     // method name in contract code
                     customData,
@@ -501,7 +512,7 @@ namespace Sample
             }
         }
 
-        // planned to beused for permit, but not supported in wallet yet
+        // EIP-712 typed data signing example with ERC20Mint (real-world use case)
         public async void OnSignTypedDataV4Button()
         {
             Debug.Log("[CrossSdk Sample] OnSignTypedDataV4Button");
@@ -510,33 +521,22 @@ namespace Sample
 
             var account = await CrossSdk.GetAccountAsync();
 
-            Debug.Log("Get mail typed definition");
-            var typedData = GetMailTypedDefinition();
-            var mail = new Mail
+            Debug.Log("Get ERC20Mint typed definition");
+            var typedData = GetERC20MintTypedDefinition();
+            
+            // ERC20Mint message with real-world parameters
+            // NOTE: This is example data. In production:
+            // - 'from' is implicit (the signer's address from account.Address)
+            // - 'nonce' should be fetched from the contract
+            // - 'deadline' should be current timestamp + expiry time
+            var message = new ERC20Mint
             {
-                From = new Person
-                {
-                    Name = "Cow",
-                    Wallets = new List<string>
-                    {
-                        "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826",
-                        "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF"
-                    }
-                },
-                To = new List<Person>
-                {
-                    new()
-                    {
-                        Name = "Bob",
-                        Wallets = new List<string>
-                        {
-                            "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
-                            "0xB0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57",
-                            "0xB0B0b0b0b0b0B000000000000000000000000000"
-                        }
-                    }
-                },
-                Contents = "Hello, Bob!"
+                Token = "0x979a94888aa35ab603ff3ef1a25f942a99a1e7a5",
+                Amount = "1000000000000000000",  // 1 token (18 decimals)
+                FeeRecipient = "0x56b78f96f028e8302aa8b94dd69299e43d7c58a6",
+                FeeBPS = "1000",  // 10% fee (1000 basis points)
+                Nonce = "12",  // Example value - fetch from contract in production
+                Deadline = "1765196498"  // Example timestamp - use DateTimeOffset.UtcNow.ToUnixTimeSeconds() + expiry in production
             };
 
             // Convert CAIP-2 chain reference to EIP-155 chain ID
@@ -544,7 +544,7 @@ namespace Sample
             var ethChainId = Utils.ExtractChainReference(account.ChainId);
 
             typedData.Domain.ChainId = BigInteger.Parse(ethChainId);
-            typedData.SetMessage(mail);
+            typedData.SetMessage(message);
 
             var jsonMessage = typedData.ToJson();
 
@@ -554,7 +554,8 @@ namespace Sample
 
                 var isValid = await CrossSdk.Evm.VerifyTypedDataSignatureAsync(account.Address, jsonMessage, signature);
 
-                Notification.ShowMessage($"Signature valid: {isValid}");
+                Notification.ShowMessage($"Signature valid: {signature} {isValid}");
+                Debug.Log($"[CrossSdk Sample] ERC20Mint signature: {signature}");
             }
             catch (Exception e)
             {
@@ -565,25 +566,26 @@ namespace Sample
         // read contract state such as balance of token or other data
         public async void OnReadContractClicked()
         {
-            // if (CrossSdk.NetworkController.ActiveChain.ChainId != "eip155:612044")
-            // {
-            //     Notification.ShowMessage("Please switch to Cross Testnet.");
-            //     return;
-            // }
-
-            var account = await CrossSdk.GetAccountAsync();
-
-            TextAsset abiText = Resources.Load<TextAsset>("Contracts/SampleERC20abi");
-            string abi = abiText.text;
-
-            Notification.ShowMessage("Reading smart contract state...");
-
             try
             {
-                var tokenName = await CrossSdk.Evm.ReadContractAsync<string>(ERC20_ADDRESS, abi, "name");
+                var erc20Address = GetERC20Address();
+                if (string.IsNullOrEmpty(erc20Address))
+                {
+                    Notification.ShowMessage("ERC20 contract does not exist on this network.");
+                    return;
+                }
+
+                var account = await CrossSdk.GetAccountAsync();
+
+                TextAsset abiText = Resources.Load<TextAsset>("Contracts/SampleERC20abi");
+                string abi = abiText.text;
+
+                Notification.ShowMessage("Reading smart contract state...");
+
+                var tokenName = await CrossSdk.Evm.ReadContractAsync<string>(erc20Address, abi, "name");
                 Debug.Log($"Token name: {tokenName}");
 
-                var balance = await CrossSdk.Evm.ReadContractAsync<BigInteger>(ERC20_ADDRESS, abi, "balanceOf", new object[]
+                var balance = await CrossSdk.Evm.ReadContractAsync<BigInteger>(erc20Address, abi, "balanceOf", new object[]
                 {
                     account.Address
                 });
@@ -598,19 +600,69 @@ namespace Sample
             }
         }
 
-        private TypedData<Domain> GetMailTypedDefinition()
+        /// <summary>
+        /// ERC20Mint EIP-712 typed data definition (real-world use case)
+        /// </summary>
+        private TypedData<Domain> GetERC20MintTypedDefinition()
         {
             return new TypedData<Domain>
             {
                 Domain = new Domain
                 {
-                    Name = "Ether Mail",
+                    Name = "0cd3a59377299deb46d424c0dc5edfc8",
+                    Version = "1",
+                    ChainId = 612044,  // Cross Testnet
+                    VerifyingContract = "0x5ad400c3db22641f7f94a1bd36f88ac359b74dae"
+                },
+                // Include Domain for Nethereum's ToJson() to work
+                // EIP712Domain will be filtered out in EthSignTypedDataV4 constructor
+                Types = MemberDescriptionFactory.GetTypesMemberDescription(typeof(Domain), typeof(ERC20Mint)),
+                PrimaryType = nameof(ERC20Mint)
+            };
+        }
+        
+        /// <summary>
+        /// Simple EIP-712 typed data definition (basic example)
+        /// </summary>
+        private TypedData<Domain> GetSimpleTypedDefinition()
+        {
+            return new TypedData<Domain>
+            {
+                Domain = new Domain
+                {
+                    Name = "Example",
                     Version = "1",
                     ChainId = 1,
                     VerifyingContract = "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
                 },
-                Types = MemberDescriptionFactory.GetTypesMemberDescription(typeof(Domain), typeof(Group), typeof(Mail), typeof(Person)),
-                PrimaryType = nameof(Mail)
+                // Include Domain for Nethereum's ToJson() to work
+                // EIP712Domain will be filtered out in EthSignTypedDataV4 constructor
+                Types = MemberDescriptionFactory.GetTypesMemberDescription(typeof(Domain), typeof(Ping)),
+                PrimaryType = nameof(Ping)
+            };
+        }
+
+        /// <summary>
+        /// Get ERC20 contract address for the current network
+        /// Returns network-specific ERC20 address or throws if not available
+        /// </summary>
+        private string GetERC20Address()
+        {
+            var chainId = CrossSdk.NetworkController.ActiveChain.ChainId;
+            
+            return chainId switch
+            {
+                "eip155:612044" => "0xe934057Ac314cD9bA9BC17AE2378959fd39Aa2E3", // Cross Testnet
+                "eip155:612055" => "0xe9013a5231BEB721f4F801F2d07516b8ca19d953", // Cross Mainnet
+                "eip155:1001" => "0xd4846dddf83278d10b92bf6c169c5951d6f5abb8",   // Kaia Testnet
+                "eip155:8217" => "",  // Kaia Mainnet (no ERC20 contract)
+                "eip155:97" => "",    // BSC Testnet (no ERC20 contract)
+                "eip155:56" => "",    // BSC Mainnet (no ERC20 contract)
+                "eip155:1" => "",     // Ethereum Mainnet (no ERC20 contract)
+                "eip155:11155111" => "", // Ethereum Sepolia (no ERC20 contract)
+                "eip155:2020" => "",  // Ronin Mainnet (no ERC20 contract)
+                "eip155:2021" => "",  // Ronin Saigon (no ERC20 contract)
+                _ => throw new Exception($"ERC20 contract does not exist on network {chainId}")
             };
         }
 

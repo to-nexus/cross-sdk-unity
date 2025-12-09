@@ -421,7 +421,11 @@ namespace Cross.Sdk.Unity
         
         protected override async Task<BigInteger> EstimateGasAsyncCore(string addressTo, BigInteger value, string data = null)
         {
-            var transactionInput = new TransactionInput(data, addressTo, new HexBigInteger(value));
+            // 가스 추정을 위해 현재 연결된 계정의 주소를 가져옴
+            var account = await CrossSdk.GetAccountAsync();
+            var fromAddress = account.Address ?? "0x0000000000000000000000000000000000000000";
+            
+            var transactionInput = new TransactionInput(data, addressTo, fromAddress, default, new HexBigInteger(value));
             return await Web3.Eth.Transactions.EstimateGas.SendRequestAsync(transactionInput);
         }
 

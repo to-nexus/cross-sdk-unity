@@ -4,6 +4,7 @@ using Cross.Core.Network.Models;
 using Cross.Core.Models;
 using Nethereum.ABI.EIP712;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Cross.Sign.Nethereum.Model
 {
@@ -22,10 +23,25 @@ namespace Cross.Sign.Nethereum.Model
 
         public EthSignTypedDataV4(string data)
         {
-            var typedDataRaw = TypedDataRawJsonConversion.DeserialiseJsonToRawTypedData(data);
-            Domain = typedDataRaw.DomainRawValues;
-            Types = typedDataRaw.Types;
-            Message = typedDataRaw.Message;
+            // Parse JSON string directly to preserve object structure
+            // instead of using TypedDataRawJsonConversion which converts domain to array format
+            var jsonObject = JObject.Parse(data);
+            
+            Domain = jsonObject["domain"]?.ToObject<object>();
+            Message = jsonObject["message"]?.ToObject<object>();
+            
+            // Filter out EIP712Domain from types (wallets don't expect it)
+            var typesObject = jsonObject["types"] as JObject;
+            if (typesObject != null)
+            {
+                // Remove EIP712Domain if present
+                typesObject.Remove("EIP712Domain");
+                Types = typesObject.ToObject<object>();
+            }
+            else
+            {
+                Types = jsonObject["types"]?.ToObject<object>();
+            }
         }
 
         [Preserve]
