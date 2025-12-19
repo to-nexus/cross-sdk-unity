@@ -9,7 +9,6 @@ namespace Cross.Sdk.Unity
 {
     public class BlockchainApiController
     {
-        private const string BasePath = "https://wallet-server.crosstoken.io";
         private const int TimoutSeconds = 5;
 
         private readonly IDictionary<string, string> _getBalanceHeaders = new Dictionary<string, string>
@@ -17,10 +16,17 @@ namespace Cross.Sdk.Unity
             { "x-sdk-version", CrossSdk.Version }
         };
 
-        private readonly UnityHttpClient _httpClient = new(new Uri(BasePath), TimeSpan.FromSeconds(TimoutSeconds));
+        private readonly UnityHttpClient _httpClient;
         private string _clientIdQueryParam;
 
         private ISignClient _signClient;
+
+        public BlockchainApiController()
+        {
+            // 환경에 따라 동적으로 API Base URL 설정
+            var apiBaseUrl = EnvironmentConfig.GetApiBaseUrl();
+            _httpClient = new UnityHttpClient(new Uri(apiBaseUrl), TimeSpan.FromSeconds(TimoutSeconds));
+        }
 
         public Task InitializeAsync(ISignClient signClient)
         {
@@ -62,6 +68,22 @@ namespace Cross.Sdk.Unity
 
             var projectId = CrossSdk.Config.projectId;
             return await _httpClient.GetAsync<GetBalanceResponse>($"api/v1/public/token/balance?account={address}", headers: _getBalanceHeaders);
+        }
+
+        public async Task<ChainApiResponse> FetchChainInfoAsync()
+        {
+            var apiPath = EnvironmentConfig.GetChainInfoApiPath();
+            
+            try
+            {
+                var response = await _httpClient.GetAsync<ChainApiResponse>(apiPath);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                UnityEngine.Debug.LogWarning($"[BlockchainApiController] Failed to fetch chain info: {ex.Message}");
+                return null;
+            }
         }
     }
 }

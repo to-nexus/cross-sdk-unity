@@ -46,8 +46,11 @@ namespace Cross.Sdk.Unity
             Evm = new NethereumEvmService();
 #endif
 
+            // BlockchainApiController를 먼저 초기화 (NetworkController에서 사용)
+            await BlockchainApiController.InitializeAsync(SignClient);
+            
+            // 나머지 컨트롤러들을 병렬로 초기화
             await Task.WhenAll(
-                BlockchainApiController.InitializeAsync(SignClient),
                 ConnectorController.InitializeAsync(Config, SignClient),
                 ModalController.InitializeAsync(),
                 EventsController.InitializeAsync(Config, ApiController),
