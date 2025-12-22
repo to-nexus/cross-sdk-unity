@@ -4,30 +4,17 @@ namespace Cross.Sdk.Unity
 {
     /// <summary>
     /// 환경별 설정을 관리합니다.
-    /// Editor 및 Development Build = Staging
-    /// Release Build = Production
+    /// Unity Editor에서는 메뉴(Cross SDK > Environment)로 Stage/Production 선택 가능
+    /// Build에서는 Development Build = Staging, Release Build = Production
     /// </summary>
     public static class EnvironmentConfig
     {
         /// <summary>
         /// 현재 환경이 Staging인지 확인합니다.
+        /// Editor에서는 EnvironmentSettings의 설정을 따르고,
+        /// Build에서는 빌드 타입에 따라 자동 결정됩니다.
         /// </summary>
-        public static bool IsStaging
-        {
-            get
-            {
-#if UNITY_EDITOR
-                // Editor는 항상 Staging
-                return true;
-#elif DEVELOPMENT_BUILD
-                // Development Build도 Staging
-                return true;
-#else
-                // Release Build는 Production
-                return false;
-#endif
-            }
-        }
+        public static bool IsStaging => EnvironmentSettings.Instance.IsStaging;
 
         /// <summary>
         /// 현재 환경 이름을 반환합니다.
