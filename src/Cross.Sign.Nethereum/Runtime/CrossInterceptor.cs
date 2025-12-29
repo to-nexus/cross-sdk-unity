@@ -7,6 +7,7 @@ using Nethereum.RPC.Eth.DTOs;
 using Nethereum.RPC.HostWallet;
 using Cross.Sign.Nethereum.Model;
 using Cross.Sign.Models;
+using Cross.Core.Common.Model.Errors;
 using UnityEngine;
 using Newtonsoft.Json;
 
@@ -49,7 +50,7 @@ namespace Cross.Sign.Nethereum
             }
 
             if (!_crossSignService.IsWalletConnected)
-                throw new InvalidOperationException("[CrossInterceptor] Wallet is not connected");
+                throw new SdkException(ErrorType.WALLET_NOT_CONNECTED, "Wallet is not connected");
 
             if (_crossSignService.IsMethodSupported(request.Method))
             {
@@ -112,7 +113,7 @@ namespace Cross.Sign.Nethereum
             }
 
             if (!_crossSignService.IsWalletConnected)
-                throw new InvalidOperationException("[CrossInterceptor] Wallet is not connected");
+                throw new SdkException(ErrorType.WALLET_NOT_CONNECTED, "Wallet is not connected");
 
             if (_crossSignService.IsMethodSupported(method))
             {
