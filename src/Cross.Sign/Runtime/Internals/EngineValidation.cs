@@ -224,12 +224,12 @@ namespace Cross.Sign
                 throw new ArgumentNullException(nameof(topic), "Pairing topic should be a valid string.");
 
             if (!Client.CoreClient.Pairing.Store.Keys.Contains(topic))
-                throw new KeyNotFoundException($"Paring topic {topic} doesn't exist in the pairing store.");
+                throw new SdkException(ErrorType.PAIRING_NOT_FOUND, $"Pairing topic {topic} doesn't exist in the pairing store.");
 
             var expiry = Client.CoreClient.Pairing.Store.Get(topic).Expiry;
             if (expiry != null && Clock.IsExpired(expiry.Value))
             {
-                throw new ExpiredException($"Pairing topic {topic} has expired.");
+                throw new SdkException(ErrorType.PAIRING_EXPIRED, $"Pairing topic {topic} has expired.");
             }
         }
 
@@ -239,12 +239,12 @@ namespace Cross.Sign
                 throw new ArgumentNullException(nameof(topic), "Session topic should be a valid string.");
 
             if (!Client.Session.Keys.Contains(topic))
-                throw new KeyNotFoundException($"Session topic {topic} doesn't exist in the session store.");
+                throw new SdkException(ErrorType.SESSION_NOT_FOUND, $"Session topic {topic} doesn't exist in the session store.");
 
             var expiry = Client.Session.Get(topic).Expiry;
             if (expiry != null && Clock.IsExpired(expiry.Value))
             {
-                throw new ExpiredException($"Session topic {topic} has expired.");
+                throw new SdkException(ErrorType.SESSION_EXPIRED, $"Session topic {topic} has expired.");
             }
 
             return Task.CompletedTask;
@@ -253,13 +253,13 @@ namespace Cross.Sign
         private async Task IsValidProposalId(long id)
         {
             if (!Client.Proposal.Keys.Contains(id))
-                throw new KeyNotFoundException($"Proposal id {id} doesn't exist in the proposal store.");
+                throw new SdkException(ErrorType.PROPOSAL_NOT_FOUND, $"Proposal id {id} doesn't exist in the proposal store.");
 
             var expiry = Client.Proposal.Get(id).Expiry;
             if (expiry != null && Clock.IsExpired(expiry.Value))
             {
                 await PrivateThis.DeleteProposal(id);
-                throw new ExpiredException($"Proposal with id {id} has expired.");
+                throw new SdkException(ErrorType.PROPOSAL_EXPIRED, $"Proposal with id {id} has expired.");
             }
         }
 
@@ -280,7 +280,7 @@ namespace Cross.Sign
             }
             else
             {
-                throw new KeyNotFoundException($"Session or pairing topic doesn't exist. Topic value: {topic}.");
+                throw new SdkException(ErrorType.SESSION_NOT_FOUND, $"Session or pairing topic doesn't exist. Topic value: {topic}.");
             }
         }
 
