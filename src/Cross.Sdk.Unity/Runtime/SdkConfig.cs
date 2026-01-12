@@ -79,10 +79,10 @@ namespace Cross.Sdk.Unity
                 new Wallet
                 {
                     Id = "cross_wallet",
-                    Name = "Cross Wallet",
+                    Name = "CROSSx Wallet",
                     ImageUrl = "https://contents.crosstoken.io/img/CROSSx_AppIcon.png",
                     MobileLink = "crossx://",
-                    DesktopLink = "crossx://",
+                    DesktopLink = null,  // Desktop에서 Extension 탭 숨김 (QR Code만 사용)
                     AppStore = "https://apps.apple.com/us/app/crossx-games/id6741250674",
                     PlayStore = "https://play.google.com/store/apps/details?id=com.nexus.crosswallet"
                 }
