@@ -3,8 +3,8 @@
     <ui:VisualElement class="cell">
         <Cross.Sdk.Unity.Components.Tabbed>
             <ui:VisualElement name="tabs-container" class="tabbed__tabs-container">
-                <ui:Label name="QrCodeTab" class="tabbed__tab" text="Mobile"/>
-                <ui:Label name="DeepLinkTab" class="tabbed__tab" text="Desktop"/>
+                <ui:Label name="QrCodeTab" class="tabbed__tab" text="QR Code"/>
+                <ui:Label name="DeepLinkTab" class="tabbed__tab" text="Extension"/>
                 <ui:Label name="WebAppTab" class="tabbed__tab" text="Web App"/>
             </ui:VisualElement>
             <ui:VisualElement name="content-container" class="tabbed__content-container">
