@@ -128,7 +128,9 @@ namespace Cross.Sign.Unity
             if (!safeAppUrl.EndsWith('/'))
                 safeAppUrl = $"{safeAppUrl}/";
 
-            var encodedWcUrl = Uri.EscapeDataString(wcUri);
+            // WalletConnect URI에 from=otherApp 파라미터 추가
+            var wcUriWithFrom = $"{wcUri}&from=otherApp";
+            var encodedWcUrl = Uri.EscapeDataString(wcUriWithFrom);
 
             return $"{safeAppUrl}wc?uri={encodedWcUrl}";
         }
