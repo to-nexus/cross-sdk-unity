@@ -69,6 +69,7 @@ namespace Cross.Sdk.Unity
         Account,
         NetworkSearch,
         NetworkLoading,
-        Siwe
+        Siwe,
+        GetWallet
     }
 }

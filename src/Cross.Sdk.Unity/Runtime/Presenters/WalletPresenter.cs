@@ -143,8 +143,8 @@ namespace Cross.Sdk.Unity
 #elif UNITY_ANDROID
             Application.OpenURL(_wallet.PlayStore);
 #else
-            // TODO: on desktop and webgl show the list of all available options
-            Application.OpenURL(_wallet.Homepage);
+            // Desktop: iOS/Android 스토어 선택 모달 표시
+            Router.OpenView(ViewType.GetWallet);
 #endif
         }
 
