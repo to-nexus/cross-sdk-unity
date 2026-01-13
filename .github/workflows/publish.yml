@@ -1,21 +1,24 @@
 name: Deploy Unity Packages to Nexus
 
 on:
-  push:
-    branches:
-      - master
-      - ci/*
-  # 태그 트리거 제거
-  # pull_request: # 필요하다면 PR 트리거는 유지하거나 제거
-  #   branches:
-  #     - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '배포할 버전 (예: 1.0.0)'
+        required: true
+        type: string
+      environment:
+        description: '배포 환경'
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
 
 jobs:
   sonarqube:
     name: SonarQube
-    runs-on: ubuntu-latest
-    # main/ci 푸시 또는 main PR 시에만 실행 (이전 조건 유지)
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/ci/')) || github.event_name == 'pull_request'
+    runs-on: [arc-runner-set]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,110 +28,379 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  deploy:
-    # 잡 이름 변경
-    name: Deploy Packages from package_version
-    needs: sonarqube
-    # main 또는 ci/* 브랜치 푸시 시에만 실행
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/ci/'))
-    runs-on: ubuntu-latest
+  calculate-version:
+    name: Calculate Version
+    runs-on: [arc-runner-set]
+    outputs:
+      final_version: ${{ steps.calc.outputs.final_version }}
+      tag_name: ${{ steps.calc.outputs.tag_name }}
+      is_prerelease: ${{ steps.calc.outputs.is_prerelease }}
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
 
-    - name: Configure npm for Nexus
-      run: |
-        # NEXUS_REGISTRY_URL에서 https:// 제거 (있을 경우)
-        REGISTRY_HOST="${NEXUS_REGISTRY_URL#https://}"
-        REGISTRY_HOST="${REGISTRY_HOST#http://}"
-        
-        # .npmrc 파일 생성 (registry와 인증 정보 포함)
-        cat > .npmrc << EOF
-        registry=https://${REGISTRY_HOST}/
-        //${REGISTRY_HOST}/:_auth=${{ secrets.NEXUS_CREDENTIALS_BASE64 }}
-        always-auth=true
-        EOF
-      env:
-        NEXUS_REGISTRY_URL: ${{ secrets.NEXUS_REGISTRY_URL }}
+      # - name: Configure npm for registry access
+      #   env:
+      #     NEXUS_REGISTRY_URL: ${{ secrets.NEXUS_REGISTRY_URL }}
+      #     DEV_NEXUS_REGISTRY_URL: ${{ secrets.DEV_NEXUS_REGISTRY_URL }}
+      #     NEXUS_CREDENTIALS_BASE64: ${{ secrets.NEXUS_CREDENTIALS_BASE64 }}
+      #     INPUT_ENV: ${{ inputs.environment }}
+      #   run: |
+      #     if [[ "$INPUT_ENV" == "prod" ]]; then
+      #       REGISTRY_URL="${NEXUS_REGISTRY_URL}"
+      #     else
+      #       REGISTRY_URL="${DEV_NEXUS_REGISTRY_URL}"
+      #     fi
+      #     REGISTRY_HOST="${REGISTRY_URL#https://}"
+      #     REGISTRY_HOST="${REGISTRY_HOST#http://}"
+      #     REGISTRY_HOST="${REGISTRY_HOST%/}"
+          
+      #     cat > .npmrc << EOF
+      #     registry=https://${REGISTRY_HOST}/
+      #     //${REGISTRY_HOST}/:_auth=${NEXUS_CREDENTIALS_BASE64}
+      #     always-auth=true
+      #     EOF
+      #     echo "Configured npm registry: https://${REGISTRY_HOST}/"
 
-    - name: Verify npm authentication
-      run: cat .npmrc
-
-    # 스텝 이름 변경 및 스크립트 수정
-    - name: Deploy Packages using version from package_version
-      run: |
-        # package_version.json 파일에서 버전 읽기 (Node.js 사용)
-        if [[ ! -f package_version.json ]]; then
-          echo "Error: package_version.json file not found in the root directory."
-          exit 1
-        fi
-        VERSION=$(node -p "require('./package_version.json').version")
-        if [[ -z "$VERSION" ]]; then
-          echo "Error: Could not read version from package_version.json"
-          exit 1
-        fi
-        echo "Deploying version specified in package_version.json: $VERSION"
-
-        echo "Finding packages in src/ directory..."
-        PACKAGES=$(find src/ -name package.json -not -path "*/.idea/*" -exec dirname {} \;)
-
-        if [ -z "$PACKAGES" ]; then
-          echo "No packages found to deploy."
-          exit 0 # 패키지가 없으면 성공으로 종료
-        fi
-
-        echo "Found packages:"
-        echo "$PACKAGES"
-        echo "---"
-
-        for pkg_dir in $PACKAGES; do
-          echo "Processing package: $pkg_dir..."
-          pushd "$pkg_dir" || exit 1
-
-          echo "Updating package.json version to $VERSION..."
-          # package.json 버전 업데이트 (Git 태그 추가 방지, 동일 버전 허용)
-          npm version "$VERSION" --no-git-tag-version --allow-same-version
-          if [[ $? -ne 0 ]]; then
-            echo "Error updating version for $pkg_dir"
-            popd
-            exit 1
-          fi
-
-          echo "Publishing $pkg_dir@$VERSION..."
-          # 루트의 .npmrc 파일을 현재 디렉토리로 복사
-          if [[ -f ../../.npmrc ]]; then
-             cp ../../.npmrc .npmrc
+      - name: Calculate final version
+        id: calc
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_ENV: ${{ inputs.environment }}
+          NEXUS_REGISTRY_URL: ${{ secrets.NEXUS_REGISTRY_URL }}
+          DEV_NEXUS_REGISTRY_URL: ${{ secrets.DEV_NEXUS_REGISTRY_URL }}
+        run: |
+          BASE_VERSION="${INPUT_VERSION}"
+          
+          if [[ "$INPUT_ENV" == "prod" ]]; then
+            # prod 환경: 버전 그대로 사용
+            FINAL_VERSION="${BASE_VERSION}"
+            TAG_NAME="v${BASE_VERSION}"
+            IS_PRERELEASE="false"
+            echo "Production release: ${TAG_NAME}"
           else
-             echo "Error: .npmrc not found in project root for $pkg_dir. Cannot publish."
-             popd
-             exit 1
+            # dev 환경: beta 버전 자동 계산
+            echo "Calculating next beta version for ${BASE_VERSION}..."
+            
+            # 레지스트리 URL 설정
+            REGISTRY_URL="${DEV_NEXUS_REGISTRY_URL}"
+            REGISTRY_URL="${REGISTRY_URL%/}"
+            if [[ ! "$REGISTRY_URL" =~ ^https?:// ]]; then
+              REGISTRY_URL="https://${REGISTRY_URL}"
+            fi
+            
+            # 1. GitHub Release에서 최신 beta 번호 확인 (GitHub API 사용)
+            GH_BETA_NUM=0
+            echo "Checking GitHub releases..."
+            RELEASES_JSON=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/releases?per_page=100" || echo "[]")
+            
+            LATEST_GH_BETA=$(echo "$RELEASES_JSON" | jq -r --arg base "v${BASE_VERSION}-beta." \
+              '[.[] | select(.tag_name | startswith($base)) | .tag_name] | sort_by(split("-beta.")[1] | tonumber) | last // empty')
+            
+            if [[ -n "$LATEST_GH_BETA" && "$LATEST_GH_BETA" != "null" ]]; then
+              GH_BETA_NUM=$(echo "$LATEST_GH_BETA" | sed 's/.*-beta\.//')
+              echo "GitHub Release latest beta: ${LATEST_GH_BETA} (beta.${GH_BETA_NUM})"
+            else
+              echo "No GitHub Release beta found"
+            fi
+            
+            # 2. npm registry에서 최신 beta 번호 확인
+            NPM_BETA_NUM=0
+            FIRST_PKG=$(find src/ -name package.json -not -path "*/.idea/*" | head -1)
+            if [[ -n "$FIRST_PKG" ]]; then
+              PKG_NAME=$(node -p "require('./${FIRST_PKG}').name")
+              echo "Checking npm registry for package: ${PKG_NAME}"
+              
+              # npm에서 해당 패키지의 모든 버전 조회 (인증된 .npmrc 사용)
+              NPM_VERSIONS=$(npm view "${PKG_NAME}" versions 2>/dev/null || echo "[]")
+              echo "npm versions response: ${NPM_VERSIONS}"
+              
+              # beta 버전 중 최신 번호 추출
+              if [[ -n "$NPM_VERSIONS" && "$NPM_VERSIONS" != "[]" ]]; then
+                LATEST_NPM_BETA=$(echo "$NPM_VERSIONS" | tr -d "[]' " | tr ',' '\n' | grep "^${BASE_VERSION}-beta\." | sort -t. -k4 -n | tail -1)
+                if [[ -n "$LATEST_NPM_BETA" ]]; then
+                  NPM_BETA_NUM=$(echo "$LATEST_NPM_BETA" | sed 's/.*-beta\.//')
+                  echo "npm registry latest beta: ${LATEST_NPM_BETA} (beta.${NPM_BETA_NUM})"
+                else
+                  echo "No npm registry beta found for ${BASE_VERSION}"
+                fi
+              else
+                echo "No versions found in npm registry or package not published yet"
+              fi
+            fi
+            
+            # 3. 둘 중 더 높은 번호 + 1
+            if [[ $GH_BETA_NUM -ge $NPM_BETA_NUM ]]; then
+              BETA_NUM=$((GH_BETA_NUM + 1))
+            else
+              BETA_NUM=$((NPM_BETA_NUM + 1))
+            fi
+            
+            echo "Final beta number: ${BETA_NUM} (GH: ${GH_BETA_NUM}, npm: ${NPM_BETA_NUM})"
+            
+            FINAL_VERSION="${BASE_VERSION}-beta.${BETA_NUM}"
+            TAG_NAME="v${BASE_VERSION}-beta.${BETA_NUM}"
+            IS_PRERELEASE="true"
+            echo "Pre-release version: ${TAG_NAME}"
           fi
           
-          # NEXUS_REGISTRY_URL에 https:// 추가 (없을 경우)
-          REGISTRY_URL="${NEXUS_REGISTRY_URL}"
-          if [[ ! "$REGISTRY_URL" =~ ^https?:// ]]; then
-            REGISTRY_URL="https://${REGISTRY_URL}"
+          echo "final_version=${FINAL_VERSION}" >> $GITHUB_OUTPUT
+          echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
+          echo "is_prerelease=${IS_PRERELEASE}" >> $GITHUB_OUTPUT
+
+  deploy:
+    name: Deploy Packages
+    needs: [calculate-version]
+    runs-on: [arc-runner-set]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Set Registry URL based on environment
+        id: registry
+        run: |
+          if [[ "${{ inputs.environment }}" == "prod" ]]; then
+            echo "url=${{ secrets.NEXUS_REGISTRY_URL }}" >> $GITHUB_OUTPUT
+            echo "Using PRODUCTION registry"
+          else
+            echo "url=${{ secrets.DEV_NEXUS_REGISTRY_URL }}" >> $GITHUB_OUTPUT
+            echo "Using DEV registry"
           fi
+          echo "credentials=${{ secrets.NEXUS_CREDENTIALS_BASE64 }}" >> $GITHUB_OUTPUT
+
+      - name: Configure npm for Nexus
+        run: |
+          REGISTRY_URL="${{ steps.registry.outputs.url }}"
+          # Remove protocol prefix if exists
+          REGISTRY_HOST="${REGISTRY_URL#https://}"
+          REGISTRY_HOST="${REGISTRY_HOST#http://}"
+          # Remove trailing slash if exists
+          REGISTRY_HOST="${REGISTRY_HOST%/}"
           
-          # npm publish 실행
-          npm publish --registry "${REGISTRY_URL}/"
-          if [[ $? -ne 0 ]]; then
-            echo "Error publishing $pkg_dir"
-            popd
-            exit 1
+          # Create .npmrc file
+          cat > .npmrc << EOF
+          registry=https://${REGISTRY_HOST}/
+          //${REGISTRY_HOST}/:_auth=${{ steps.registry.outputs.credentials }}
+          always-auth=true
+          EOF
+
+      - name: Verify npm configuration
+        run: |
+          echo "Registry configuration:"
+          cat .npmrc | head -1
+
+      - name: Deploy Packages
+        env:
+          FINAL_VERSION: ${{ needs.calculate-version.outputs.final_version }}
+          REGISTRY_URL: ${{ steps.registry.outputs.url }}
+        run: |
+          VERSION="${FINAL_VERSION}"
+          echo "Deploying version: $VERSION"
+          echo "Environment: ${{ inputs.environment }}"
+
+          echo "Finding packages in src/ directory..."
+          PACKAGES=$(find src/ -name package.json -not -path "*/.idea/*" -exec dirname {} \;)
+
+          if [ -z "$PACKAGES" ]; then
+            echo "No packages found to deploy."
+            exit 0
           fi
 
-          popd || exit 1
+          echo "Found packages:"
+          echo "$PACKAGES"
           echo "---"
-        done
 
-        echo "All packages deployed successfully with version $VERSION."
-      env:
-        NEXUS_REGISTRY_URL: ${{ secrets.NEXUS_REGISTRY_URL }}
-        NEXUS_CREDENTIALS_BASE64: ${{ secrets.NEXUS_CREDENTIALS_BASE64 }}
-        # 필요시 npm 인증 토큰 설정 (npm version은 일반적으로 필요 없음)
-        # NODE_AUTH_TOKEN: ${{ secrets.NEXUS_CREDENTIALS_BASE64 }}
+          for pkg_dir in $PACKAGES; do
+            echo "Processing package: $pkg_dir..."
+            pushd "$pkg_dir" || exit 1
+
+            echo "Updating package.json version to $VERSION..."
+            npm version "$VERSION" --no-git-tag-version --allow-same-version
+            if [[ $? -ne 0 ]]; then
+              echo "Error updating version for $pkg_dir"
+              popd
+              exit 1
+            fi
+
+            echo "Publishing $pkg_dir@$VERSION..."
+            # Copy .npmrc from root
+            if [[ -f ../../.npmrc ]]; then
+               cp ../../.npmrc .npmrc
+            else
+               echo "Error: .npmrc not found in project root for $pkg_dir. Cannot publish."
+               popd
+               exit 1
+            fi
+            
+            # Ensure registry URL has protocol and no trailing slash
+            PUBLISH_URL="${REGISTRY_URL}"
+            if [[ ! "$PUBLISH_URL" =~ ^https?:// ]]; then
+              PUBLISH_URL="https://${PUBLISH_URL}"
+            fi
+            PUBLISH_URL="${PUBLISH_URL%/}"
+            
+            npm publish --registry "${PUBLISH_URL}/"
+            if [[ $? -ne 0 ]]; then
+              echo "Error publishing $pkg_dir"
+              popd
+              exit 1
+            fi
+
+            popd || exit 1
+            echo "---"
+          done
+
+          echo "All packages deployed successfully with version $VERSION."
+
+  create-release:
+    name: Create GitHub Release
+    needs: [calculate-version, deploy]
+    runs-on: [arc-runner-set]
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.calculate-version.outputs.tag_name }}
+          name: ${{ needs.calculate-version.outputs.is_prerelease == 'true' && format('Pre-release {0}', needs.calculate-version.outputs.tag_name) || format('Release {0}', needs.calculate-version.outputs.tag_name) }}
+          body: ${{ needs.calculate-version.outputs.is_prerelease == 'true' && format('Pre-release version {0} - Development build for testing purposes only.', needs.calculate-version.outputs.final_version) || format('Production release version {0}', needs.calculate-version.outputs.final_version) }}
+          prerelease: ${{ needs.calculate-version.outputs.is_prerelease == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+  # ===========================================
+  # 배포 완료 알림 (Slack)
+  # ===========================================
+  notify:
+    name: Slack Notification
+    needs: [calculate-version, deploy, create-release]
+    runs-on: [arc-runner-set]
+    if: always()
+    steps:
+      - name: Set deployment status
+        id: status
+        run: |
+          DEPLOY_RESULT="${{ needs.deploy.result || 'skipped' }}"
+          RELEASE_RESULT="${{ needs.create-release.result || 'skipped' }}"
+          
+          # 전체 결과 판단
+          if [[ "$DEPLOY_RESULT" == "failure" ]] || [[ "$RELEASE_RESULT" == "failure" ]]; then
+            echo "overall=failure" >> $GITHUB_OUTPUT
+            echo "color=#FF0000" >> $GITHUB_OUTPUT
+            echo "emoji=❌" >> $GITHUB_OUTPUT
+          elif [[ "$DEPLOY_RESULT" == "success" ]] && [[ "$RELEASE_RESULT" == "success" ]]; then
+            echo "overall=success" >> $GITHUB_OUTPUT
+            echo "color=#36A64F" >> $GITHUB_OUTPUT
+            echo "emoji=✅" >> $GITHUB_OUTPUT
+          else
+            echo "overall=skipped" >> $GITHUB_OUTPUT
+            echo "color=#808080" >> $GITHUB_OUTPUT
+            echo "emoji=⏭️" >> $GITHUB_OUTPUT
+          fi
+          
+          # 결과 이모지 매핑
+          echo "deploy_emoji=$([[ "$DEPLOY_RESULT" == "success" ]] && echo "✅" || ([[ "$DEPLOY_RESULT" == "failure" ]] && echo "❌" || echo "⏭️"))" >> $GITHUB_OUTPUT
+          echo "release_emoji=$([[ "$RELEASE_RESULT" == "success" ]] && echo "✅" || ([[ "$RELEASE_RESULT" == "failure" ]] && echo "❌" || echo "⏭️"))" >> $GITHUB_OUTPUT
+
+      - name: Send Slack Notification
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: ${{ vars.SLACK_CHANNEL_ID }}
+          payload: |
+            {
+              "text": "${{ steps.status.outputs.emoji }} Unity SDK 배포 ${{ steps.status.outputs.overall }}",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "${{ steps.status.outputs.emoji }} Unity SDK 배포 결과",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Repository:*\n<${{ github.server_url }}/${{ github.repository }}|${{ github.repository }}>"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Environment:*\n`${{ inputs.environment }}`"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Version:*\n`${{ needs.calculate-version.outputs.final_version }}`"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Tag:*\n`${{ needs.calculate-version.outputs.tag_name }}`"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Deploy:*\n${{ steps.status.outputs.deploy_emoji }} ${{ needs.deploy.result || 'skipped' }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Release:*\n${{ steps.status.outputs.release_emoji }} ${{ needs.create-release.result || 'skipped' }}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Commit:*\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Actor:*\n${{ github.actor }}"
+                    }
+                  ]
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow Run>"
+                    }
+                  ]
+                }
+              ],
+              "attachments": [
+                {
+                  "color": "${{ steps.status.outputs.color }}"
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
