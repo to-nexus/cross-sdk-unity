@@ -1,0 +1,27 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="GetWalletView.uss"/>
+    
+    <ui:VisualElement name="get-wallet-view__container" class="get-wallet-view__container">
+        <!-- iOS App 옵션 -->
+        <ui:VisualElement name="ios-option" class="store-option">
+            <ui:VisualElement class="store-option__icon-container">
+                <ui:VisualElement name="ios-icon" class="store-option__icon store-option__icon--ios"/>
+            </ui:VisualElement>
+            <ui:Label name="ios-label" text="iOS App" class="store-option__label"/>
+            <ui:VisualElement class="store-option__arrow">
+                <ui:Label text="›" class="arrow-icon"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+        <!-- Android App 옵션 -->
+        <ui:VisualElement name="android-option" class="store-option">
+            <ui:VisualElement class="store-option__icon-container">
+                <ui:VisualElement name="android-icon" class="store-option__icon store-option__icon--android"/>
+            </ui:VisualElement>
+            <ui:Label name="android-label" text="Android App" class="store-option__label"/>
+            <ui:VisualElement class="store-option__arrow">
+                <ui:Label text="›" class="arrow-icon"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
