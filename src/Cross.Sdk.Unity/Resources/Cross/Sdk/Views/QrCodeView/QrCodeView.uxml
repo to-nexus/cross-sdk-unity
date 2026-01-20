@@ -17,7 +17,7 @@
     </ui:VisualElement>
     <ui:VisualElement class="gap"/>
     <ui:VisualElement class="cell">
-        <ui:Label name="qrcode-view__subtitle" class="text-paragraph" text="Scan this QR code with your phone"/>
+        <ui:Label name="qrcode-view__subtitle" class="text-paragraph" text="Scan this QR Code with your phone"/>
         <ui:VisualElement name="qrcode-view__copy-link-container">
             <Cross.Sdk.Unity.Components.Link name="qrcode-view__copy-link"
                                                 text="&lt;font-weight=600&gt;Copy link&lt;/font-weight&gt;"

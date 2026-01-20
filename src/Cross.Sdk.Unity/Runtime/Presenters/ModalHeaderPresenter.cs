@@ -43,10 +43,11 @@ namespace Cross.Sdk.Unity
 
             // Assign buttons to the corresponding view types
             _leftSlotItems.Add(ViewType.QrCode, goBackIconLink);
-            _leftSlotItems.Add(ViewType.Wallet, goBackIconLink);
+            // _leftSlotItems.Add(ViewType.Wallet, goBackIconLink); // CROSSx Wallet 모달에서는 뒤로가기 버튼 숨김
             _leftSlotItems.Add(ViewType.WalletSearch, goBackIconLink);
             _leftSlotItems.Add(ViewType.NetworkSearch, goBackIconLink);
             _leftSlotItems.Add(ViewType.NetworkLoading, goBackIconLink);
+            _leftSlotItems.Add(ViewType.GetWallet, goBackIconLink);
 
             // Close button
             View.rightSlot.Add(new IconLink(

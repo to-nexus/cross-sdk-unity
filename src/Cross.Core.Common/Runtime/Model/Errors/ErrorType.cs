@@ -52,6 +52,18 @@ namespace Cross.Core.Common.Model.Errors
         UNKNOWN = 9000,
 
         // 10000 (Pairing)
-        WC_METHOD_UNSUPPORTED = 10001
+        WC_METHOD_UNSUPPORTED = 10001,
+
+        // 11000 (SDK Internal Errors)
+        WALLET_NOT_CONNECTED = 11001,
+        SESSION_NOT_FOUND = 11002,
+        SESSION_EXPIRED = 11003,
+        PAIRING_NOT_FOUND = 11004,
+        PAIRING_EXPIRED = 11005,
+        PROPOSAL_NOT_FOUND = 11006,
+        PROPOSAL_EXPIRED = 11007,
+        INVALID_OPERATION = 11008,
+        ARGUMENT_NULL = 11009,
+        ARGUMENT_INVALID = 11010
     }
 }

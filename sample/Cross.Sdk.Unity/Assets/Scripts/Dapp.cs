@@ -672,21 +672,44 @@ namespace Sample
         /// </summary>
         private void HandleWalletError(Exception e, string operationName)
         {
+            // Convert Exception to ErrorResponse
+            var errorResponse = e.ToErrorResponse();
             string message;
             
             switch (e)
             {
+                // SDK Internal Errors
+                case SdkException sdk when sdk.ErrorType == ErrorType.WALLET_NOT_CONNECTED:
+                    message = $"🔌 Wallet is not connected.\n[Code: {errorResponse.errorCode}]";
+                    Debug.LogWarning($"[CrossSdk Sample] Wallet not connected");
+                    break;
+                    
+                case SdkException sdk when sdk.ErrorType == ErrorType.SESSION_EXPIRED:
+                    message = $"⏱️ Session expired. Please reconnect your wallet.\n[Code: {errorResponse.errorCode}]";
+                    Debug.LogWarning($"[CrossSdk Sample] Session expired");
+                    break;
+                    
+                case SdkException sdk when sdk.ErrorType == ErrorType.SESSION_NOT_FOUND:
+                    message = $"❌ Session not found. Please reconnect your wallet.\n[Code: {errorResponse.errorCode}]";
+                    Debug.LogWarning($"[CrossSdk Sample] Session not found");
+                    break;
+                    
+                case SdkException sdk:
+                    message = $"SDK Error [{errorResponse.errorCode}]:\n{errorResponse.errorMessage}";
+                    break;
+                
+                // WalletConnect Protocol Errors
                 case CrossNetworkException cne when cne.CodeType == ErrorType.JSONRPC_REQUEST_METHOD_REJECTED:
-                    message = $"❌ User rejected the {operationName}";
+                    message = $"❌ User rejected the {operationName}.\n[Code: {errorResponse.errorCode}]";
                     Debug.Log($"[CrossSdk Sample] User rejected {operationName}");
                     break;
                     
                 case CrossNetworkException cne when cne.CodeType == ErrorType.JSONRPC_REQUEST_TIMEOUT:
-                    message = "⏱️ Request timed out. Please try again.";
+                    message = $"⏱️ Request timed out. Please try again.\n[Code: {errorResponse.errorCode}]";
                     break;
                     
                 case CrossNetworkException cne:
-                    message = $"Network Error ({cne.Code}):\n{cne.Message}";
+                    message = $"Network Error [{errorResponse.errorCode}]:\n{errorResponse.errorMessage}";
                     break;
                     
                 case RpcResponseException rpc:
@@ -694,7 +717,7 @@ namespace Sample
                     break;
                     
                 default:
-                    message = $"Error:\n{e.Message}";
+                    message = $"Error [{errorResponse.errorCode}]:\n{errorResponse.errorMessage}";
                     break;
             }
             
