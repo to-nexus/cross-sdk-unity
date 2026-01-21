@@ -12,11 +12,37 @@ namespace Sample
         [Space]
         [SerializeField] private GameObject _debugConsole;
 
+        private void Awake()
+        {
+            // Subscribe to deep link events
+            Application.deepLinkActivated += OnDeepLinkActivated;
+            
+            // Check if app was opened via deep link
+            if (!string.IsNullOrEmpty(Application.absoluteURL))
+            {
+                OnDeepLinkActivated(Application.absoluteURL);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            Application.deepLinkActivated -= OnDeepLinkActivated;
+        }
+
         private void Start()
         {
             InitDebugConsole();
             ConfigureMixpanel();
             SceneManager.LoadScene(_mainScene);
+        }
+
+        private void OnDeepLinkActivated(string url)
+        {
+            Debug.Log($"[AppInit] Deep link activated: {url}");
+            
+            // The deep link brings the app to foreground
+            // WalletConnect will handle the connection via WebSocket automatically
+            // when the app comes back to foreground
         }
 
         private void InitDebugConsole()

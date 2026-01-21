@@ -190,7 +190,7 @@ namespace Cross.Sdk.Unity
                 new BlockExplorer("Kaia Scan", "https://kaiascan.io/"),
                 "https://kaia-mainnet-ext.crosstoken.io/815b8a6e389b34a4f82cfd1e501692dee2f4e8f5",
                 false,
-                "https://dev-imgproxy-api.crosstoken.io/rs:fit:512:512:1/plain/https://contents.crosstoken.io/wallet/token/images/KAIA.svg@png"
+                "https://dev-imgproxy-api.crosstoken.io/rs:fit:512:512:1/plain/https://contents.crosstoken.io/wallet/token/images/KAIA.png@png"
             );
 
             public static readonly Chain KaiaTestnet = new(
@@ -201,7 +201,7 @@ namespace Cross.Sdk.Unity
                 new BlockExplorer("Kairos Scan", "https://kairos.kaiascan.io/"),
                 "https://kaia-testnet.crosstoken.io/fda0d5a47e2d0768e9329444295a3f0681fff365",
                 true,
-                "https://dev-imgproxy-api.crosstoken.io/rs:fit:512:512:1/plain/https://contents.crosstoken.io/wallet/token/images/KAIA.svg@png"
+                "https://dev-imgproxy-api.crosstoken.io/rs:fit:512:512:1/plain/https://contents.crosstoken.io/wallet/token/images/KAIA.png@png"
             );
 
             public static readonly Chain Ronin = new(
