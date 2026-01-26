@@ -128,7 +128,9 @@ namespace Cross.Sdk.Unity
 
             Address = e.Account.Address;
             AccountId = e.Account.AccountId;
-            ChainId = e.Account.ChainId;
+            ChainId = e.Account.ChainId.Contains(":") 
+                ? e.Account.ChainId.Split(":")[1] 
+                : e.Account.ChainId;
 
             await Task.WhenAll(
                 UpdateBalance(),
