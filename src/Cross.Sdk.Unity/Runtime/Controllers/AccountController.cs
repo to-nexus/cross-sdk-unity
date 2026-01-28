@@ -114,7 +114,7 @@ namespace Cross.Sdk.Unity
             
             Address = account.Address;
             AccountId = account.AccountId;
-            ChainId = account.ChainId.Split(":")[1] ?? "-1";
+            ChainId = Core.Utils.ExtractChainReference(account.ChainId) ?? "-1";
             
             await Task.WhenAll(
                 UpdateBalance(),
@@ -128,9 +128,7 @@ namespace Cross.Sdk.Unity
 
             Address = e.Account.Address;
             AccountId = e.Account.AccountId;
-            ChainId = e.Account.ChainId.Contains(":") 
-                ? e.Account.ChainId.Split(":")[1] 
-                : e.Account.ChainId;
+            ChainId = Core.Utils.ExtractChainReference(e.Account.ChainId);
 
             await Task.WhenAll(
                 UpdateBalance(),
