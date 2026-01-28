@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Cross.Core.Common.Utils;
 using Cross.Sign.Models;
 using Cross.Sign.Unity;
+using Cross.Sdk.Unity.WebView;
 using Nethereum.Contracts.Standards.ERC20.TokenList;
 using UnityEngine;
 
@@ -384,6 +385,33 @@ namespace Cross.Sdk.Unity
                 throw new Exception("No account connected"); // TODO: use custom ex type
 
             return Instance.DisconnectAsyncCore();
+        }
+
+        /// <summary>
+        ///     Opens a WebView for external authentication (e.g., Privy).
+        /// </summary>
+        /// <param name="url">The URL to open in the WebView.</param>
+        /// <param name="initialData">Optional initial data to send to the WebView.</param>
+        /// <returns>A task that represents the WebView operation with the result string from the Web.</returns>
+        public static async Task<string> ConnectWithWebViewAsync(string url, string initialData = null)
+        {
+            if (!IsInitialized)
+                throw new Exception("CrossSdk not initialized");
+
+            var tcs = new TaskCompletionSource<string>();
+            var handler = WebViewProvider.GetHandler(Instance);
+
+            void OnMessage(string msg)
+            {
+                handler.OnMessageReceived -= OnMessage;
+                tcs.TrySetResult(msg);
+                handler.Close();
+            }
+
+            handler.OnMessageReceived += OnMessage;
+            handler.Open(url, initialData);
+
+            return await tcs.Task;
         }
 
         protected abstract Task InitializeAsyncCore();

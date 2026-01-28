@@ -13,6 +13,8 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using ButtonUtk = UnityEngine.UIElements.Button;
 using Newtonsoft.Json;
+using Cross.Sdk.Unity.WebView;
+using System.IO;
 
 namespace Sample
 {
@@ -22,6 +24,9 @@ namespace Sample
 
         private ButtonStruct[] _buttons;
         private VisualElement _buttonsContainer;
+
+        private readonly string _mockWebsiteUrl = "https://stg-cross-wallet.crosstoken.io/en";
+        private readonly string _bridgeMocksPath = "/Users/igyeong-won/Documents/Workspace/cross-wallet-ios-master/crossx-ios/BridgeMocks";
 
         private void Awake()
         {
@@ -104,6 +109,12 @@ namespace Sample
                     {
                         "eip155:612044"
                     }
+                },
+                new ButtonStruct
+                {
+                    Text = "Open Wallet Web (Mock)",
+                    OnClick = OnOpenWalletWebButton,
+                    AccountRequired = false
                 },
                 new ButtonStruct
                 {
@@ -344,6 +355,35 @@ namespace Sample
             {
                 Notification.ShowMessage($"{e.GetType()}:\n{e.Message}");
                 Debug.LogException(e, this);
+            }
+        }
+
+        public async void OnOpenWalletWebButton()
+        {
+            try
+            {
+                // 1. BridgeMocks에서 JSON 데이터 읽기
+                string jsonPath = Path.Combine(_bridgeMocksPath, "get-account-detail.json");
+                string jsonData = "";
+
+                if (File.Exists(jsonPath))
+                {
+                    jsonData = File.ReadAllText(jsonPath);
+                    Debug.Log($"[Dapp] Loading Mock Data from: {jsonPath}");
+                }
+
+                // 2. SDK를 통해 웹뷰 인증 진행 (Dapp은 내부 핸들러를 몰라도 됨)
+                Notification.ShowMessage("Opening Wallet Web via SDK...");
+                string result = await CrossSdk.ConnectWithWebViewAsync(_mockWebsiteUrl, jsonData);
+                
+                // 3. 결과 처리
+                Debug.Log($"[Dapp] Received from SDK WebView: {result}");
+                Notification.ShowMessage($"Web Response Received!\n{result}");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error in OnOpenWalletWebButton: {e.Message}");
+                Notification.ShowMessage("Failed to open webview.");
             }
         }
 
