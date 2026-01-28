@@ -541,7 +541,7 @@ namespace Sample
 
             // Convert CAIP-2 chain reference to EIP-155 chain ID
             // This is equivalent to `account.ChainId.Split(":")[1]`, but allocates less memory
-            var ethChainId = Utils.ExtractChainReference(account.ChainId);
+            var ethChainId = Core.Utils.ExtractChainReference(account.ChainId);
 
             typedData.Domain.ChainId = BigInteger.Parse(ethChainId);
             typedData.SetMessage(message);

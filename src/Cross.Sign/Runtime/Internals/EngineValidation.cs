@@ -403,16 +403,11 @@ namespace Cross.Sign
 
         private static string[] GetAccountsChains(string[] accounts)
         {
-            List<string> chains = new()
-            {
-            };
+            List<string> chains = new();
             foreach (var account in accounts)
             {
-                var values = account.Split(":");
-                var chain = values[0];
-                var chainId = values[1];
-
-                chains.Add($"{chain}:{chainId}");
+                var (chainId, _) = Core.Utils.DeconstructAccountId(account);
+                chains.Add(chainId);
             }
 
             return chains.ToArray();
@@ -477,13 +472,13 @@ namespace Cross.Sign
             }
 
             // Reject multi-namespace requests
-            var uniqueNamespaces = authParams.Chains.Select(chain => chain.Split(":")[0]).Distinct().ToArray();
+            var uniqueNamespaces = authParams.Chains.Select(Core.Utils.ExtractChainNamespace).Distinct().ToArray();
             if (uniqueNamespaces.Length > 1)
             {
                 throw new ArgumentException("Multi-namespace requests are not supported. Please request single namespace only.");
             }
 
-            var @namespace = authParams.Chains[0].Split(":")[0];
+            var @namespace = Core.Utils.ExtractChainNamespace(authParams.Chains[0]);
             if (@namespace != "eip155")
             {
                 throw new ArgumentException("Only eip155 namespace is supported for authenticated sessions. Please use .connect() for non-eip155 chains.");
