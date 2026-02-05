@@ -567,15 +567,12 @@ namespace Cross.Sign
 
         protected async Task Initialize()
         {
-            await CoreClient.Start();
-            await PendingRequests.Init();
-            await PairingStore.Init();
-            await Session.Init();
-            await Proposal.Init();
-            await Engine.Init();
-            await Auth.Init();
+            // 1. Storage 먼저 초기화 (중복 호출 안전)
+            await CoreClient.Storage.Init();
 
-            // 자동 Storage 정리 (옵션이 활성화된 경우)
+            // 2. 자동 Storage 정리 (Storage Init 직후, 모든 모듈 Init 전)
+            // 중요: CoreClient.Start()는 Relayer.Init() → Messages.Init()을 호출하므로
+            // CoreClient.Start() 전에 정리해야 메모리 캐시 복구 문제 방지
             if (Options.AutoCleanupStorage)
             {
                 try
@@ -584,7 +581,10 @@ namespace Cross.Sign
                     {
                         VerboseLogging = false // 초기화 시에는 간단한 로그만
                     };
-                    var result = await Utils.StorageCleanupUtility.CleanupStorageAsync(this, cleanupOptions);
+                    
+                    var result = await Utils.StorageCleanupUtility.CleanupStorageBeforeInit(
+                        CoreClient.Storage, 
+                        cleanupOptions);
                     
                     if (result.TotalKeysRemoved > 0)
                     {
@@ -598,6 +598,17 @@ namespace Cross.Sign
                     Core.Common.Logging.CrossLogger.Log($"[SignClient] ⚠️ Storage 자동 정리 중 오류 (무시됨): {ex.Message}");
                 }
             }
+
+            // 3. CoreClient 초기화 (Storage는 이미 Init되어 스킵됨, 정리된 Storage에서 로드)
+            await CoreClient.Start();
+            
+            // 4. SignClient 모듈 초기화 (정리된 Storage에서 로드)
+            await PendingRequests.Init();
+            await PairingStore.Init();
+            await Session.Init();
+            await Proposal.Init();
+            await Engine.Init();
+            await Auth.Init();
         }
 
         protected virtual void Dispose(bool disposing)
