@@ -30,9 +30,10 @@ namespace Cross.Sign.Utils
             public bool CleanupMessages { get; set; } = true;
 
             /// <summary>
-            ///     만료된 Expirer 데이터를 정리할지 여부 (기본값: true)
+            ///     만료된 Expirer 데이터를 정리할지 여부 (기본값: false)
+            ///     주의: Expirer 모듈이 자동으로 만료 데이터를 정리하므로 일반적으로 불필요합니다.
             /// </summary>
-            public bool CleanupExpiredData { get; set; } = true;
+            public bool CleanupExpiredData { get; set; } = false;
 
             /// <summary>
             ///     사용하지 않는 KeyChain 데이터를 정리할지 여부 (기본값: false, 안전상 기본 비활성화)
@@ -65,15 +66,18 @@ namespace Cross.Sign.Utils
         }
 
         /// <summary>
-        ///     오래되고 사용하지 않는 Storage 데이터를 정리합니다.
-        ///     주의: 이 메서드는 모듈 Init 이후에 호출되므로, 메모리 캐시 문제로 인해
-        ///     다음 Persist 시 데이터가 복구될 수 있습니다.
-        ///     초기화 시 자동 정리는 CleanupStorageBeforeInit을 사용하세요.
+        ///     오래되고 사용하지 않는 Storage 데이터를 수동으로 정리합니다.
+        ///     이 메서드는 활성 세션 정보를 사용하여 더 정교한 정리를 수행합니다.
+        ///     
+        ///     사용 시나리오:
+        ///     - 런타임에 명시적으로 스토리지 정리가 필요한 경우
+        ///     - 활성 세션의 MessageTracker 데이터를 정리하고 싶은 경우
+        ///     
+        ///     주의: SDK 초기화 시 자동 정리는 CleanupStorageBeforeInit을 사용합니다.
         /// </summary>
         /// <param name="signClient">SignClient 인스턴스</param>
         /// <param name="options">정리 옵션 (null인 경우 기본값 사용)</param>
         /// <returns>정리 결과</returns>
-        [Obsolete("Use CleanupStorageBeforeInit for initialization. This method has cache restoration issues.")]
         public static async Task<CleanupResult> CleanupStorageAsync(ISignClient signClient, CleanupOptions options = null)
         {
             options ??= new CleanupOptions();
@@ -253,8 +257,18 @@ namespace Cross.Sign.Utils
         }
 
         /// <summary>
-        ///     Storage Init 직후 정리합니다. Storage와 메모리 캐시를 모두 정리하여
-        ///     Persist 시 데이터 복구 문제를 방지합니다.
+        ///     Storage Init 직후, 모듈 Init 전에 정리합니다.
+        ///     이 시점에서 정리하면 메모리 캐시 복구 문제를 방지할 수 있습니다.
+        ///     
+        ///     사용 시나리오:
+        ///     - SDK 초기화 시 자동 정리 (SignClient.Initialize에서 자동 호출)
+        ///     - 활성 세션 정보가 없으므로 보수적 정리만 수행
+        ///     
+        ///     제한 사항:
+        ///     - Resolved된 JsonRpcHistory만 정리 (pending 없는 것만)
+        ///     - MessageTracker는 정리하지 않음 (활성 세션 정보 필요)
+        ///     
+        ///     런타임에 수동 정리가 필요하면 CleanupStorageAsync를 사용하세요.
         /// </summary>
         /// <param name="storage">Storage 인스턴스 (반드시 Init되어 있어야 함)</param>
         /// <param name="options">정리 옵션 (null인 경우 기본값 사용)</param>
@@ -387,9 +401,10 @@ namespace Cross.Sign.Utils
 
         private static bool IsExpiredDataKey(string key)
         {
-            // Expirer 자체 저장소가 아닌, 만료된 데이터를 의미
-            // 이 부분은 실제로는 Expirer가 자동으로 정리하므로 추가 검증 필요
-            return false; // 안전을 위해 기본적으로 false
+            // 현재 구현되지 않음: Expirer 모듈이 자동으로 만료 데이터를 정리하므로
+            // 이 cleanup 유틸리티에서 중복 처리할 필요가 없습니다.
+            // 향후 필요 시 구현 가능하지만, 현재는 Expirer의 자동 처리를 신뢰합니다.
+            return false;
         }
 
         private static bool IsKeyChainKey(string key)
@@ -436,17 +451,19 @@ namespace Cross.Sign.Utils
 
         private static bool IsActiveExpirerKey(ISignClient signClient, string key)
         {
-            // Expirer 키가 현재 추적 중인지 확인
-            // 실제 구현 시 Expirer.Keys를 확인
+            // 특정 키가 Expirer에서 현재 추적 중인지 확인
+            // 참고: IsExpiredDataKey()가 현재 구현되지 않았으므로 이 메서드도 호출되지 않음
             try
             {
+                // Storage key와 Expirer의 topic 키는 형식이 다를 수 있음
+                // 안전하게 키 배열에서 직접 확인
                 var expirerKeys = signClient.CoreClient.Expirer.Keys;
-                // key format: "wc@2:core:0.3//core-expirer"
-                return expirerKeys != null && expirerKeys.Length > 0;
+                return expirerKeys != null && expirerKeys.Contains(key);
             }
             catch
             {
-                return false;
+                // 오류 시 보수적으로 true 반환 (삭제 안함)
+                return true;
             }
         }
 

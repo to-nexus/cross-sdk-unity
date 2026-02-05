@@ -494,6 +494,14 @@ namespace Cross.Sign
         /// </summary>
         /// <param name="options">정리 옵션 (null인 경우 기본값 사용)</param>
         /// <returns>정리 결과</returns>
+        /// <remarks>
+        ///     사용 예시:
+        ///     - 앱 실행 중 스토리지가 너무 커졌을 때
+        ///     - 세션 종료 후 정리가 필요할 때
+        ///     - 주기적인 유지보수 작업
+        ///     
+        ///     참고: SDK 초기화 시에는 자동으로 정리됩니다 (AutoCleanupStorage 옵션).
+        /// </remarks>
         public Task<Utils.StorageCleanupUtility.CleanupResult> CleanupStorageAsync(
             Utils.StorageCleanupUtility.CleanupOptions options = null)
         {
