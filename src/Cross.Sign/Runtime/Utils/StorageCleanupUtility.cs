@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cross.Core.Common.Logging;
+using Cross.Core.Interfaces;
 using Cross.Core.Storage.Interfaces;
 using Cross.Sign.Interfaces;
 
@@ -504,7 +505,8 @@ namespace Cross.Sign.Utils
             try
             {
                 // MessageTracker 데이터 구조: Dictionary<string, MessageRecord>
-                var messages = await storage.GetItem<Dictionary<string, object>>(key);
+                // MessageRecord는 Dictionary<string, string>을 상속한 클래스
+                var messages = await storage.GetItem<Dictionary<string, MessageRecord>>(key);
                 if (messages == null || messages.Count == 0)
                     return 0;
 
