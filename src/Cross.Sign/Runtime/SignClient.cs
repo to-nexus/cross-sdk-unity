@@ -487,6 +487,30 @@ namespace Cross.Sign
             return Engine.Authenticate(authParams);
         }
 
+        /// <summary>
+        ///     Storage에 누적된 오래된 데이터를 정리합니다.
+        ///     JsonRpcHistory, MessageTracker 등 무한정 쌓이는 데이터를 안전하게 삭제합니다.
+        ///     현재 활성 세션과 관련된 데이터는 보존됩니다.
+        /// </summary>
+        /// <param name="options">정리 옵션 (null인 경우 기본값 사용)</param>
+        /// <returns>정리 결과</returns>
+        public Task<Utils.StorageCleanupUtility.CleanupResult> CleanupStorageAsync(
+            Utils.StorageCleanupUtility.CleanupOptions options = null)
+        {
+            return Utils.StorageCleanupUtility.CleanupStorageAsync(this, options);
+        }
+
+        /// <summary>
+        ///     Storage를 완전히 초기화합니다. (개발/테스트 전용)
+        ///     경고: 모든 세션, 페어링, 키체인 정보가 삭제됩니다!
+        /// </summary>
+        /// <param name="confirmDeletion">삭제를 확인하려면 true를 전달해야 합니다</param>
+        /// <returns>성공 여부</returns>
+        public Task<bool> ClearAllStorageAsync(bool confirmDeletion = false)
+        {
+            return Utils.StorageCleanupUtility.ClearAllStorageAsync(this, confirmDeletion);
+        }
+
         public Task RejectSessionAuthenticate(RejectParams rejectParams)
         {
             return Engine.RejectSessionAuthenticate(rejectParams);
@@ -550,6 +574,30 @@ namespace Cross.Sign
             await Proposal.Init();
             await Engine.Init();
             await Auth.Init();
+
+            // 자동 Storage 정리 (옵션이 활성화된 경우)
+            if (Options.AutoCleanupStorage)
+            {
+                try
+                {
+                    var cleanupOptions = new Utils.StorageCleanupUtility.CleanupOptions
+                    {
+                        VerboseLogging = false // 초기화 시에는 간단한 로그만
+                    };
+                    var result = await Utils.StorageCleanupUtility.CleanupStorageAsync(this, cleanupOptions);
+                    
+                    if (result.TotalKeysRemoved > 0)
+                    {
+                        Core.Common.Logging.CrossLogger.Log(
+                            $"[SignClient] Storage 정리 완료: {result.TotalKeysRemoved}개 키 삭제, " +
+                            $"약 {result.EstimatedBytesFreed / 1024}KB 확보");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Core.Common.Logging.CrossLogger.Log($"[SignClient] ⚠️ Storage 자동 정리 중 오류 (무시됨): {ex.Message}");
+                }
+            }
         }
 
         protected virtual void Dispose(bool disposing)
