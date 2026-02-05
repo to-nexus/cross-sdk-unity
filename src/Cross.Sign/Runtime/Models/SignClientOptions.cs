@@ -23,5 +23,12 @@ namespace Cross.Sign.Models
         /// </summary>
         [JsonProperty("metadata")]
         public Metadata Metadata;
+
+        /// <summary>
+        ///     초기화 시 오래된 Storage 데이터를 자동으로 정리할지 여부 (기본값: true)
+        ///     JsonRpcHistory, MessageTracker 등 무한정 누적되는 데이터를 정리합니다.
+        /// </summary>
+        [JsonProperty("autoCleanupStorage")]
+        public bool AutoCleanupStorage { get; set; } = true;
     }
 }

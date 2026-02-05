@@ -32,6 +32,10 @@ namespace Cross.Sign.Unity
 
         public override async Task Init()
         {
+            // Idempotency check: 중복 Init 호출 방지 (semaphore 누수 방지)
+            if (Initialized)
+                return;
+
             _semaphoreSlim = new SemaphoreSlim(1, 1);
             await Task.WhenAll(
                 Load(), base.Init()
