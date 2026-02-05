@@ -68,13 +68,20 @@ namespace Cross.Sign.Utils
 
         /// <summary>
         ///     오래되고 사용하지 않는 Storage 데이터를 수동으로 정리합니다.
-        ///     이 메서드는 활성 세션 정보를 사용하여 더 정교한 정리를 수행합니다.
         ///     
-        ///     사용 시나리오:
-        ///     - 런타임에 명시적으로 스토리지 정리가 필요한 경우
-        ///     - 활성 세션의 MessageTracker 데이터를 정리하고 싶은 경우
+        ///     ⚠️ 중요 제한사항:
+        ///     이 메서드는 Storage만 정리하며, 이미 메모리에 로드된 모듈 캐시는 수정하지 않습니다.
+        ///     MessageTracker 및 JsonRpcHistory 모듈은 다음 Persist() 호출 시 메모리 캐시를
+        ///     Storage에 다시 저장하므로, 정리한 데이터가 복구될 수 있습니다.
         ///     
-        ///     주의: SDK 초기화 시 자동 정리는 CleanupStorageBeforeInit을 사용합니다.
+        ///     권장 사용 방법:
+        ///     1. 앱 종료 직전에 호출 (다음 실행 시 정리된 Storage에서 로드)
+        ///     2. 정리 후 앱 재시작
+        ///     3. 런타임 정리보다는 자동 정리(AutoCleanupStorage) 사용 권장
+        ///     
+        ///     완전한 정리를 원하면:
+        ///     - AutoCleanupStorage 옵션을 활성화하여 초기화 시 자동 정리
+        ///     - CleanupStorageBeforeInit은 메모리 캐시 문제가 없음
         /// </summary>
         /// <param name="signClient">SignClient 인스턴스</param>
         /// <param name="options">정리 옵션 (null인 경우 기본값 사용)</param>
@@ -173,13 +180,15 @@ namespace Cross.Sign.Utils
                             if (options.PreserveActiveSessionData && (activeTopics.Count > 0 || activePairingTopics.Count > 0))
                             {
                                 // 활성 세션이 있으면 부분 정리
-                                var cleaned = await CleanupMessageTrackerData(storage, key, activeTopics, activePairingTopics);
-                                if (cleaned > 0)
+                                var cleanupInfo = await CleanupMessageTrackerData(storage, key, activeTopics, activePairingTopics);
+                                if (cleanupInfo.topicsRemoved > 0)
                                 {
-                                    result.MessageKeysRemoved += cleaned;
+                                    result.MessageKeysRemoved += cleanupInfo.topicsRemoved;
+                                    result.TotalKeysRemoved += cleanupInfo.topicsRemoved;
+                                    result.EstimatedBytesFreed += cleanupInfo.bytesFreed;
                                     if (options.VerboseLogging)
                                     {
-                                        CrossLogger.Log($"[StorageCleanup] MessageTracker 부분 정리: {cleaned}개 topic 삭제");
+                                        CrossLogger.Log($"[StorageCleanup] MessageTracker 부분 정리: {cleanupInfo.topicsRemoved}개 topic 삭제, ~{cleanupInfo.bytesFreed} bytes 확보");
                                     }
                                 }
                             }
@@ -496,7 +505,7 @@ namespace Cross.Sign.Utils
         ///     MessageTracker 데이터를 부분적으로 정리합니다.
         ///     활성 세션의 메시지는 보존하고, 비활성 topic의 메시지만 삭제합니다.
         /// </summary>
-        private static async Task<int> CleanupMessageTrackerData(
+        private static async Task<(int topicsRemoved, long bytesFreed)> CleanupMessageTrackerData(
             IKeyValueStorage storage, 
             string key, 
             HashSet<string> activeTopics, 
@@ -508,7 +517,10 @@ namespace Cross.Sign.Utils
                 // MessageRecord는 Dictionary<string, string>을 상속한 클래스
                 var messages = await storage.GetItem<Dictionary<string, MessageRecord>>(key);
                 if (messages == null || messages.Count == 0)
-                    return 0;
+                    return (0, 0);
+
+                // 정리 전 크기 추정
+                var sizeBefore = EstimateMessageTrackerSize(messages);
 
                 var removedCount = 0;
                 var allActiveTopics = new HashSet<string>(activeTopics);
@@ -530,18 +542,41 @@ namespace Cross.Sign.Utils
                     removedCount++;
                 }
 
-                // 변경된 데이터 저장
+                // 변경된 데이터 저장 및 크기 계산
+                long bytesFreed = 0;
                 if (removedCount > 0)
                 {
                     await storage.SetItem(key, messages);
+                    
+                    // 정리 후 크기 추정
+                    var sizeAfter = EstimateMessageTrackerSize(messages);
+                    bytesFreed = sizeBefore - sizeAfter;
                 }
 
-                return removedCount;
+                return (removedCount, bytesFreed);
             }
             catch (Exception ex)
             {
                 CrossLogger.LogError($"[StorageCleanup] MessageTracker 정리 중 오류: {ex.Message}");
-                return 0;
+                return (0, 0);
+            }
+        }
+
+        /// <summary>
+        ///     MessageTracker 데이터의 크기를 추정합니다.
+        /// </summary>
+        private static long EstimateMessageTrackerSize(Dictionary<string, MessageRecord> messages)
+        {
+            try
+            {
+                // 간단한 JSON 직렬화 기반 크기 추정
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(messages);
+                return json.Length;
+            }
+            catch
+            {
+                // 추정 실패 시 대략적인 크기 반환
+                return messages.Count * 1024; // 1KB per topic
             }
         }
 
