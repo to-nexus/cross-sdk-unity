@@ -57,12 +57,28 @@ namespace Cross.Sign.Utils
         /// </summary>
         public class CleanupResult
         {
+            /// <summary>삭제된 History storage key 개수</summary>
             public int HistoryKeysRemoved { get; set; }
+            
+            /// <summary>삭제된 MessageTracker storage key 개수</summary>
             public int MessageKeysRemoved { get; set; }
+            
+            /// <summary>부분 정리된 MessageTracker topic 개수 (key는 유지됨)</summary>
+            public int MessageTopicsRemoved { get; set; }
+            
+            /// <summary>삭제된 Expirer storage key 개수</summary>
             public int ExpiredKeysRemoved { get; set; }
+            
+            /// <summary>삭제된 KeyChain storage key 개수</summary>
             public int KeyChainKeysRemoved { get; set; }
+            
+            /// <summary>삭제된 총 storage key 개수 (topic은 제외)</summary>
             public int TotalKeysRemoved { get; set; }
+            
+            /// <summary>확보된 예상 용량 (bytes)</summary>
             public long EstimatedBytesFreed { get; set; }
+            
+            /// <summary>정리 중 발생한 오류 목록</summary>
             public List<string> Errors { get; set; } = new List<string>();
         }
 
@@ -179,16 +195,15 @@ namespace Cross.Sign.Utils
                             // 키를 삭제하지 않고 내부 데이터를 필터링해야 함
                             if (options.PreserveActiveSessionData && (activeTopics.Count > 0 || activePairingTopics.Count > 0))
                             {
-                                // 활성 세션이 있으면 부분 정리
+                                // 활성 세션이 있으면 부분 정리 (key는 유지, topic만 삭제)
                                 var cleanupInfo = await CleanupMessageTrackerData(storage, key, activeTopics, activePairingTopics);
                                 if (cleanupInfo.topicsRemoved > 0)
                                 {
-                                    result.MessageKeysRemoved += cleanupInfo.topicsRemoved;
-                                    result.TotalKeysRemoved += cleanupInfo.topicsRemoved;
+                                    result.MessageTopicsRemoved += cleanupInfo.topicsRemoved;
                                     result.EstimatedBytesFreed += cleanupInfo.bytesFreed;
                                     if (options.VerboseLogging)
                                     {
-                                        CrossLogger.Log($"[StorageCleanup] MessageTracker 부분 정리: {cleanupInfo.topicsRemoved}개 topic 삭제, ~{cleanupInfo.bytesFreed} bytes 확보");
+                                        CrossLogger.Log($"[StorageCleanup] MessageTracker 부분 정리: {cleanupInfo.topicsRemoved}개 topic 삭제 (key 유지), ~{cleanupInfo.bytesFreed} bytes 확보");
                                     }
                                 }
                             }
@@ -250,10 +265,11 @@ namespace Cross.Sign.Utils
                 if (options.VerboseLogging)
                 {
                     CrossLogger.Log($"[StorageCleanup] 정리 완료: {result.TotalKeysRemoved}개 키 삭제, 약 {result.EstimatedBytesFreed / 1024}KB 확보");
-                    CrossLogger.Log($"[StorageCleanup] - History: {result.HistoryKeysRemoved}개");
-                    CrossLogger.Log($"[StorageCleanup] - Messages: {result.MessageKeysRemoved}개");
-                    CrossLogger.Log($"[StorageCleanup] - Expired: {result.ExpiredKeysRemoved}개");
-                    CrossLogger.Log($"[StorageCleanup] - KeyChain: {result.KeyChainKeysRemoved}개");
+                    CrossLogger.Log($"[StorageCleanup] - History keys: {result.HistoryKeysRemoved}개");
+                    CrossLogger.Log($"[StorageCleanup] - Message keys: {result.MessageKeysRemoved}개");
+                    CrossLogger.Log($"[StorageCleanup] - Message topics (partial): {result.MessageTopicsRemoved}개");
+                    CrossLogger.Log($"[StorageCleanup] - Expired keys: {result.ExpiredKeysRemoved}개");
+                    CrossLogger.Log($"[StorageCleanup] - KeyChain keys: {result.KeyChainKeysRemoved}개");
                 }
 
                 return result;
