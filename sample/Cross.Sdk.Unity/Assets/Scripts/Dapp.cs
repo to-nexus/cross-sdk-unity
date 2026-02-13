@@ -27,6 +27,10 @@ namespace Sample
         {
             Application.targetFrameRate = Screen.currentResolution.refreshRate;
 
+#if UNITY_STANDALONE_WIN
+            Screen.fullScreenMode = FullScreenMode.Windowed;
+#endif
+
             _buttonsContainer = _uiDocument.rootVisualElement.Q<VisualElement>("ButtonsContainer");
 
             BuildButtons();
@@ -187,7 +191,6 @@ namespace Sample
                 // After the scene and UI are loaded, try to resume the session from the storage
                 var sessionResumed = await CrossSdk.ConnectorController.TryResumeSessionAsync();
                 Debug.Log($"Session resumed: {sessionResumed}");
-                Debug.Log($"IsAccountConnected: {CrossSdk.IsAccountConnected}");
             }
             catch (Exception e)
             {
