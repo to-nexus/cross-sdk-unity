@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Cross.Core;
 using Cross.Core.Common;
 using Cross.Core.Interfaces;
@@ -60,5 +61,17 @@ namespace Cross.Sign.Interfaces
         int Version { get; }
 
         IAuth Auth { get; }
+
+        /// <summary>
+        ///     Storage에 누적된 오래된 데이터를 정리합니다.
+        ///     JsonRpcHistory, MessageTracker 등 무한정 쌓이는 데이터를 안전하게 삭제합니다.
+        /// </summary>
+        Task<Utils.StorageCleanupUtility.CleanupResult> CleanupStorageAsync(
+            Utils.StorageCleanupUtility.CleanupOptions options = null);
+
+        /// <summary>
+        ///     Storage를 완전히 초기화합니다. (개발/테스트 전용)
+        /// </summary>
+        Task<bool> ClearAllStorageAsync(bool confirmDeletion = false);
     }
 }

@@ -27,6 +27,10 @@ namespace Sample
         {
             Application.targetFrameRate = Screen.currentResolution.refreshRate;
 
+#if UNITY_STANDALONE_WIN
+            Screen.fullScreenMode = FullScreenMode.Windowed;
+#endif
+
             _buttonsContainer = _uiDocument.rootVisualElement.Q<VisualElement>("ButtonsContainer");
 
             BuildButtons();

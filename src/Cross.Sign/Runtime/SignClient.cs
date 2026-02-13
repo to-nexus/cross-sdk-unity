@@ -487,6 +487,42 @@ namespace Cross.Sign
             return Engine.Authenticate(authParams);
         }
 
+        /// <summary>
+        ///     Storage에 누적된 오래된 데이터를 정리합니다.
+        ///     JsonRpcHistory, MessageTracker 등 무한정 쌓이는 데이터를 안전하게 삭제합니다.
+        ///     현재 활성 세션과 관련된 데이터는 보존됩니다.
+        /// </summary>
+        /// <param name="options">정리 옵션 (null인 경우 기본값 사용)</param>
+        /// <returns>정리 결과</returns>
+        /// <remarks>
+        ///     ⚠️ 중요 제한사항:
+        ///     이 메서드는 Storage만 정리하며, 이미 메모리에 로드된 데이터는 수정하지 않습니다.
+        ///     다음 SDK 작업 시 메모리 캐시가 Storage에 다시 저장되어 정리가 취소될 수 있습니다.
+        ///     
+        ///     권장 사용법:
+        ///     - 앱 종료 직전에 호출 (다음 실행 시 정리된 상태로 시작)
+        ///     - 정리 후 앱 재시작
+        ///     
+        ///     완전한 정리를 원하면 AutoCleanupStorage 옵션(기본 활성화)을 사용하세요.
+        ///     초기화 시 자동 정리는 메모리 캐시 문제가 없습니다.
+        /// </remarks>
+        public Task<Utils.StorageCleanupUtility.CleanupResult> CleanupStorageAsync(
+            Utils.StorageCleanupUtility.CleanupOptions options = null)
+        {
+            return Utils.StorageCleanupUtility.CleanupStorageAsync(this, options);
+        }
+
+        /// <summary>
+        ///     Storage를 완전히 초기화합니다. (개발/테스트 전용)
+        ///     경고: 모든 세션, 페어링, 키체인 정보가 삭제됩니다!
+        /// </summary>
+        /// <param name="confirmDeletion">삭제를 확인하려면 true를 전달해야 합니다</param>
+        /// <returns>성공 여부</returns>
+        public Task<bool> ClearAllStorageAsync(bool confirmDeletion = false)
+        {
+            return Utils.StorageCleanupUtility.ClearAllStorageAsync(this, confirmDeletion);
+        }
+
         public Task RejectSessionAuthenticate(RejectParams rejectParams)
         {
             return Engine.RejectSessionAuthenticate(rejectParams);
@@ -543,7 +579,42 @@ namespace Cross.Sign
 
         protected async Task Initialize()
         {
+            // 1. Storage 먼저 초기화 (중복 호출 안전)
+            await CoreClient.Storage.Init();
+
+            // 2. 자동 Storage 정리 (Storage Init 직후, 모든 모듈 Init 전)
+            // 중요: CoreClient.Start()는 Relayer.Init() → Messages.Init()을 호출하므로
+            // CoreClient.Start() 전에 정리해야 메모리 캐시 복구 문제 방지
+            if (Options.AutoCleanupStorage)
+            {
+                try
+                {
+                    var cleanupOptions = new Utils.StorageCleanupUtility.CleanupOptions
+                    {
+                        VerboseLogging = false // 초기화 시에는 간단한 로그만
+                    };
+                    
+                    var result = await Utils.StorageCleanupUtility.CleanupStorageBeforeInit(
+                        CoreClient.Storage, 
+                        cleanupOptions);
+                    
+                    if (result.TotalKeysRemoved > 0)
+                    {
+                        Core.Common.Logging.CrossLogger.Log(
+                            $"[SignClient] Storage 정리 완료: {result.TotalKeysRemoved}개 키 삭제, " +
+                            $"약 {result.EstimatedBytesFreed / 1024}KB 확보");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Core.Common.Logging.CrossLogger.Log($"[SignClient] ⚠️ Storage 자동 정리 중 오류 (무시됨): {ex.Message}");
+                }
+            }
+
+            // 3. CoreClient 초기화 (Storage는 이미 Init되어 스킵됨, 정리된 Storage에서 로드)
             await CoreClient.Start();
+            
+            // 4. SignClient 모듈 초기화 (정리된 Storage에서 로드)
             await PendingRequests.Init();
             await PairingStore.Init();
             await Session.Init();
