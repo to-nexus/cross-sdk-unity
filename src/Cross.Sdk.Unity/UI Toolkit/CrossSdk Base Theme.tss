@@ -87,7 +87,7 @@ Modal {
     --ro-modal-bg-color: rgb(25, 26, 26);
     --ro-modal-border-color: var(--ro-gray-glass-005);
     --ro-modal-border-width: 1px;
-    --ro-modal-width-desktop: 360px;
+    --ro-modal-width-desktop: 440px;
     --ro-modal-max-height-mobile: 90%;
 }
 
